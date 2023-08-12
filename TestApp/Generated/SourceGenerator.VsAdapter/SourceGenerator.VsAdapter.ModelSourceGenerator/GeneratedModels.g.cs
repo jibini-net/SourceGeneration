@@ -121,4 +121,8 @@ public class SiteUser
             //});
         }
     }
+    public interface IService
+    {
+        bool ValidatePassword(string suEmail,string password);
+    }
 }

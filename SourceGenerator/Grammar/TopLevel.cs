@@ -1,6 +1,7 @@
 ﻿namespace SourceGenerator.Grammar;
 
 using System.Text.RegularExpressions;
+
 using static Token;
 
 /*
@@ -30,11 +31,11 @@ public class _TopLevel
                 case (int)Repo:
                     _Repo.Match(stream, modelName);
                     break;
-                    /*
+                    
                 case (int)Service:
-                    _Service.Match(stream);
+                    _Service.Match(stream, modelName);
                     break;
-                    */
+                    
                 default:
                     throw new Exception($"Invalid token '{stream.Text}' for top-level");
             }

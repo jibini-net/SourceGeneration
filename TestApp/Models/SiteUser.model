@@ -44,3 +44,7 @@ repo {
 
     dbo.SiteUser_GetWithPermissions(int suID) => SiteUser.WithPermissions
 }
+
+service {
+	ValidatePassword(string suEmail, string password) => bool
+}

@@ -1,7 +1,5 @@
 ﻿namespace SourceGenerator.Grammar;
 
-using System.Text;
-
 using static Token;
 
 /*

@@ -29,16 +29,27 @@ namespace SourceGenerator.VsAdapter
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
                 FileName = Path.Combine(CallingPath, ToolPath),
-                Arguments = $"{CallingPath}"
+                Arguments = $"{CallingPath}",
+                
             };
             using (var process = Process.Start(processInfo))
             {
-                process.WaitForExit();
+                // Source can overflow the buffer! Take it in pieces
+                var output = new StringBuilder();
+                for (var i = 0; !process.WaitForExit(10); i++)
+                {
+                    output.Append(process.StandardOutput.ReadToEnd());
+                    // 10ms * 1,000 = 10,000ms = 10s
+                    if (i > 1000)
+                    {
+                        throw new Exception("Source generator process timed out");
+                    }
+                }
 
                 switch (process.ExitCode)
                 {
                     case 0:
-                        return process.StandardOutput.ReadToEnd();
+                        return output.ToString();
 
                     default:
                         var error = process.StandardError.ReadToEnd();

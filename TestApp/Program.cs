@@ -28,5 +28,10 @@ internal class Program
             var test3 = test.dbo__SiteUser_GetWithPassword(test2.suEmail);
             Console.WriteLine(test3.suPasswordHash);
         }
+
+        {
+            SiteUser.IService test = null;
+            test?.ValidatePassword("zgoethel12@gmail.com", "S3cur3P4ssw0rd");
+        }
     }
 }
