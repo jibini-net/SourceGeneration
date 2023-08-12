@@ -3,6 +3,10 @@
 using System.Text.RegularExpressions;
 using static Token;
 
+/*
+ * Implementation of source generation and semantic evaluation. The parser
+ * operates top-down using recursive descent.
+ */
 public class _TopLevel
 {
     public static void Match(TokenStream stream, string modelName)
@@ -12,7 +16,7 @@ public class _TopLevel
             switch (stream.Next)
             {
                 case (int)LCurly:
-                    Console.WriteLine(MatchCSharp(stream).Replace("__model__", modelName));
+                    Console.WriteLine(MatchCSharp(stream));
                     break;
 
                 case (int)Schema:

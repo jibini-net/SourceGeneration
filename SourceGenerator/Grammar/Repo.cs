@@ -1,8 +1,13 @@
 ﻿namespace SourceGenerator.Grammar;
 
 using System.Text;
+
 using static Token;
 
+/*
+ * Implementation of source generation and semantic evaluation. The parser
+ * operates top-down using recursive descent.
+ */
 public class _Repo
 {
     public static void Match(TokenStream stream, string modelName)
@@ -29,6 +34,8 @@ public class _Repo
             {
                 throw new Exception("Expected left parens");
             }
+
+            // "..."
             if (stream.Next == (int)Splat)
             {
                 throw new NotImplementedException("Model field splat is not implemented");
@@ -67,7 +74,7 @@ public class _Repo
 
             if (stream.Next == (int)Arrow)
             {
-                // "=>" {type name}
+                // "=>" {return type}
                 stream.Poll();
                 if (stream.Poll() != (int)Ident)
                 {

@@ -2,9 +2,13 @@
 
 using static Token;
 
+/*
+ * Implementation of source generation and semantic evaluation. The parser
+ * operates top-down using recursive descent.
+ */
 public class _Schema
 {
-    public static void Match(TokenStream stream, string modelName)
+    public static void Match(TokenStream stream, string _/*modelName*/)
     {
         // "schema" "{"
         stream.Poll();
@@ -15,11 +19,11 @@ public class _Schema
 
         while (stream.Next != (int)RCurly)
         {
+            // {type} {name} ["=" "{" {C# expression} "}"]
             var field = MatchField(stream);
             Console.WriteLine("    public {0} {1} {{ get; set; }}",
                 field.TypeName,
                 field.Name);
-
             if (!string.IsNullOrEmpty(field.Initial))
             {
                 Console.WriteLine("        = {0};", field.Initial);
