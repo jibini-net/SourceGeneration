@@ -153,6 +153,10 @@ public class Fsa
             }
         }
     }
+    public void Build(string word, int accept)
+    {
+        Build(word, accept, out var _);
+    }
 
     /*
      * Finds all states accessible from this state without consuming any

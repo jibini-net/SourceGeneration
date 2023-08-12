@@ -7,6 +7,7 @@ public object perName { get; set; }
 public object perConstant { get; set; }
 public object perType { get; set; }
 public object perActive { get; set; }
+public object perTest { get; set; }
 }
 public class SiteUser
 {
