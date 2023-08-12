@@ -7,17 +7,17 @@ schema {
 }
 
 repo {
-	dbo.Permission_GetByID(int perID) => Permission,
+    dbo.Permission_GetByID(int perID) => Permission,
 
-	dbo.Permission_Set(
-	
-		int perID,
-		int perTypeID,
-		string perName,
-		string perConstant,
-		bool perActive
+    dbo.Permission_Set(
+    
+        int perID,
+        int perTypeID,
+        string perName,
+        string perConstant,
+        bool perActive
 
-		) => Permission,
+        ) => Permission,
 
-	dbo.Permission_Delete(int perID)
+    dbo.Permission_Delete(int perID)
 }

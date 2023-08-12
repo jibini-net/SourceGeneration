@@ -9,12 +9,12 @@ schema {
 }
 
 partial WithPassword {
-	string suPasswordHash
+    string suPasswordHash
 }
 
 partial WithPermissions {
-	List<Permission> user_perms = {new()},
-	List<string> user_roles = {new() { "Guest" }}
+    List<Permission> user_perms = {new()},
+    List<string> user_roles = {new() { "Guest" }}
 }
 
 {
@@ -25,22 +25,22 @@ partial WithPermissions {
 }
 
 repo {
-	dbo.SiteUser_GetByID(int suID) => SiteUser,
+    dbo.SiteUser_GetByID(int suID) => SiteUser,
 
-	dbo.SiteUser_Set(
-	
-		int suID,
-		string suEmail,
-		string suFirstName,
-		string suLastName,
-		bool suActive,
-		bool suLocked
+    dbo.SiteUser_Set(
+    
+        int suID,
+        string suEmail,
+        string suFirstName,
+        string suLastName,
+        bool suActive,
+        bool suLocked
 
-		) => SiteUser,
+        ) => SiteUser,
 
-	dbo.SiteUser_Delete(int suID),
+    dbo.SiteUser_Delete(int suID),
 
-	dbo.SiteUser_GetWithPassword(string suEmail) => SiteUser.WithPassword,
+    dbo.SiteUser_GetWithPassword(string suEmail) => SiteUser.WithPassword,
 
-	dbo.SiteUser_GetWithPermissions(int suID) => SiteUser.WithPermissions
+    dbo.SiteUser_GetWithPermissions(int suID) => SiteUser.WithPermissions
 }
