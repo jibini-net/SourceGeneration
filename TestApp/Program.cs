@@ -18,5 +18,6 @@ internal class Program
             perConstant = "PERMISSION",
             perActive = true
         };
+        test.granted_permissions.Add(test2);
     }
 }

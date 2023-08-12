@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "SourceGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": ".\\",
+      "workingDirectory": "C:\\Users\\zgoethel\\Desktop\\SourceGenerator\\TestApp"
+    }
+  }
+}

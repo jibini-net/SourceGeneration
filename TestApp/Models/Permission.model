@@ -1,5 +1,7 @@
-perID
-perName
-perConstant
-perType
-perActive
+schema {
+	int perID,
+	string perName,
+	string perConstant,
+	int perType,
+	bool perActive
+}

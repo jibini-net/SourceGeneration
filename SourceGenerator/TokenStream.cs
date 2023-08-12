@@ -11,8 +11,11 @@ public class TokenStream
     {
         get
         {
-            Peek();
-            return nextToken.Value;
+            if (nextToken is not null)
+            {
+                return nextToken.Value;
+            }
+            return Peek();
         }
     }
 
@@ -20,23 +23,27 @@ public class TokenStream
 
     public int Peek()
     {
-        if (nextToken is not null)
-        {
-            return nextToken.Value;
-        }
         if (Offset >= Source.Length)
         {
+            Text = "";
             return (nextToken = -1).Value;
         }
-
         var (accepted, match) = Grammar.Search(Source, Offset);
         Text = match;
-        return (nextToken = accepted).Value;
+        nextToken = accepted;
+
+        // Discard whitespace/comments
+        if (accepted == 9999)
+        {
+            Poll();
+            return Peek();
+        }
+        return accepted;
     }
 
     public int Poll()
     {
-        var token = Peek();
+        var token = Next;
         nextToken = null;
         Offset += Text.Length;
         return token;

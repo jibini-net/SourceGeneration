@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SourceGenerator;
+﻿namespace SourceGenerator;
 
 public enum Token
 {
-    Schema,
+    Schema = 1,
     Partial,
     Repo,
+    Service,
     Ident,
     LCurly,
     RCurly,
     LParen,
-    RParen
+    RParen,
+    Comma,
+    Splat,
+    Arrow
 }

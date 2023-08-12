@@ -1,9 +1,13 @@
-suID
-suEmail
-suFirstName
-suLastName
-suPhone
-suActive
-suLocked
-suLastLogin
-suPassword
+
+schema {
+	int suID,
+	string suEmail,
+	string suFirstName,
+	string suLastName,
+	string suPhone,
+	bool suActive,
+	bool suLocked,
+	DateTime? suLastLogin,
+	string suPassword,
+	List<Permission> granted_permissions
+}
