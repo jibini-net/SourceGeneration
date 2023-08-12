@@ -19,7 +19,8 @@ internal class Program
         var letters = "a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z";
         var capLetters = letters.ToUpperInvariant();
         var numbers = "0|1|2|3|4|5|6|7|8|9";
-        var word = $"({letters}|{capLetters}|_)+(|({letters}|{capLetters}|{numbers}|\\<|\\>|\\.|\\?|_)+)";
+        var cSharpType = "\\<|\\>|\\[|\\]|\\.|\\?";
+        var word = $"({letters}|{capLetters}|_)+(|({letters}|{capLetters}|{numbers}|{cSharpType}|_)+)";
 
         var nfa = new Fsa();
         nfa.Build("schema",         (int)Schema);
@@ -33,6 +34,7 @@ internal class Program
         nfa.Build("\\)",            (int)RParen);
         nfa.Build("\\,",            (int)Comma);
         nfa.Build("\\.\\.\\.",      (int)Splat);
+        nfa.Build("\\=",            (int)Assign);
         nfa.Build("\\=\\>",         (int)Arrow);
         nfa.Build("( |\n|\r|\t)+",  9999);
 
@@ -40,7 +42,8 @@ internal class Program
         Console.WriteLine("#nullable disable");
         Console.WriteLine("namespace Generated;");
 
-        foreach (var file in Directory.GetFiles(Path.Combine(callingPath, "Models")))
+        foreach (var file in Directory.GetFiles(Path.Combine(callingPath, "Models"))
+            .Where((it) => it.EndsWith(".model")))
         {
             var source = new TokenStream()
             {
@@ -48,11 +51,11 @@ internal class Program
                 Grammar = nfa
             };
 
-            var className = Path.GetFileNameWithoutExtension(file);
-            Console.WriteLine($"public class {className}");
+            var modelName = Path.GetFileNameWithoutExtension(file);
+            Console.WriteLine($"public class {modelName}");
             Console.WriteLine("{");
 
-            _TopLevel.Match(source);
+            _TopLevel.Match(source, modelName);
 
             Console.WriteLine("}");
         }

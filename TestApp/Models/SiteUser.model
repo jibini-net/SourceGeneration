@@ -1,13 +1,13 @@
 
 schema {
 	int suID,
-	string suEmail,
-	string suFirstName,
-	string suLastName,
-	string suPhone,
-	bool suActive,
+	string suEmail = {""},
+	string suFirstName = {""},
+	string suLastName = {""},
+	string suPhone = {""},
+	bool suActive = {true},
 	bool suLocked,
 	DateTime? suLastLogin,
 	string suPassword,
-	List<Permission> granted_permissions
+	List<Permission> granted_permissions = {new()}
 }

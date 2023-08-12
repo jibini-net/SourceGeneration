@@ -13,5 +13,6 @@ public enum Token
     RParen,
     Comma,
     Splat,
+    Assign,
     Arrow
 }

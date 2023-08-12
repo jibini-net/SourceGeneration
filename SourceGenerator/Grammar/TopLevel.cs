@@ -4,7 +4,7 @@ using static Token;
 
 public class _TopLevel
 {
-    public static void Match(TokenStream stream)
+    public static void Match(TokenStream stream, string className)
     {
         for (var token = stream.Next;
             token > 0;
@@ -13,7 +13,7 @@ public class _TopLevel
             switch (stream.Next)
             {
                 case (int)Schema:
-                    _Schema.Match(stream);
+                    _Schema.Match(stream, className);
                     break;
                     /*
                 case (int)Partial:

@@ -19,5 +19,10 @@ internal class Program
             perActive = true
         };
         test.granted_permissions.Add(test2);
+
+        foreach (var testInt in test2.perTest)
+        {
+            Console.WriteLine(testInt);
+        }
     }
 }

@@ -4,7 +4,15 @@ public class TokenStream
 {
     public Fsa Grammar { get; set; } = new();
     public string Source { get; set; } = "";
-    public int Offset { get; set; }
+    public int Offset { get; private set; }
+
+    public void Seek(int offset)
+    {
+        Offset = offset;
+        nextToken = null;
+    }
+
+    public string Remaining => Source.Substring(Offset);
 
     private int? nextToken;
     public int Next
