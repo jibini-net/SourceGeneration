@@ -31,5 +31,5 @@ public class SiteUser
     public DateTime? suLastLogin { get; set; }
     public string suPassword { get; set; }
     public List<Permission> granted_permissions { get; set; }
-        = new();
+        = new() /*{ <- escaped*/;
 }

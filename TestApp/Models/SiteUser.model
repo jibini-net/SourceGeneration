@@ -9,5 +9,5 @@ schema {
 	bool suLocked,
 	DateTime? suLastLogin,
 	string suPassword,
-	List<Permission> granted_permissions = {new()}
+	List<Permission> granted_permissions = {new() /*\{ <- escaped*/}
 }

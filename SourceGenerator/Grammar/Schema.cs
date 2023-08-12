@@ -1,5 +1,6 @@
 ﻿namespace SourceGenerator.Grammar;
 
+using System.Text.RegularExpressions;
 using static Token;
 
 public class _Schema
@@ -77,6 +78,7 @@ public class _Schema
 
         // {C# expression} "}"
         int start = stream.Offset, length = 0;
+        var escaped = false;
         for (;
             start + length < stream.Source.Length && bracketDepth > 0;
             length++)
@@ -84,14 +86,25 @@ public class _Schema
             switch (stream.Source[start + length])
             {
                 case '{':
-                    bracketDepth++;
-                    break;
+                    bracketDepth += escaped ? 0 : 1;
+                    continue;
                 case '}':
-                    bracketDepth--;
-                    break;
+                    bracketDepth -= escaped ? 0 : 1;
+                    continue;
+                case '\\':
+                    escaped = !escaped;
+                    continue;
+                default:
+                    escaped = false;
+                    continue;
             }
         }
         stream.Seek(start + length);
-        return stream.Source.Substring(start, length - 1);
+        return Regex.Replace(stream.Source.Substring(start, length - 1),
+            // Any character--mainly "{" and "}"-- can be escaped with "\"
+            "(?<!\\\\)\\\\",
+            "")
+            // This doesn't catch "\\" which becomes "\"
+            .Replace("\\\\", "\\");
     }
 }
