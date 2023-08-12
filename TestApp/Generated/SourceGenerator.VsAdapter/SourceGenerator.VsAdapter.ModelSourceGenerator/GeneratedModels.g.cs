@@ -25,9 +25,17 @@ public class SiteUser
         = true;
     public bool suLocked { get; set; }
     public DateTime? suLastLogin { get; set; }
-    public string suPasswordHash { get; set; }
-    public List<Permission> granted_permissions { get; set; }
-        = new();
+    public partial class WithPassword : SiteUser
+    {
+        public string suPasswordHash { get; set; }
+    }
+    public partial class WithPermissions : SiteUser
+    {
+        public List<Permission> user_perms { get; set; }
+            = new();
+        public List<string> user_roles { get; set; }
+            = new() { "Guest" };
+    }
 
     public class ResetToken
     {

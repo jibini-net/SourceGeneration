@@ -7,8 +7,15 @@ schema {
     bool suActive = {true},
     bool suLocked,
     DateTime? suLastLogin,
-    string suPasswordHash,
-    List<Permission> granted_permissions = {new()}
+}
+
+partial WithPassword {
+	string suPasswordHash
+}
+
+partial WithPermissions {
+	List<Permission> user_perms = {new()},
+	List<string> user_roles = {new() { "Guest" }}
 }
 
 {

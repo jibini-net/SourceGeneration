@@ -18,11 +18,11 @@ public class _TopLevel
                 case (int)Schema:
                     _Schema.Match(stream, modelName);
                     break;
-                    /*
-                case (int)Partial:
-                    _Partial.Match(stream);
-                    break;
 
+                case (int)Partial:
+                    _Partial.Match(stream, modelName);
+                    break;
+                    /*
                 case (int)Repo:
                     _Repo.Match(stream);
                     break;

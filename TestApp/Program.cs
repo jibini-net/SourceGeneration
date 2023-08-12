@@ -6,7 +6,7 @@ internal class Program
 {
     public static void Main(string[] _)
     {
-        var test = new SiteUser()
+        var test = new SiteUser.WithPermissions()
         {
             suID = 3,
             suEmail = "zgoethel12@gmail.com"
@@ -18,6 +18,6 @@ internal class Program
             perConstant = "PERMISSION",
             perActive = true
         };
-        test.granted_permissions.Add(test2);
+        test.user_perms.Add(test2);
     }
 }
