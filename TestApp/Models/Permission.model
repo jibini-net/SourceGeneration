@@ -1,8 +1,7 @@
 schema {
-	int perID,
-	string perName = {""},
-	string perConstant = {""},
-	int perType,
-	bool perActive = {true},
-	int[] perTest = {new[] { 1, 2, 3 }}
+    int perID,
+    int perTypeID,
+    string perName = {""},
+    string perConstant = {""},
+    bool perActive = {true}
 }

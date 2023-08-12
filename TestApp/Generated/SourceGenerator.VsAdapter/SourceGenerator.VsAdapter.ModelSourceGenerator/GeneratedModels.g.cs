@@ -4,15 +4,13 @@ namespace Generated;
 public class Permission
 {
     public int perID { get; set; }
+    public int perTypeID { get; set; }
     public string perName { get; set; }
         = "";
     public string perConstant { get; set; }
         = "";
-    public int perType { get; set; }
     public bool perActive { get; set; }
         = true;
-    public int[] perTest { get; set; }
-        = new[] { 1, 2, 3 };
 }
 public class SiteUser
 {
@@ -23,13 +21,17 @@ public class SiteUser
         = "";
     public string suLastName { get; set; }
         = "";
-    public string suPhone { get; set; }
-        = "";
     public bool suActive { get; set; }
         = true;
     public bool suLocked { get; set; }
     public DateTime? suLastLogin { get; set; }
-    public string suPassword { get; set; }
+    public string suPasswordHash { get; set; }
     public List<Permission> granted_permissions { get; set; }
-        = new() /*{ <- escaped*/;
+        = new();
+
+    public class ResetToken
+    {
+        public Guid suPasswordReset { get; set; }
+    }
+
 }

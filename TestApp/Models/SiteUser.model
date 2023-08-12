@@ -1,13 +1,19 @@
 
 schema {
-	int suID,
-	string suEmail = {""},
-	string suFirstName = {""},
-	string suLastName = {""},
-	string suPhone = {""},
-	bool suActive = {true},
-	bool suLocked,
-	DateTime? suLastLogin,
-	string suPassword,
-	List<Permission> granted_permissions = {new() /*\{ <- escaped*/}
+    int suID,
+    string suEmail = {""},
+    string suFirstName = {""},
+    string suLastName = {""},
+    bool suActive = {true},
+    bool suLocked,
+    DateTime? suLastLogin,
+    string suPasswordHash,
+    List<Permission> granted_permissions = {new()}
+}
+
+{
+    public class ResetToken
+    {
+        public Guid suPasswordReset { get; set; }
+    }
 }
