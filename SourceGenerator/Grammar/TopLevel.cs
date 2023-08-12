@@ -22,11 +22,11 @@ public class _TopLevel
                 case (int)Partial:
                     _Partial.Match(stream, modelName);
                     break;
-                    /*
+                    
                 case (int)Repo:
-                    _Repo.Match(stream);
+                    _Repo.Match(stream, modelName);
                     break;
-
+                    /*
                 case (int)Service:
                     _Service.Match(stream);
                     break;

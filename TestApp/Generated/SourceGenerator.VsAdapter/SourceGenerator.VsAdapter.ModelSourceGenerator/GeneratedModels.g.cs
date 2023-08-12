@@ -11,6 +11,37 @@ public class Permission
         = "";
     public bool perActive { get; set; }
         = true;
+    public class Repository
+    {
+        //TODO Code to inject database service interface
+        public Permission dbo__Permission_GetByID(int perID)
+        {
+            //TODO Code to read results from proc
+            return default;
+            //return db.Execute<Permission>("dbo.Permission_GetByID", new { 
+            //    perID
+            //});
+        }
+        public Permission dbo__Permission_Set(int perID,int perTypeID,string perName,string perConstant,bool perActive)
+        {
+            //TODO Code to read results from proc
+            return default;
+            //return db.Execute<Permission>("dbo.Permission_Set", new { 
+            //    perID,
+            //    perTypeID,
+            //    perName,
+            //    perConstant,
+            //    perActive
+            //});
+        }
+        public void dbo__Permission_Delete(int perID)
+        {
+            //TODO Code to execute void-result proc
+            //db.Execute("dbo.Permission_Delete", new { 
+            //    perID
+            //});
+        }
+    }
 }
 public class SiteUser
 {
@@ -42,4 +73,52 @@ public class SiteUser
         public Guid suPasswordReset { get; set; }
     }
 
+    public class Repository
+    {
+        //TODO Code to inject database service interface
+        public SiteUser dbo__SiteUser_GetByID(int suID)
+        {
+            //TODO Code to read results from proc
+            return default;
+            //return db.Execute<SiteUser>("dbo.SiteUser_GetByID", new { 
+            //    suID
+            //});
+        }
+        public SiteUser dbo__SiteUser_Set(int suID,string suEmail,string suFirstName,string suLastName,bool suActive,bool suLocked)
+        {
+            //TODO Code to read results from proc
+            return default;
+            //return db.Execute<SiteUser>("dbo.SiteUser_Set", new { 
+            //    suID,
+            //    suEmail,
+            //    suFirstName,
+            //    suLastName,
+            //    suActive,
+            //    suLocked
+            //});
+        }
+        public void dbo__SiteUser_Delete(int suID)
+        {
+            //TODO Code to execute void-result proc
+            //db.Execute("dbo.SiteUser_Delete", new { 
+            //    suID
+            //});
+        }
+        public SiteUser.WithPassword dbo__SiteUser_GetWithPassword(string suEmail)
+        {
+            //TODO Code to read results from proc
+            return default;
+            //return db.Execute<SiteUser.WithPassword>("dbo.SiteUser_GetWithPassword", new { 
+            //    suEmail
+            //});
+        }
+        public SiteUser.WithPermissions dbo__SiteUser_GetWithPermissions(int suID)
+        {
+            //TODO Code to read results from proc
+            return default;
+            //return db.Execute<SiteUser.WithPermissions>("dbo.SiteUser_GetWithPermissions", new { 
+            //    suID
+            //});
+        }
+    }
 }

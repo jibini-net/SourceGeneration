@@ -1,6 +1,5 @@
 ﻿namespace SourceGenerator.Grammar;
 
-using System.Text.RegularExpressions;
 using static Token;
 
 public class _Schema
@@ -64,7 +63,7 @@ public class _Schema
 
         if (stream.Next == (int)Assign)
         {
-            // "="
+            // "=" {C# expression}
             stream.Poll();
             result.Initial = _TopLevel.MatchCSharp(stream);
         }

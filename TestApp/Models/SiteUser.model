@@ -24,3 +24,24 @@ partial WithPermissions {
         public Guid suPasswordReset { get; set; }
     }
 }
+
+repo {
+	dbo.SiteUser_GetByID(int suID) => SiteUser,
+
+	dbo.SiteUser_Set(
+	
+		int suID,
+		string suEmail,
+		string suFirstName,
+		string suLastName,
+		bool suActive,
+		bool suLocked
+
+		) => SiteUser,
+
+	dbo.SiteUser_Delete(int suID),
+
+	dbo.SiteUser_GetWithPassword(string suEmail) => SiteUser.WithPassword,
+
+	dbo.SiteUser_GetWithPermissions(int suID) => SiteUser.WithPermissions
+}

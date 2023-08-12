@@ -5,3 +5,19 @@ schema {
     string perConstant = {""},
     bool perActive = {true}
 }
+
+repo {
+	dbo.Permission_GetByID(int perID) => Permission,
+
+	dbo.Permission_Set(
+	
+		int perID,
+		int perTypeID,
+		string perName,
+		string perConstant,
+		bool perActive
+
+		) => Permission,
+
+	dbo.Permission_Delete(int perID)
+}
