@@ -10,7 +10,7 @@ using static Token;
  */
 public class _Repo
 {
-    public static void Match(TokenStream stream, string modelName)
+    public static void Match(TokenStream stream, string _/*modelName*/)
     {
         // "repo" "{"
         stream.Poll();
@@ -65,7 +65,7 @@ public class _Repo
                 // ","
                 if (stream.Next != (int)RParen && stream.Poll() != (int)Comma)
                 {
-                    throw new Exception("Expected comma");
+                    throw new Exception("Expected comma or ')'");
                 }
             }
 
@@ -118,7 +118,7 @@ public class _Repo
             // ","
             if (stream.Next != (int)RCurly && stream.Poll() != (int)Comma)
             {
-                throw new Exception("Expected comma");
+                throw new Exception("Expected comma or '}'");
             }
         }
 

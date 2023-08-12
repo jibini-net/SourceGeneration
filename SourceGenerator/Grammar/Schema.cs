@@ -32,7 +32,7 @@ public class _Schema
             // ","
             if (stream.Next != (int)RCurly && stream.Poll() != (int)Comma)
             {
-                throw new Exception("Expected comma");
+                throw new Exception("Expected comma or '}'");
             }
         }
 

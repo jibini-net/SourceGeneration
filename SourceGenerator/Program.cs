@@ -55,7 +55,30 @@ internal class Program
             Console.WriteLine($"public class {modelName}");
             Console.WriteLine("{");
 
-            _TopLevel.Match(source, modelName);
+            try
+            {
+                _TopLevel.Match(source, modelName);
+            } catch (Exception ex)
+            {
+                int lineNumber = 1, prevLine = 0;
+                for (int i = 0;
+                    i <= source.Offset && i < source.Source.Length;
+                    i++)
+                {
+                    if (source.Source[i] == '\n')
+                    {
+                        lineNumber++;
+                        prevLine = i;
+                    }
+                }
+
+                Console.Error.WriteLine("{0}:{1}:{2} - {3}",
+                    file,
+                    lineNumber,
+                    source.Offset - prevLine + 1,
+                    ex.Message);
+                Process.GetCurrentProcess().Kill();
+            }
 
             Console.WriteLine("}");
         }
