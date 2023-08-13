@@ -33,10 +33,12 @@ public class _Service
         // "}"
         stream.Poll();
 
-        WriteServices(actions, modelName);
+        WriteServiceInterface(actions);
+        WriteDbService(actions);
+        WriteApiService(actions, modelName);
     }
 
-    public static void WriteServices(List<_Repo.ProcDto> actions, string modelName)
+    public static void WriteServiceInterface(List<_Repo.ProcDto> actions)
     {
         Console.WriteLine("    public interface IService");
         Console.WriteLine("    {");
@@ -48,24 +50,97 @@ public class _Service
                 proc.ReturnType,
                 proc.Name,
                 string.Join(',', proc.Params.Select((it) => $"{it.type} {it.name}")));
-            /*
+        }
+
+        Console.WriteLine("    }");
+        Console.WriteLine("    public interface IBackendService : IService");
+        Console.WriteLine("    {");
+        Console.WriteLine("        // Implement and inject this interface as a separate service");
+        Console.WriteLine("    }");
+    }
+
+    public static void WriteDbService(List<_Repo.ProcDto> actions)
+    {
+        Console.WriteLine("    public class DbService : IService");
+        Console.WriteLine("    {");
+        Console.WriteLine("        //TODO Inject database wrapper service");
+        Console.WriteLine("        private readonly IBackendService impl;");
+        Console.WriteLine("        public DbService(IBackendService impl)");
+        Console.WriteLine("        {");
+        Console.WriteLine("            this.impl = impl;");
+        Console.WriteLine("        }");
+
+        foreach (var action in actions)
+        {
+            Console.WriteLine("        public {0} {1}({2})",
+                action.ReturnType,
+                action.Name,
+                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
             Console.WriteLine("        {");
 
-            if (proc.ReturnType == "void")
+            if (action.ReturnType == "void")
             {
-                Console.WriteLine("            //TODO Code to execute void-result proc");
-                Console.WriteLine("            //db.Execute(\"{0}\", new {{ ", proc.Name);
+                Console.WriteLine("            //TODO Code to execute via DB wrapper");
+                Console.WriteLine("            //wrapper.Execute(() => impl.{0}(", action.Name);
             } else
             {
-                Console.WriteLine("            //TODO Code to read results from proc");
+                Console.WriteLine("            //TODO Code to execute via DB wrapper");
                 Console.WriteLine("            return default;");
-                Console.WriteLine("            //return db.Execute<{0}>(\"{1}\", new {{ ",
-                    proc.ReturnType,
-                    proc.Name);
+                Console.WriteLine("            //wrapper.Execute<{0}>(() => impl.{1}(",
+                    action.ReturnType,
+                    action.Name);
             }
-            foreach (var par in proc.Params.Select((it) => it.name))
+            foreach (var par in action.Params.Select((it) => it.name))
             {
-                if (par != proc.Params.First().name)
+                if (par != action.Params.First().name)
+                {
+                    Console.WriteLine(",");
+                }
+                Console.Write("            //    ");
+                Console.Write(par);
+            }
+            Console.WriteLine("\n            //    ));");
+            Console.WriteLine("        }");
+        }
+
+        Console.WriteLine("    }");
+    }
+
+    public static void WriteApiService(List<_Repo.ProcDto> actions, string modelName)
+    {
+        Console.WriteLine("    public class ApiService : IService");
+        Console.WriteLine("    {");
+        Console.WriteLine("        //TODO Inject HTTP client service");
+        Console.WriteLine("        public ApiService()");
+        Console.WriteLine("        {");
+        Console.WriteLine("        }");
+
+        foreach (var action in actions)
+        {
+            Console.WriteLine("        public {0} {1}({2})",
+                action.ReturnType,
+                action.Name,
+                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+            Console.WriteLine("        {");
+
+            if (action.ReturnType == "void")
+            {
+                Console.WriteLine("            //TODO Code to execute via API client");
+                Console.WriteLine("            //api.Execute(\"{0}/{1}\", new {{",
+                    modelName,
+                    action.Name);
+            } else
+            {
+                Console.WriteLine("            //TODO Code to execute via API client");
+                Console.WriteLine("            return default;");
+                Console.WriteLine("            //return api.Execute<{0}>(\"{1}/{2}\", new {{",
+                    action.ReturnType,
+                    modelName,
+                    action.Name);
+            }
+            foreach (var par in action.Params.Select((it) => it.name))
+            {
+                if (par != action.Params.First().name)
                 {
                     Console.WriteLine(",");
                 }
@@ -73,7 +148,7 @@ public class _Service
                 Console.Write(par);
             }
             Console.WriteLine("\n            //});");
-            */
+            Console.WriteLine("        }");
         }
 
         Console.WriteLine("    }");

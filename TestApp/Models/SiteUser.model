@@ -46,5 +46,7 @@ repo {
 }
 
 service {
-	ValidatePassword(string suEmail, string password) => bool
+    AttemptLogin(string suEmail, string password) => SiteUser.WithPermissions,
+
+    ValidateSession(string sessionToken) => SiteUser.WithPermissions
 }

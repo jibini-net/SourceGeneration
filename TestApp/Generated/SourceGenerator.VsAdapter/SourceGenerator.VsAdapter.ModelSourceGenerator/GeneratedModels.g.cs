@@ -123,6 +123,61 @@ public class SiteUser
     }
     public interface IService
     {
-        bool ValidatePassword(string suEmail,string password);
+        SiteUser.WithPermissions AttemptLogin(string suEmail,string password);
+        SiteUser.WithPermissions ValidateSession(string sessionToken);
+    }
+    public interface IBackendService : IService
+    {
+        // Implement and inject this interface as a separate service
+    }
+    public class DbService : IService
+    {
+        //TODO Inject database wrapper service
+        private readonly IBackendService impl;
+        public DbService(IBackendService impl)
+        {
+            this.impl = impl;
+        }
+        public SiteUser.WithPermissions AttemptLogin(string suEmail,string password)
+        {
+            //TODO Code to execute via DB wrapper
+            return default;
+            //wrapper.Execute<SiteUser.WithPermissions>(() => impl.AttemptLogin(
+            //    suEmail,
+            //    password
+            //    ));
+        }
+        public SiteUser.WithPermissions ValidateSession(string sessionToken)
+        {
+            //TODO Code to execute via DB wrapper
+            return default;
+            //wrapper.Execute<SiteUser.WithPermissions>(() => impl.ValidateSession(
+            //    sessionToken
+            //    ));
+        }
+    }
+    public class ApiService : IService
+    {
+        //TODO Inject HTTP client service
+        public ApiService()
+        {
+        }
+        public SiteUser.WithPermissions AttemptLogin(string suEmail,string password)
+        {
+            //TODO Code to execute via API client
+            return default;
+            //return api.Execute<SiteUser.WithPermissions>("SiteUser/AttemptLogin", new {
+            //    suEmail,
+            //    password
+            //});
+        }
+        public SiteUser.WithPermissions ValidateSession(string sessionToken)
+        {
+            //TODO Code to execute via API client
+            return default;
+            //return api.Execute<SiteUser.WithPermissions>("SiteUser/ValidateSession", new {
+            //    sessionToken
+            //});
+        }
     }
 }
