@@ -21,19 +21,25 @@ public partial class TopLevelGrammar
                     break;
 
                 case (int)Schema:
-                    SchemaGrammar.Match(stream, modelName);
+                    var schema = SchemaGrammar.Match(stream);
+                    SchemaGrammar.Write(schema);
                     break;
 
                 case (int)Partial:
-                    PartialGrammar.Match(stream, modelName);
+                    var partial = PartialGrammar.Match(stream, modelName);
+                    PartialGrammar.Write(partial);
                     break;
                     
                 case (int)Repo:
-                    RepoGrammar.Match(stream, modelName);
+                    var repo = RepoGrammar.Match(stream);
+                    RepoGrammar.Write(repo);
                     break;
                     
                 case (int)Service:
-                    ServiceGrammar.Match(stream, modelName);
+                    var services = ServiceGrammar.Match(stream, modelName);
+                    ServiceGrammar.WriteServiceInterface(services);
+                    ServiceGrammar.WriteDbService(services);
+                    ServiceGrammar.WriteApiService(services);
                     break;
                     
                 default:

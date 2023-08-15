@@ -74,7 +74,7 @@ public class SiteUser
         {
             //TODO Code to read results from proc as json
             return default;
-            //return db.Execute<SiteUser.WithPermissions>("dbo.SiteUser_GetWithPermissions", new { 
+            //return db.ExecuteForJson<SiteUser.WithPermissions>("dbo.SiteUser_GetWithPermissions", new { 
             //    suID
             //});
         }

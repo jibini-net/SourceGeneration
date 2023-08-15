@@ -8,18 +8,28 @@ using static Token;
  */
 public class PartialGrammar
 {
-    public static void Match(TokenStream stream, string modelName)
+    public struct Dto
     {
+        public string SuperClass { get; set; }
+        public string Name { get; set; }
+        public List<FieldGrammar.Dto> Fields { get; set; }
+    }
+
+    public static Dto Match(TokenStream stream, string modelName)
+    {
+        var result = new Dto()
+        {
+            Fields = new()
+        };
+
         // "partial" {type name} "{"
         stream.Poll();
         if (stream.Poll() != (int)Ident)
         {
             throw new Exception($"Expected partial model class name");
         }
-        Console.WriteLine("    public partial class {0} : {1}",
-            stream.Text,
-            modelName);
-        Console.WriteLine("    {");
+        result.SuperClass = modelName;
+        result.Name = stream.Text;
         if (stream.Poll() != (int)LCurly)
         {
             throw new Exception($"Expected left curly");
@@ -27,15 +37,9 @@ public class PartialGrammar
 
         while (stream.Next != (int)RCurly)
         {
-            // {type} {name} ["=" {initial value}]
-            var field = SchemaGrammar.MatchField(stream);
-            Console.WriteLine("        public {0} {1} {{ get; set; }}",
-                field.TypeName,
-                field.Name);
-            if (!string.IsNullOrEmpty(field.Initial))
-            {
-                Console.WriteLine("            = {0};", field.Initial);
-            }
+            // {type} {name} ["=" "{" {initial value} "}"]
+            var field = FieldGrammar.Match(stream);
+            result.Fields.Add(field);
 
             // ","
             if (stream.Next != (int)RCurly && stream.Poll() != (int)Comma)
@@ -46,6 +50,28 @@ public class PartialGrammar
 
         // "}"
         stream.Poll();
+
+        return result;
+    }
+
+    public static void Write(Dto dto)
+    {
+        Console.WriteLine("    public partial class {0} : {1}",
+            dto.Name,
+            dto.SuperClass);
+        Console.WriteLine("    {");
+
+        foreach (var field in dto.Fields)
+        {
+            Console.WriteLine("        public {0} {1} {{ get; set; }}",
+               field.TypeName,
+               field.Name);
+            if (!string.IsNullOrEmpty(field.Initial))
+            {
+                Console.WriteLine("            = {0};", field.Initial);
+            }
+        }
+        
         Console.WriteLine("    }");
     }
 }

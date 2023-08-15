@@ -38,7 +38,7 @@ public class BlogPost
         {
             //TODO Code to read results from proc as json
             return default;
-            //return db.Execute<BlogPost.WithComments>("BlogPost_GetWithComments", new { 
+            //return db.ExecuteForJson<BlogPost.WithComments>("BlogPost_GetWithComments", new { 
             //    bpID
             //});
         }

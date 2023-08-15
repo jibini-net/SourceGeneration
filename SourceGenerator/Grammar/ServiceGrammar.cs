@@ -8,8 +8,20 @@ using static Token;
  */
 public class ServiceGrammar
 {
-    public static void Match(TokenStream stream, string modelName)
+    public struct Dto
     {
+        public string ApiRoute { get; set; }
+        public List<ActionGrammar.Dto> Actions { get; set; }
+    }
+
+    public static Dto Match(TokenStream stream, string modelName)
+    {
+        var result = new Dto()
+        {
+            ApiRoute = modelName,
+            Actions = new()
+        };
+
         // "service" "{"
         stream.Poll();
         if (stream.Poll() != (int)LCurly)
@@ -17,16 +29,15 @@ public class ServiceGrammar
             throw new Exception($"Expected left curly");
         }
 
-        var actions = new List<RepoGrammar.ProcDto>();
         while (stream.Next != (int)RCurly)
         {
             // {action name} "(" {parameter list} ")" ["=>" {return type}]
-            var proc = RepoGrammar.MatchProc(stream);
-            if (proc.IsJson)
+            var action = ActionGrammar.Match(stream);
+            if (action.IsJson)
             {
                 throw new Exception("JSON is not valid for service action");
             }
-            actions.Add(proc);
+            result.Actions.Add(action);
 
             // ","
             if (stream.Next != (int)RCurly && stream.Poll() != (int)Comma)
@@ -38,17 +49,15 @@ public class ServiceGrammar
         // "}"
         stream.Poll();
 
-        WriteServiceInterface(actions);
-        WriteDbService(actions);
-        WriteApiService(actions, modelName);
+        return result;
     }
 
-    public static void WriteServiceInterface(List<RepoGrammar.ProcDto> actions)
+    public static void WriteServiceInterface(Dto dto)
     {
         Console.WriteLine("    public interface IService");
         Console.WriteLine("    {");
 
-        foreach (var proc in actions)
+        foreach (var proc in dto.Actions)
         {
             
             Console.WriteLine("        {0} {1}({2});",
@@ -64,7 +73,7 @@ public class ServiceGrammar
         Console.WriteLine("    }");
     }
 
-    public static void WriteDbService(List<RepoGrammar.ProcDto> actions)
+    public static void WriteDbService(Dto dto)
     {
         Console.WriteLine("    public class DbService : IService");
         Console.WriteLine("    {");
@@ -75,7 +84,7 @@ public class ServiceGrammar
         Console.WriteLine("            this.impl = impl;");
         Console.WriteLine("        }");
 
-        foreach (var action in actions)
+        foreach (var action in dto.Actions)
         {
             Console.WriteLine("        public {0} {1}({2})",
                 action.ReturnType,
@@ -110,7 +119,7 @@ public class ServiceGrammar
         Console.WriteLine("    }");
     }
 
-    public static void WriteApiService(List<RepoGrammar.ProcDto> actions, string modelName)
+    public static void WriteApiService(Dto dto)
     {
         Console.WriteLine("    public class ApiService : IService");
         Console.WriteLine("    {");
@@ -119,7 +128,7 @@ public class ServiceGrammar
         Console.WriteLine("        {");
         Console.WriteLine("        }");
 
-        foreach (var action in actions)
+        foreach (var action in dto.Actions)
         {
             Console.WriteLine("        public {0} {1}({2})",
                 action.ReturnType,
@@ -131,7 +140,7 @@ public class ServiceGrammar
             {
                 Console.WriteLine("            //TODO Code to execute via API client");
                 Console.WriteLine("            //api.Execute(\"{0}/{1}\", new {{",
-                    modelName,
+                    dto.ApiRoute,
                     action.Name);
             } else
             {
@@ -139,7 +148,7 @@ public class ServiceGrammar
                 Console.WriteLine("            return default;");
                 Console.WriteLine("            //return api.Execute<{0}>(\"{1}/{2}\", new {{",
                     action.ReturnType,
-                    modelName,
+                    dto.ApiRoute,
                     action.Name);
             }
             foreach (var par in action.Params.Select((it) => it.name))

@@ -63,9 +63,7 @@ internal class Program
         } catch (Exception ex)
         {
             int lineNumber = 1, prevLine = 0;
-            for (int i = 0;
-                i <= source.Offset && i < source.Source.Length;
-                i++)
+            for (int i = 0; i <= source.Offset && i < source.Source.Length; i++)
             {
                 if (source.Source[i] == '\n')
                 {
