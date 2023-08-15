@@ -7,6 +7,7 @@ Series of tests to generate a number of individual pieces of boilerplate source:
  - partial classes
  - backend service interfaces
  - frontend HTTP client
+
 from a simple input syntax.
 
 ### Brief Example
