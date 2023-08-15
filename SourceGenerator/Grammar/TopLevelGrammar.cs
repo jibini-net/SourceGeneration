@@ -8,7 +8,7 @@ using static Token;
  * Implementation of source generation and semantic evaluation. The parser
  * operates top-down using recursive descent.
  */
-public class _TopLevel
+public partial class TopLevelGrammar
 {
     public static void Match(TokenStream stream, string modelName)
     {
@@ -21,19 +21,19 @@ public class _TopLevel
                     break;
 
                 case (int)Schema:
-                    _Schema.Match(stream, modelName);
+                    SchemaGrammar.Match(stream, modelName);
                     break;
 
                 case (int)Partial:
-                    _Partial.Match(stream, modelName);
+                    PartialGrammar.Match(stream, modelName);
                     break;
                     
                 case (int)Repo:
-                    _Repo.Match(stream, modelName);
+                    RepoGrammar.Match(stream, modelName);
                     break;
                     
                 case (int)Service:
-                    _Service.Match(stream, modelName);
+                    ServiceGrammar.Match(stream, modelName);
                     break;
                     
                 default:
@@ -75,11 +75,12 @@ public class _TopLevel
             }
         }
         stream.Seek(start + length);
-        return Regex.Replace(stream.Source.Substring(start, length - 1),
-            // Any character--mainly "{" and "}"-- can be escaped with "\"
-            "(?<!\\\\)\\\\",
-            "")
+        return NonPrecededBackslash()
+            .Replace(stream.Source.Substring(start, length - 1), "")
             // This doesn't catch "\\" which becomes "\"
             .Replace("\\\\", "\\");
     }
+
+    [GeneratedRegex("(?<!\\\\)\\\\")]
+    private static partial Regex NonPrecededBackslash();
 }

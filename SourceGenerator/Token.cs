@@ -9,6 +9,7 @@ public enum Token
     Partial,
     Repo,
     Service,
+    Json,
     Ident,
     LCurly,
     RCurly,

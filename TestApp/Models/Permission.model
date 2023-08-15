@@ -6,18 +6,24 @@ schema {
     bool perActive = {true}
 }
 
+partial Test {
+    string calculated_field = {""}
+}
+
 repo {
-    dbo.Permission_GetByID(int perID) => Permission,
+    dbo.Permission_GetByID(int perID)
+        => Permission,
 
     dbo.Permission_Set(
-    
         int perID,
         int perTypeID,
         string perName,
         string perConstant,
-        bool perActive
+        bool perActive)
+        => Permission,
 
-        ) => Permission,
+    dbo.Permission_Delete(int perID),
 
-    dbo.Permission_Delete(int perID)
+    dbo.Permission_DoTest()
+        => Permission.Test
 }

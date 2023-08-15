@@ -6,7 +6,7 @@ using static Token;
  * Implementation of source generation and semantic evaluation. The parser
  * operates top-down using recursive descent.
  */
-public class _Schema
+public class SchemaGrammar
 {
     public static void Match(TokenStream stream, string _/*modelName*/)
     {
@@ -52,11 +52,16 @@ public class _Schema
         var result = new FieldDto();
 
         // {type name}
-        if (stream.Poll() != (int)Ident)
+        if (stream.Next == (int)LCurly)
+        {
+            result.TypeName = TopLevelGrammar.MatchCSharp(stream);
+        } else if (stream.Poll() != (int)Ident)
         {
             throw new Exception("Expected field type name");
+        } else
+        {
+            result.TypeName = stream.Text;
         }
-        result.TypeName = stream.Text;
 
         // {field name}
         if (stream.Poll() != (int)Ident)
@@ -67,9 +72,9 @@ public class _Schema
 
         if (stream.Next == (int)Assign)
         {
-            // "=" {C# expression}
+            // "=" "{" {C# expression} "}"
             stream.Poll();
-            result.Initial = _TopLevel.MatchCSharp(stream);
+            result.Initial = TopLevelGrammar.MatchCSharp(stream);
         }
 
         return result;

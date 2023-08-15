@@ -25,28 +25,34 @@ partial WithPermissions {
 }
 
 repo {
-    dbo.SiteUser_GetByID(int suID) => SiteUser,
+    dbo.SiteUser_GetByID(int suID)
+        => SiteUser,
 
     dbo.SiteUser_Set(
-    
         int suID,
         string suEmail,
         string suFirstName,
         string suLastName,
         bool suActive,
-        bool suLocked
-
-        ) => SiteUser,
+        bool suLocked)
+        => SiteUser,
 
     dbo.SiteUser_Delete(int suID),
 
-    dbo.SiteUser_GetWithPassword(string suEmail) => SiteUser.WithPassword,
+    dbo.SiteUser_GetWithPassword(string suEmail)
+        => SiteUser.WithPassword,
 
-    dbo.SiteUser_GetWithPermissions(int suID) => SiteUser.WithPermissions
+    dbo.SiteUser_GetWithPermissions(int suID)
+        => json SiteUser.WithPermissions,
+
+    dbo.SiteUser_ResetPassword(string suEmail)
+        => SiteUser.ResetToken
 }
 
 service {
-    AttemptLogin(string suEmail, string password) => SiteUser.WithPermissions,
+    AttemptLogin(string suEmail, string password)
+        => SiteUser.WithPermissions,
 
-    ValidateSession(string sessionToken) => SiteUser.WithPermissions
+    ResetPassword(string suEmail)
+        => SiteUser.ResetToken
 }

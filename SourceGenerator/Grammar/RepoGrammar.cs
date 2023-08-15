@@ -6,7 +6,7 @@ using static Token;
  * Implementation of source generation and semantic evaluation. The parser
  * operates top-down using recursive descent.
  */
-public class _Repo
+public class RepoGrammar
 {
     public static void Match(TokenStream stream, string _/*modelName*/)
     {
@@ -32,11 +32,11 @@ public class _Repo
 
             if (proc.ReturnType == "void")
             {
-                Console.WriteLine("            //TODO Code to execute void-result proc");
+                Console.WriteLine("            //TODO Code to execute void-result proc" + (proc.IsJson ? " as json" : ""));
                 Console.WriteLine("            //db.Execute(\"{0}\", new {{ ", proc.Name);
             } else
             {
-                Console.WriteLine("            //TODO Code to read results from proc");
+                Console.WriteLine("            //TODO Code to read results from proc" + (proc.IsJson ? " as json" : ""));
                 Console.WriteLine("            return default;");
                 Console.WriteLine("            //return db.Execute<{0}>(\"{1}\", new {{ ",
                     proc.ReturnType,
@@ -72,6 +72,7 @@ public class _Repo
         public string Name { get; set; }
         public string ReturnType { get; set; }
         public List<(string type, string name)> Params { get; set; }
+        public bool IsJson { get; set; }
     }
 
     public static ProcDto MatchProc(TokenStream stream)
@@ -102,11 +103,17 @@ public class _Repo
         while (stream.Next != (int)RParen)
         {
             // {param type}
-            if (stream.Poll() != (int)Ident)
+            string parType;
+            if (stream.Next == (int)LCurly)
+            {
+                parType = TopLevelGrammar.MatchCSharp(stream);
+            } else if (stream.Poll() != (int)Ident)
             {
                 throw new Exception("Expected proc parameter type");
+            } else
+            {
+                parType = stream.Text;
             }
-            var parType = stream.Text;
 
             // {param name}
             if (stream.Poll() != (int)Ident)
@@ -127,13 +134,24 @@ public class _Repo
 
         if (stream.Next == (int)Arrow)
         {
-            // "=>" {return type}
+            // "=>" ["json"] {return type}
             stream.Poll();
-            if (stream.Poll() != (int)Ident)
+            if (stream.Next == (int)Json)
+            {
+                result.IsJson = true;
+                stream.Poll();
+            }
+
+            if (stream.Next == (int)LCurly)
+            {
+                result.ReturnType = TopLevelGrammar.MatchCSharp(stream);
+            } else if (stream.Poll() != (int)Ident)
             {
                 throw new Exception("Expected proc return type name");
+            } else
+            {
+                result.ReturnType = stream.Text;
             }
-            result.ReturnType = stream.Text;
         }
 
         return result;

@@ -6,7 +6,7 @@ using static Token;
  * Implementation of source generation and semantic evaluation. The parser
  * operates top-down using recursive descent.
  */
-public class _Service
+public class ServiceGrammar
 {
     public static void Match(TokenStream stream, string modelName)
     {
@@ -17,11 +17,16 @@ public class _Service
             throw new Exception($"Expected left curly");
         }
 
-        var actions = new List<_Repo.ProcDto>();
+        var actions = new List<RepoGrammar.ProcDto>();
         while (stream.Next != (int)RCurly)
         {
             // {action name} "(" {parameter list} ")" ["=>" {return type}]
-            actions.Add(_Repo.MatchProc(stream));
+            var proc = RepoGrammar.MatchProc(stream);
+            if (proc.IsJson)
+            {
+                throw new Exception("JSON is not valid for service action");
+            }
+            actions.Add(proc);
 
             // ","
             if (stream.Next != (int)RCurly && stream.Poll() != (int)Comma)
@@ -38,7 +43,7 @@ public class _Service
         WriteApiService(actions, modelName);
     }
 
-    public static void WriteServiceInterface(List<_Repo.ProcDto> actions)
+    public static void WriteServiceInterface(List<RepoGrammar.ProcDto> actions)
     {
         Console.WriteLine("    public interface IService");
         Console.WriteLine("    {");
@@ -59,7 +64,7 @@ public class _Service
         Console.WriteLine("    }");
     }
 
-    public static void WriteDbService(List<_Repo.ProcDto> actions)
+    public static void WriteDbService(List<RepoGrammar.ProcDto> actions)
     {
         Console.WriteLine("    public class DbService : IService");
         Console.WriteLine("    {");
@@ -81,12 +86,11 @@ public class _Service
             if (action.ReturnType == "void")
             {
                 Console.WriteLine("            //TODO Code to execute via DB wrapper");
-                Console.WriteLine("            //wrapper.Execute(() => impl.{0}(", action.Name);
+                Console.WriteLine("            /*wrapper.Execute(() => */impl.{0}(", action.Name);
             } else
             {
                 Console.WriteLine("            //TODO Code to execute via DB wrapper");
-                Console.WriteLine("            return default;");
-                Console.WriteLine("            //wrapper.Execute<{0}>(() => impl.{1}(",
+                Console.WriteLine("            return /*wrapper.Execute<{0}>(() => */impl.{1}(",
                     action.ReturnType,
                     action.Name);
             }
@@ -96,17 +100,17 @@ public class _Service
                 {
                     Console.WriteLine(",");
                 }
-                Console.Write("            //    ");
+                Console.Write("                  ");
                 Console.Write(par);
             }
-            Console.WriteLine("\n            //    ));");
+            Console.WriteLine("\n                  )/*)*/;");
             Console.WriteLine("        }");
         }
 
         Console.WriteLine("    }");
     }
 
-    public static void WriteApiService(List<_Repo.ProcDto> actions, string modelName)
+    public static void WriteApiService(List<RepoGrammar.ProcDto> actions, string modelName)
     {
         Console.WriteLine("    public class ApiService : IService");
         Console.WriteLine("    {");

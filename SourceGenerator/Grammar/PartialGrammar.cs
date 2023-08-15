@@ -6,7 +6,7 @@ using static Token;
  * Implementation of source generation and semantic evaluation. The parser
  * operates top-down using recursive descent.
  */
-public class _Partial
+public class PartialGrammar
 {
     public static void Match(TokenStream stream, string modelName)
     {
@@ -28,7 +28,7 @@ public class _Partial
         while (stream.Next != (int)RCurly)
         {
             // {type} {name} ["=" {initial value}]
-            var field = _Schema.MatchField(stream);
+            var field = SchemaGrammar.MatchField(stream);
             Console.WriteLine("        public {0} {1} {{ get; set; }}",
                 field.TypeName,
                 field.Name);

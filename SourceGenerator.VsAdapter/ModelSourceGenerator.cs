@@ -1,9 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SourceGenerator.VsAdapter
 {
@@ -19,7 +23,7 @@ namespace SourceGenerator.VsAdapter
         public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}/SourceGenerator.exe";
         public static string CallingPath = "";
 
-        public static string ExecuteProcess(GeneratorExecutionContext context)
+        public static string ExecuteProcess(AdditionalText file)
         {
             var processInfo = new ProcessStartInfo()
             {
@@ -29,8 +33,7 @@ namespace SourceGenerator.VsAdapter
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
                 FileName = Path.Combine(CallingPath, ToolPath),
-                Arguments = $"{CallingPath}",
-                
+                Arguments = $"{'"'}{file.Path}{'"'}"
             };
             using (var process = Process.Start(processInfo))
             {
@@ -42,6 +45,7 @@ namespace SourceGenerator.VsAdapter
                     // 10ms * 1,000 = 10,000ms = 10s
                     if (i > 1000)
                     {
+                        process.Kill();
                         throw new Exception("Source generator process timed out");
                     }
                 }
@@ -67,20 +71,45 @@ namespace SourceGenerator.VsAdapter
                     : throw new Exception("Cannot determine calling path");
             }
 
-            try
+            var files = context.AdditionalFiles
+                .Where((it) => it.Path.ToLowerInvariant().EndsWith(".model"))
+                .ToList();
+            var completed = new SemaphoreSlim(0, files.Count);
+            var sources = new BlockingCollection<(string file, SourceText source)>();
+            
+            foreach (var file in files)
+                _ = Task.Run(() =>
+                {
+                    try
+                    {
+                        var name = Path.GetFileNameWithoutExtension(file.Path);
+                        var source = ExecuteProcess(file);
+                        sources.Add(($"{name}.Model.g.cs", SourceText.From(source, Encoding.UTF8)));
+                    } catch (Exception ex)
+                    {
+                        context.ReportDiagnostic(Diagnostic.Create(
+                            new DiagnosticDescriptor(
+                                "SG001",
+                                "",
+                                ex.Message,
+                                "",
+                                DiagnosticSeverity.Error,
+                                true),
+                            null));
+                    } finally
+                    {
+                        completed.Release();
+                    }
+                });
+            for (var i = 0; i < files.Count; i ++)
             {
-                context.AddSource("GeneratedModels.g.cs", SourceText.From(ExecuteProcess(context), Encoding.UTF8));
-            } catch (Exception ex)
+                completed.Wait();
+            }
+
+            // Add all sources from main thread for safety
+            foreach (var source in sources)
             {
-                context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "SG001",
-                        "",
-                        ex.Message,
-                        "",
-                        DiagnosticSeverity.Error,
-                        true),
-                    null));
+                context.AddSource(source.file, source.source);
             }
         }
 

@@ -1,0 +1,42 @@
+schema {
+    int bpID,
+    int bpSiteUserID,
+    DateTime bpPostedDate,
+    string bpTitle,
+    string bpContent,
+    bool bpActive = {true}
+}
+
+partial WithComments {
+    List<string> user_comments = {new()}
+}
+
+repo {
+    BlogPost_GetByID(int bpID)
+        => BlogPost,
+
+    BlogPost_GetByUserID(int suID)
+        => List<BlogPost>,
+
+    BlogPost_GetWithComments(int bpID)
+        => json BlogPost.WithComments,
+
+    BlogPost_Create(int bpSiteUserID, string bpContent)
+        => BlogPost,
+
+    BlogPost_Delete(int bpID),
+
+    BlogPost_List()
+        => List<BlogPost>
+}
+
+service {
+    MakePost(string bpContent)
+        => BlogPost,
+
+    Get(int bpID)
+        => BlogPost.WithComments,
+
+    GetByUser(int suID)
+        => List<BlogPost>
+}
