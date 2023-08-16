@@ -7,8 +7,9 @@
  * which can be reached with no character actions.
  * 
  * The longest valid match from any merged FSA will be returned. In the case of
- * ambiguous tokens, the token of highest precedence (added first) will match.
+ * ambiguous tokens, the token of highest precedence (lowest ID) will match.
  */
+[Serializable]
 public class Fsa
 {
     /*
@@ -153,6 +154,15 @@ public class Fsa
             }
         }
     }
+
+    /*
+     * Creates new nodes in the FSA to match the provided word. The resulting
+     * machine is likely nondeterministic, depending on which regular expression
+     * is provided and any logical "ORs" or ambiguous tokens.
+     * 
+     * Paths are not reused nor optimized at this stage. If a letter is already
+     * in the "next" list of a state, it is added as an epsilon transition.
+     */
     public void Build(string word, int accept)
     {
         Build(word, accept, out var _);
@@ -162,7 +172,7 @@ public class Fsa
      * Finds all states accessible from this state without consuming any
      * characters, and also any states recursively accessible thereunder.
      */
-    public IEnumerable<Fsa> EpsilonClosure()
+    protected IEnumerable<Fsa> EpsilonClosure()
     {
         return new[] { this }
             .Concat(Epsilon)
@@ -172,7 +182,7 @@ public class Fsa
     /*
      * Single- or zero-element list of reachable deterministic states.
      */
-    public IEnumerable<Fsa> AdjacentSet(char c)
+    protected IEnumerable<Fsa> AdjacentSet(char c)
     {
         if (Next.ContainsKey(c))
         {
@@ -206,7 +216,7 @@ public class Fsa
             if (acceptState is not null)
             {
                 longestEnd = textIndex;
-                match = acceptState.Accepts.First();
+                match = acceptState.Accepts.Min();
             }
 
             // "Invalid state" due to end of input or lack of next states
@@ -226,5 +236,82 @@ public class Fsa
         {
             return (match, text.Substring(startIndex, longestEnd - startIndex));
         }
+    }
+
+    /*
+     * Accessible nodes from this one, ignoring epsilon transitions from here.
+     */
+    protected Dictionary<char, List<Fsa>> memoizedClosures = new();
+
+    /*
+     * Returns a cached or calculated list of states accessible from this one
+     * after applying the character transition. Only checks epsilon on children.
+     */
+    protected List<Fsa> AccessibleMemoized(char c)
+    {
+        return memoizedClosures.TryGetValue(c, out var cached)
+            ? cached
+            : (memoizedClosures[c] = AdjacentSet(c)
+                .SelectMany((it) => it.EpsilonClosure())
+                .Distinct()
+                .ToList());
+    }
+
+    /*
+     * Performs an expensive conversion between NFA and DFA which calculates the
+     * epsilon closures at all states for all characters in the alphabet. State
+     * is calculated and cached during runtime, which renders the FSA invalid if
+     * any of the structure is later modified.
+     * 
+     * Do not modify the NFA again after calling the conversion to DFA; the NFA
+     * would continue to function, but this method would not.
+     */
+    public Fsa ConvertToDfa()
+    {
+        var result = new Fsa()
+        {
+            Letter = Letter,
+            Accepts = new(Accepts)
+        };
+        var queue = new Queue<(Fsa node, List<Fsa> closure)>();
+        // Visited set for cycles and already-deterministic nodes
+        var replace = new Dictionary<HashSet<Fsa>, Fsa>(HashSet<Fsa>.CreateSetComparer());
+
+        queue.Enqueue((result, EpsilonClosure().Distinct().ToList()));
+        do
+        {
+            var (node, oldClosure) = queue.Dequeue();
+            // Find all actions which can be taken from this state
+            var alphabet = oldClosure.SelectMany((it) => it.Next.Keys).Distinct().ToList();
+
+            // Find all nodes accessible from all discovered characters
+            var closures = alphabet.ToDictionary(
+                (c) => c,
+                (c) => oldClosure.SelectMany((it) => it.AccessibleMemoized(c)).ToList());
+            
+            foreach (var (c, closure) in closures)
+            {
+                var withLetters = closure.Where((it) => it.Letter == c).ToHashSet();
+                // Find an existing state for target nodes
+                if (replace.TryGetValue(withLetters, out var cached))
+                {
+                    node.Next[c] = cached;
+                    continue;
+                }
+
+                var created = new Fsa()
+                {
+                    Letter = c,
+                    // Merged node will accept any tokens accepted by originals
+                    Accepts = closure.SelectMany((it) => it.Accepts).Distinct().ToList()
+                };
+                node.Next[c] = created;
+                replace[withLetters] = created;
+
+                queue.Enqueue((created, closure.ToList()));
+            }
+        } while (queue.Count > 0);
+
+        return result;
     }
 }

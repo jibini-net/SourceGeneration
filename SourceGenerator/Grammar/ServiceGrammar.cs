@@ -57,13 +57,12 @@ public class ServiceGrammar
         Console.WriteLine("    public interface IService");
         Console.WriteLine("    {");
 
-        foreach (var proc in dto.Actions)
+        foreach (var action in dto.Actions)
         {
-            
             Console.WriteLine("        {0} {1}({2});",
-                proc.ReturnType,
-                proc.Name,
-                string.Join(',', proc.Params.Select((it) => $"{it.type} {it.name}")));
+                action.ReturnType,
+                action.Name,
+                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
         }
 
         Console.WriteLine("    }");

@@ -20,21 +20,25 @@ namespace SourceGenerator.VsAdapter
         public static readonly string BuildMode = "Release";
 #endif
         public static readonly string DotNetVersion = "net7.0";
-        public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}/SourceGenerator.exe";
+        public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
         public static string CallingPath = "";
 
         public static string ExecuteProcess(AdditionalText file)
         {
             var processInfo = new ProcessStartInfo()
             {
+                UseShellExecute = false,
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
+
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
-                FileName = Path.Combine(CallingPath, ToolPath),
-                Arguments = $"{'"'}{file.Path}{'"'}"
+
+                FileName = Path.Combine(CallingPath, ToolPath, "SourceGenerator.exe"),
+                Arguments = $"{'"'}{file.Path}{'"'}",
+                WorkingDirectory = Path.Combine(CallingPath, ToolPath)
             };
+
             using (var process = Process.Start(processInfo))
             {
                 // Source can overflow the buffer! Take it in pieces
@@ -49,7 +53,6 @@ namespace SourceGenerator.VsAdapter
                         throw new Exception("Source generator process timed out");
                     }
                 }
-
                 switch (process.ExitCode)
                 {
                     case 0:
@@ -71,13 +74,12 @@ namespace SourceGenerator.VsAdapter
                     : throw new Exception("Cannot determine calling path");
             }
 
-            var files = context.AdditionalFiles
-                .Where((it) => it.Path.ToLowerInvariant().EndsWith(".model"))
-                .ToList();
+            var files = context.AdditionalFiles.Where((it) => it.Path.ToLowerInvariant().EndsWith(".model")).ToList();
             var completed = new SemaphoreSlim(0, files.Count);
             var sources = new BlockingCollection<(string file, SourceText source)>();
-            
+
             foreach (var file in files)
+            {
                 _ = Task.Run(() =>
                 {
                     try
@@ -101,6 +103,7 @@ namespace SourceGenerator.VsAdapter
                         completed.Release();
                     }
                 });
+            }
             for (var i = 0; i < files.Count; i ++)
             {
                 completed.Wait();

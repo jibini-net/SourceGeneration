@@ -2,8 +2,7 @@
   "profiles": {
     "SourceGenerator": {
       "commandName": "Project",
-      "commandLineArgs": ".\\Models\\SiteUser.model",
-      "workingDirectory": "C:\\Users\\zgoethel\\Desktop\\SourceGenerator\\TestApp"
+      "commandLineArgs": "..\\..\\..\\..\\Models\\SiteUser.model"
     }
   }
 }
