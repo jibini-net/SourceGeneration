@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Tools\SourceGenerator\" />
     <Folder Include="Tools\SourceGenerator.VsAdapter\" />
   </ItemGroup>
 
