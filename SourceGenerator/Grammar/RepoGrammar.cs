@@ -66,12 +66,12 @@ public class RepoGrammar
 
             if (proc.ReturnType == "void")
             {
-                Program.AppendLine("            db.Execute{0}(\"{1}\", new {{ ",
+                Program.AppendLine("            db.Execute{0}(\"{1}\", new\n            {{",
                     proc.IsJson ? "ForJson" : "",
                     proc.Name);
             } else
             {
-                Program.AppendLine("            return db.Execute{0}<{1}>(\"{2}\", new {{ ",
+                Program.AppendLine("            return db.Execute{0}<{1}>(\"{2}\", new\n            {{",
                     proc.IsJson ? "ForJson" : "",
                     proc.ReturnType,
                     proc.Name);

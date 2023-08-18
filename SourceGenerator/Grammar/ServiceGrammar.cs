@@ -76,10 +76,11 @@ public class ServiceGrammar
     {
         Program.AppendLine("    public class DbService : IService");
         Program.AppendLine("    {{");
-        Program.AppendLine("        //TODO Inject database wrapper service");
+        Program.AppendLine("        private readonly IModelDbWrapper wrapper;");
         Program.AppendLine("        private readonly IBackendService impl;");
-        Program.AppendLine("        public DbService(IBackendService impl)");
+        Program.AppendLine("        public DbService(IModelDbWrapper wrapper, IBackendService impl)");
         Program.AppendLine("        {{");
+        Program.AppendLine("            this.wrapper = wrapper;");
         Program.AppendLine("            this.impl = impl;");
         Program.AppendLine("        }}");
 
@@ -93,12 +94,10 @@ public class ServiceGrammar
 
             if (action.ReturnType == "void")
             {
-                Program.AppendLine("            //TODO Code to execute via DB wrapper");
-                Program.AppendLine("            /*wrapper.Execute(() => */impl.{0}(", action.Name);
+                Program.AppendLine("            wrapper.Execute(() => impl.{0}(", action.Name);
             } else
             {
-                Program.AppendLine("            //TODO Code to execute via DB wrapper");
-                Program.AppendLine("            return /*wrapper.Execute<{0}>(() => */impl.{1}(",
+                Program.AppendLine("            return wrapper.Execute<{0}>(() => impl.{1}(",
                     action.ReturnType,
                     action.Name);
             }
@@ -111,7 +110,7 @@ public class ServiceGrammar
                 Program.Append("                  ");
                 Program.Append(par);
             }
-            Program.AppendLine("\n                  )/*)*/;");
+            Program.AppendLine("\n                  ));");
             Program.AppendLine("        }}");
         }
 
@@ -138,12 +137,12 @@ public class ServiceGrammar
 
             if (action.ReturnType == "void")
             {
-                Program.AppendLine("            api.Execute(\"{0}/{1}\", new {{",
+                Program.AppendLine("            api.Execute(\"{0}/{1}\", new\n            {{",
                     dto.ApiRoute,
                     action.Name);
             } else
             {
-                Program.AppendLine("            return api.Execute<{0}>(\"{1}/{2}\", new {{",
+                Program.AppendLine("            return api.Execute<{0}>(\"{1}/{2}\", new\n            {{",
                     action.ReturnType,
                     dto.ApiRoute,
                     action.Name);
