@@ -122,9 +122,10 @@ public class ServiceGrammar
     {
         Program.AppendLine("    public class ApiService : IService");
         Program.AppendLine("    {{");
-        Program.AppendLine("        //TODO Inject HTTP client service");
-        Program.AppendLine("        public ApiService()");
+        Program.AppendLine("        private readonly IModelApiAdapter api;");
+        Program.AppendLine("        public ApiService(IModelApiAdapter api)");
         Program.AppendLine("        {{");
+        Program.AppendLine("            this.api = api;");
         Program.AppendLine("        }}");
 
         foreach (var action in dto.Actions)
@@ -137,15 +138,12 @@ public class ServiceGrammar
 
             if (action.ReturnType == "void")
             {
-                Program.AppendLine("            //TODO Code to execute via API client");
-                Program.AppendLine("            //api.Execute(\"{0}/{1}\", new {{",
+                Program.AppendLine("            api.Execute(\"{0}/{1}\", new {{",
                     dto.ApiRoute,
                     action.Name);
             } else
             {
-                Program.AppendLine("            //TODO Code to execute via API client");
-                Program.AppendLine("            return default;");
-                Program.AppendLine("            //return api.Execute<{0}>(\"{1}/{2}\", new {{",
+                Program.AppendLine("            return api.Execute<{0}>(\"{1}/{2}\", new {{",
                     action.ReturnType,
                     dto.ApiRoute,
                     action.Name);
@@ -156,10 +154,10 @@ public class ServiceGrammar
                 {
                     Program.AppendLine(",");
                 }
-                Program.Append("            //    ");
+                Program.Append("                ");
                 Program.Append(par);
             }
-            Program.AppendLine("\n            //}});");
+            Program.AppendLine("\n            }});");
             Program.AppendLine("        }}");
         }
 

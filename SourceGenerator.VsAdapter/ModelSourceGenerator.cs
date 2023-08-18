@@ -23,6 +23,21 @@ namespace SourceGenerator.VsAdapter
         public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
         public static string CallingPath = "";
 
+        public const string INCLUDES = "" +
+            "public interface IModelDbAdapter\n{\n" +
+            "    void Execute(string procName, object args);\n" +
+            "    T Execute<T>(string procName, object args);\n" +
+            "    T ExecuteForJson<T>(string procName, object args);\n" +
+            "}\n" +
+            "public interface IModelApiAdapter\n{\n" +
+            "    void Execute(string path, object args);\n" +
+            "    T Execute<T>(string path, object args);\n" +
+            "}\n" +
+            "public interface IModelDbWrapper\n{\n" +
+            "    void Execute(Action impl);\n" +
+            "    T Execute<T>(Func<T> impl);\n" +
+            "}\n" ;
+
         public static async Task<MemoryStream> ExecuteProcess(AdditionalText file)
         {
             var processInfo = new ProcessStartInfo()
@@ -72,13 +87,13 @@ namespace SourceGenerator.VsAdapter
 
             foreach (var file in files)
             {
-                Func<Task> detachAsync = async () =>
+                async Task detachAsync()
                 {
                     try
                     {
                         var name = Path.GetFileNameWithoutExtension(file.Path);
                         var source = await ExecuteProcess(file);
-                        
+
                         sources.Add(($"{name}.Model.g.cs", source));
                     } catch (Exception ex)
                     {
@@ -95,7 +110,7 @@ namespace SourceGenerator.VsAdapter
                     {
                         completed.Release();
                     }
-                };
+                }
                 _ = detachAsync();
             }
             for (var i = 0; i < files.Count; i ++)
@@ -104,12 +119,13 @@ namespace SourceGenerator.VsAdapter
             }
 
             // Add all sources from main thread for safety
+            context.AddSource("_Includes.g.cs", INCLUDES);
+            //TODO context.AddSource("_ServiceCollection.g.c", GenerateServiceCollection());
             foreach (var source in sources)
             {
                 var sourceText = SourceText.From(source.source, Encoding.UTF8, canBeEmbedded: true);
                 context.AddSource(source.file, sourceText);
             }
-            //TODO Add includes for common adapter interfaces
         }
 
         public void Initialize(GeneratorInitializationContext context)

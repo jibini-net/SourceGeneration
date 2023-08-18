@@ -50,7 +50,11 @@ public class RepoGrammar
     {
         Program.AppendLine("    public class Repository");
         Program.AppendLine("    {{");
-        Program.AppendLine("        //TODO Code to inject database service interface");
+        Program.AppendLine("        private readonly IModelDbAdapter db;");
+        Program.AppendLine("        public Repository(IModelDbAdapter db)");
+        Program.AppendLine("        {{");
+        Program.AppendLine("            this.db = db;");
+        Program.AppendLine("        }}");
 
         foreach (var proc in dto.Procs)
         {
@@ -62,14 +66,13 @@ public class RepoGrammar
 
             if (proc.ReturnType == "void")
             {
-                Program.AppendLine("            //TODO Code to execute void-result proc" + (proc.IsJson ? " as json" : ""));
-                Program.AppendLine("            //db.Execute" + (proc.IsJson ? "ForJson" : "") +  "(\"{0}\", new {{ ", proc.Name);
-            }
-            else
+                Program.AppendLine("            db.Execute{0}(\"{1}\", new {{ ",
+                    proc.IsJson ? "ForJson" : "",
+                    proc.Name);
+            } else
             {
-                Program.AppendLine("            //TODO Code to read results from proc" + (proc.IsJson ? " as json" : ""));
-                Program.AppendLine("            return default;");
-                Program.AppendLine("            //return db.Execute" + (proc.IsJson ? "ForJson" : "") +  "<{0}>(\"{1}\", new {{ ",
+                Program.AppendLine("            return db.Execute{0}<{1}>(\"{2}\", new {{ ",
+                    proc.IsJson ? "ForJson" : "",
                     proc.ReturnType,
                     proc.Name);
             }
@@ -79,10 +82,10 @@ public class RepoGrammar
                 {
                     Program.AppendLine(",");
                 }
-                Program.Append("            //    ");
+                Program.Append("                ");
                 Program.Append(par);
             }
-            Program.AppendLine("\n            //}});");
+            Program.AppendLine("\n            }});");
 
             Program.AppendLine("        }}");
         }
