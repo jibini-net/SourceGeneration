@@ -56,22 +56,22 @@ public class PartialGrammar
 
     public static void Write(Dto dto)
     {
-        Console.WriteLine("    public partial class {0} : {1}",
+        Program.AppendLine("    public partial class {0} : {1}",
             dto.Name,
             dto.SuperClass);
-        Console.WriteLine("    {");
+        Program.AppendLine("    {{");
 
         foreach (var field in dto.Fields)
         {
-            Console.WriteLine("        public {0} {1} {{ get; set; }}",
+            Program.AppendLine("        public {0} {1} {{ get; set; }}",
                field.TypeName,
                field.Name);
             if (!string.IsNullOrEmpty(field.Initial))
             {
-                Console.WriteLine("            = {0};", field.Initial);
+                Program.AppendLine("            = {0};", field.Initial);
             }
         }
         
-        Console.WriteLine("    }");
+        Program.AppendLine("    }}");
     }
 }

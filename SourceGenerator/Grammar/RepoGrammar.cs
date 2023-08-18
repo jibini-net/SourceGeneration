@@ -48,28 +48,28 @@ public class RepoGrammar
 
     public static void Write(Dto dto)
     {
-        Console.WriteLine("    public class Repository");
-        Console.WriteLine("    {");
-        Console.WriteLine("        //TODO Code to inject database service interface");
+        Program.AppendLine("    public class Repository");
+        Program.AppendLine("    {{");
+        Program.AppendLine("        //TODO Code to inject database service interface");
 
         foreach (var proc in dto.Procs)
         {
-            Console.WriteLine("        public {0} {1}({2})",
+            Program.AppendLine("        public {0} {1}({2})",
                 proc.ReturnType,
                 proc.Name.Replace(".", "__"),
                 string.Join(',', proc.Params.Select((it) => $"{it.type} {it.name}")));
-            Console.WriteLine("        {");
+            Program.AppendLine("        {{");
 
             if (proc.ReturnType == "void")
             {
-                Console.WriteLine("            //TODO Code to execute void-result proc" + (proc.IsJson ? " as json" : ""));
-                Console.WriteLine("            //db.Execute" + (proc.IsJson ? "ForJson" : "") +  "(\"{0}\", new {{ ", proc.Name);
+                Program.AppendLine("            //TODO Code to execute void-result proc" + (proc.IsJson ? " as json" : ""));
+                Program.AppendLine("            //db.Execute" + (proc.IsJson ? "ForJson" : "") +  "(\"{0}\", new {{ ", proc.Name);
             }
             else
             {
-                Console.WriteLine("            //TODO Code to read results from proc" + (proc.IsJson ? " as json" : ""));
-                Console.WriteLine("            return default;");
-                Console.WriteLine("            //return db.Execute" + (proc.IsJson ? "ForJson" : "") +  "<{0}>(\"{1}\", new {{ ",
+                Program.AppendLine("            //TODO Code to read results from proc" + (proc.IsJson ? " as json" : ""));
+                Program.AppendLine("            return default;");
+                Program.AppendLine("            //return db.Execute" + (proc.IsJson ? "ForJson" : "") +  "<{0}>(\"{1}\", new {{ ",
                     proc.ReturnType,
                     proc.Name);
             }
@@ -77,16 +77,16 @@ public class RepoGrammar
             {
                 if (par != proc.Params.First().name)
                 {
-                    Console.WriteLine(",");
+                    Program.AppendLine(",");
                 }
-                Console.Write("            //    ");
-                Console.Write(par);
+                Program.Append("            //    ");
+                Program.Append(par);
             }
-            Console.WriteLine("\n            //});");
+            Program.AppendLine("\n            //}});");
 
-            Console.WriteLine("        }");
+            Program.AppendLine("        }}");
         }
 
-        Console.WriteLine("    }");
+        Program.AppendLine("    }}");
     }
 }

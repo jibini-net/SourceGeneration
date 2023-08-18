@@ -23,17 +23,15 @@ namespace SourceGenerator.VsAdapter
         public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
         public static string CallingPath = "";
 
-        public static string ExecuteProcess(AdditionalText file)
+        public static async Task<MemoryStream> ExecuteProcess(AdditionalText file)
         {
             var processInfo = new ProcessStartInfo()
             {
                 UseShellExecute = false,
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
-
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
-
                 FileName = Path.Combine(CallingPath, ToolPath, "SourceGenerator.exe"),
                 Arguments = $"{'"'}{file.Path}{'"'}",
                 WorkingDirectory = Path.Combine(CallingPath, ToolPath)
@@ -41,24 +39,18 @@ namespace SourceGenerator.VsAdapter
 
             using (var process = Process.Start(processInfo))
             {
-                // Source can overflow the buffer! Take it in pieces
-                var output = new StringBuilder();
-                for (var i = 0; !process.WaitForExit(10); i++)
-                {
-                    output.Append(process.StandardOutput.ReadToEnd());
-                    // 10ms * 1,000 = 10,000ms = 10s
-                    if (i > 1000)
-                    {
-                        process.Kill();
-                        throw new Exception("Source generator process timed out");
-                    }
-                }
+                var source = new MemoryStream();
+                await process.StandardOutput.BaseStream.CopyToAsync(source);
+                source.Position = 0;
+
+                process.WaitForExit();
                 switch (process.ExitCode)
                 {
                     case 0:
-                        return output.ToString();
+                        return source;
 
                     default:
+                        source.Dispose();
                         var error = process.StandardError.ReadToEnd();
                         throw new Exception(error);
                 }
@@ -76,17 +68,18 @@ namespace SourceGenerator.VsAdapter
 
             var files = context.AdditionalFiles.Where((it) => it.Path.ToLowerInvariant().EndsWith(".model")).ToList();
             var completed = new SemaphoreSlim(0, files.Count);
-            var sources = new BlockingCollection<(string file, SourceText source)>();
+            var sources = new BlockingCollection<(string file, MemoryStream source)>();
 
             foreach (var file in files)
             {
-                _ = Task.Run(() =>
+                Func<Task> detachAsync = async () =>
                 {
                     try
                     {
                         var name = Path.GetFileNameWithoutExtension(file.Path);
-                        var source = ExecuteProcess(file);
-                        sources.Add(($"{name}.Model.g.cs", SourceText.From(source, Encoding.UTF8)));
+                        var source = await ExecuteProcess(file);
+                        
+                        sources.Add(($"{name}.Model.g.cs", source));
                     } catch (Exception ex)
                     {
                         context.ReportDiagnostic(Diagnostic.Create(
@@ -102,7 +95,8 @@ namespace SourceGenerator.VsAdapter
                     {
                         completed.Release();
                     }
-                });
+                };
+                _ = detachAsync();
             }
             for (var i = 0; i < files.Count; i ++)
             {
@@ -112,8 +106,10 @@ namespace SourceGenerator.VsAdapter
             // Add all sources from main thread for safety
             foreach (var source in sources)
             {
-                context.AddSource(source.file, source.source);
+                var sourceText = SourceText.From(source.source, Encoding.UTF8, canBeEmbedded: true);
+                context.AddSource(source.file, sourceText);
             }
+            //TODO Add includes for common adapter interfaces
         }
 
         public void Initialize(GeneratorInitializationContext context)

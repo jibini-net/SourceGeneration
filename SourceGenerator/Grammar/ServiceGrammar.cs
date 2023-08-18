@@ -54,51 +54,51 @@ public class ServiceGrammar
 
     public static void WriteServiceInterface(Dto dto)
     {
-        Console.WriteLine("    public interface IService");
-        Console.WriteLine("    {");
+        Program.AppendLine("    public interface IService");
+        Program.AppendLine("    {{");
 
         foreach (var action in dto.Actions)
         {
-            Console.WriteLine("        {0} {1}({2});",
+            Program.AppendLine("        {0} {1}({2});",
                 action.ReturnType,
                 action.Name,
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
         }
 
-        Console.WriteLine("    }");
-        Console.WriteLine("    public interface IBackendService : IService");
-        Console.WriteLine("    {");
-        Console.WriteLine("        // Implement and inject this interface as a separate service");
-        Console.WriteLine("    }");
+        Program.AppendLine("    }}");
+        Program.AppendLine("    public interface IBackendService : IService");
+        Program.AppendLine("    {{");
+        Program.AppendLine("        // Implement and inject this interface as a separate service");
+        Program.AppendLine("    }}");
     }
 
     public static void WriteDbService(Dto dto)
     {
-        Console.WriteLine("    public class DbService : IService");
-        Console.WriteLine("    {");
-        Console.WriteLine("        //TODO Inject database wrapper service");
-        Console.WriteLine("        private readonly IBackendService impl;");
-        Console.WriteLine("        public DbService(IBackendService impl)");
-        Console.WriteLine("        {");
-        Console.WriteLine("            this.impl = impl;");
-        Console.WriteLine("        }");
+        Program.AppendLine("    public class DbService : IService");
+        Program.AppendLine("    {{");
+        Program.AppendLine("        //TODO Inject database wrapper service");
+        Program.AppendLine("        private readonly IBackendService impl;");
+        Program.AppendLine("        public DbService(IBackendService impl)");
+        Program.AppendLine("        {{");
+        Program.AppendLine("            this.impl = impl;");
+        Program.AppendLine("        }}");
 
         foreach (var action in dto.Actions)
         {
-            Console.WriteLine("        public {0} {1}({2})",
+            Program.AppendLine("        public {0} {1}({2})",
                 action.ReturnType,
                 action.Name,
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
-            Console.WriteLine("        {");
+            Program.AppendLine("        {{");
 
             if (action.ReturnType == "void")
             {
-                Console.WriteLine("            //TODO Code to execute via DB wrapper");
-                Console.WriteLine("            /*wrapper.Execute(() => */impl.{0}(", action.Name);
+                Program.AppendLine("            //TODO Code to execute via DB wrapper");
+                Program.AppendLine("            /*wrapper.Execute(() => */impl.{0}(", action.Name);
             } else
             {
-                Console.WriteLine("            //TODO Code to execute via DB wrapper");
-                Console.WriteLine("            return /*wrapper.Execute<{0}>(() => */impl.{1}(",
+                Program.AppendLine("            //TODO Code to execute via DB wrapper");
+                Program.AppendLine("            return /*wrapper.Execute<{0}>(() => */impl.{1}(",
                     action.ReturnType,
                     action.Name);
             }
@@ -106,46 +106,46 @@ public class ServiceGrammar
             {
                 if (par != action.Params.First().name)
                 {
-                    Console.WriteLine(",");
+                    Program.AppendLine(",");
                 }
-                Console.Write("                  ");
-                Console.Write(par);
+                Program.Append("                  ");
+                Program.Append(par);
             }
-            Console.WriteLine("\n                  )/*)*/;");
-            Console.WriteLine("        }");
+            Program.AppendLine("\n                  )/*)*/;");
+            Program.AppendLine("        }}");
         }
 
-        Console.WriteLine("    }");
+        Program.AppendLine("    }}");
     }
 
     public static void WriteApiService(Dto dto)
     {
-        Console.WriteLine("    public class ApiService : IService");
-        Console.WriteLine("    {");
-        Console.WriteLine("        //TODO Inject HTTP client service");
-        Console.WriteLine("        public ApiService()");
-        Console.WriteLine("        {");
-        Console.WriteLine("        }");
+        Program.AppendLine("    public class ApiService : IService");
+        Program.AppendLine("    {{");
+        Program.AppendLine("        //TODO Inject HTTP client service");
+        Program.AppendLine("        public ApiService()");
+        Program.AppendLine("        {{");
+        Program.AppendLine("        }}");
 
         foreach (var action in dto.Actions)
         {
-            Console.WriteLine("        public {0} {1}({2})",
+            Program.AppendLine("        public {0} {1}({2})",
                 action.ReturnType,
                 action.Name,
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
-            Console.WriteLine("        {");
+            Program.AppendLine("        {{");
 
             if (action.ReturnType == "void")
             {
-                Console.WriteLine("            //TODO Code to execute via API client");
-                Console.WriteLine("            //api.Execute(\"{0}/{1}\", new {{",
+                Program.AppendLine("            //TODO Code to execute via API client");
+                Program.AppendLine("            //api.Execute(\"{0}/{1}\", new {{",
                     dto.ApiRoute,
                     action.Name);
             } else
             {
-                Console.WriteLine("            //TODO Code to execute via API client");
-                Console.WriteLine("            return default;");
-                Console.WriteLine("            //return api.Execute<{0}>(\"{1}/{2}\", new {{",
+                Program.AppendLine("            //TODO Code to execute via API client");
+                Program.AppendLine("            return default;");
+                Program.AppendLine("            //return api.Execute<{0}>(\"{1}/{2}\", new {{",
                     action.ReturnType,
                     dto.ApiRoute,
                     action.Name);
@@ -154,15 +154,15 @@ public class ServiceGrammar
             {
                 if (par != action.Params.First().name)
                 {
-                    Console.WriteLine(",");
+                    Program.AppendLine(",");
                 }
-                Console.Write("            //    ");
-                Console.Write(par);
+                Program.Append("            //    ");
+                Program.Append(par);
             }
-            Console.WriteLine("\n            //});");
-            Console.WriteLine("        }");
+            Program.AppendLine("\n            //}});");
+            Program.AppendLine("        }}");
         }
 
-        Console.WriteLine("    }");
+        Program.AppendLine("    }}");
     }
 }

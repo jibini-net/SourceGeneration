@@ -17,7 +17,8 @@ public partial class TopLevelGrammar
             switch (stream.Next)
             {
                 case (int)LCurly:
-                    Console.WriteLine(MatchCSharp(stream));
+                    var cSharp = MatchCSharp(stream);
+                    Program.AppendLine(cSharp.Replace("{", "{{").Replace("}", "}}"));
                     break;
 
                 case (int)Schema:

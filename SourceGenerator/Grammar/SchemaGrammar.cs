@@ -50,12 +50,12 @@ public class SchemaGrammar
     {
         foreach (var field in dto.Fields)
         {
-            Console.WriteLine("    public {0} {1} {{ get; set; }}",
+            Program.AppendLine("    public {0} {1} {{ get; set; }}",
                 field.TypeName,
                 field.Name);
             if (!string.IsNullOrEmpty(field.Initial))
             {
-                Console.WriteLine("        = {0};", field.Initial);
+                Program.AppendLine("        = {0};", field.Initial);
             }
         }
     }

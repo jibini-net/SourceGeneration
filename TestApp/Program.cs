@@ -2,9 +2,10 @@
 
 namespace TestApp;
 
-internal class Program
+public class Program
 {
     public static void Main(string[] _)
     {
+        var test = new SiteUser();
     }
 }
