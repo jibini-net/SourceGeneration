@@ -5,36 +5,43 @@ using TestApp.Services;
 
 namespace TestApp;
 
+public static class ServiceCollectionExtensions
+{
+    public static void AddBackendServices(this IServiceCollection services)
+    {
+        services.AddBlogPostBackend<BlogPostService>();
+        /*
+        services.AddLogEntryBackend<LogEntryService>();
+        services.AddPermissionBackend<PermissionService>();
+        services.AddSiteUserBackend<SiteUserService>();
+        */
+    }
+
+    public static void AddFrontendServices(this IServiceCollection services)
+    {
+        services.AddBlogPostFrontend();
+        services.AddLogEntryFrontend();
+        services.AddPermissionFrontend();
+        services.AddSiteUserFrontend();
+    }
+}
+
 public class Program
 {
     public static void Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
-        //TODO builder.AddBackendServices();
-        //TODO builder.AddBackendServices();
-        //TODO builder.AddSiteUserBackend();
-        //TODO builder.AddPermissionFrontend();
-
-        // Services for backend/generated API
-        builder.Services.AddScoped<BlogPost.Repository>();
-        builder.Services.AddScoped<BlogPost.IBackendService, BlogPostService>();
-        builder.Services.AddScoped<BlogPost.DbService>();
-        // Service for connecting to generated API
-        builder.Services.AddScoped<BlogPost.ApiService>();
-        // Default service used by business logic
-        builder.Services.AddScoped<BlogPost.IService>((sp) => sp.GetRequiredService<BlogPost.DbService>());
+        builder.Services.AddBackendServices();
+        // or
+        //builder.Services.AddFrontendServices();
 
         var app = builder.Build();
         app.Start();
 
         {
-            var db = app.Services.GetService<BlogPost.IService>();
-
-        }
-
-        {
-            var api = app.Services.GetService<BlogPost.IService>();
-
+            var blogPosts = app.Services.GetRequiredService<BlogPost.IService>();
+            blogPosts.Get(1);
+            blogPosts.MakePost("Hello, world!");
         }
 
         app.WaitForShutdown();

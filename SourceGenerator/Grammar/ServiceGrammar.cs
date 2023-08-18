@@ -107,10 +107,10 @@ public class ServiceGrammar
                 {
                     Program.AppendLine(",");
                 }
-                Program.Append("                  ");
+                Program.Append("                ");
                 Program.Append(par);
             }
-            Program.AppendLine("\n                  ));");
+            Program.AppendLine("\n                ));");
             Program.AppendLine("        }}");
         }
 

@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,20 +24,24 @@ namespace SourceGenerator.VsAdapter
         public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
         public static string CallingPath = "";
 
-        public const string INCLUDES = "" +
+        public const string INCLUDES =
+            "namespace Generated;\n" +
+
             "public interface IModelDbAdapter\n{\n" +
             "    void Execute(string procName, object args);\n" +
             "    T Execute<T>(string procName, object args);\n" +
             "    T ExecuteForJson<T>(string procName, object args);\n" +
             "}\n" +
+
             "public interface IModelApiAdapter\n{\n" +
             "    void Execute(string path, object args);\n" +
             "    T Execute<T>(string path, object args);\n" +
             "}\n" +
+
             "public interface IModelDbWrapper\n{\n" +
             "    void Execute(Action impl);\n" +
             "    T Execute<T>(Func<T> impl);\n" +
-            "}\n" ;
+            "}\n";
 
         public static async Task<MemoryStream> ExecuteProcess(AdditionalText file)
         {
@@ -120,7 +125,7 @@ namespace SourceGenerator.VsAdapter
 
             // Add all sources from main thread for safety
             context.AddSource("_Includes.g.cs", INCLUDES);
-            //TODO context.AddSource("_ServiceCollection.g.c", GenerateServiceCollection());
+            context.AddSource("_ServiceCollection.g.cs", GenerateServiceCollection(files));
             foreach (var source in sources)
             {
                 var sourceText = SourceText.From(source.source, Encoding.UTF8, canBeEmbedded: true);
@@ -130,6 +135,38 @@ namespace SourceGenerator.VsAdapter
 
         public void Initialize(GeneratorInitializationContext context)
         {
+        }
+
+        private static string GenerateServiceCollection(List<AdditionalText> files)
+        {
+            var sourceBuilder = new StringBuilder();
+            sourceBuilder.AppendLine("namespace Generated;");
+            sourceBuilder.AppendLine("using Microsoft.Extensions.DependencyInjection;");
+            foreach (var file in files)
+            {
+                var name = Path.GetFileNameWithoutExtension(file.Path);
+                sourceBuilder.AppendFormat("public static class {0}Extensions\n{{\n", name);
+
+                sourceBuilder.AppendFormat("    public static void Add{0}Backend<T>(this IServiceCollection services)\n", name);
+                sourceBuilder.AppendFormat("        where T : class, {0}.IBackendService\n    {{\n", name);
+                sourceBuilder.AppendFormat("        services.AddScoped<{0}.Repository>();\n", name);
+                sourceBuilder.AppendFormat("        services.AddScoped<{0}.IBackendService, T>();\n", name);
+                sourceBuilder.AppendFormat("        services.AddScoped<{0}.DbService>();\n", name);
+                sourceBuilder.AppendFormat("        services.AddScoped<{0}.IService>((sp) => sp.GetRequiredService<{1}.DbService>());\n",
+                    name,
+                    name);
+                sourceBuilder.AppendLine("    }");
+
+                sourceBuilder.AppendFormat("    public static void Add{0}Frontend(this IServiceCollection services)\n    {{\n", name);
+                sourceBuilder.AppendFormat("        services.AddScoped<{0}.ApiService>();\n", name);
+                sourceBuilder.AppendFormat("        services.AddScoped<{0}.IService>((sp) => sp.GetRequiredService<{1}.ApiService>());\n",
+                    name,
+                    name);
+                sourceBuilder.AppendLine("    }");
+
+                sourceBuilder.AppendLine("}");
+            }
+            return sourceBuilder.ToString();
         }
     }
 }

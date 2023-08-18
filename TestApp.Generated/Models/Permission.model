@@ -27,3 +27,7 @@ repo {
     dbo.Permission_DoTest()
         => Permission.Test
 }
+
+service
+{
+}
