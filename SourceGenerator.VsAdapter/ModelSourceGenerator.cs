@@ -28,19 +28,19 @@ namespace SourceGenerator.VsAdapter
             "namespace Generated;\n" +
 
             "public interface IModelDbAdapter\n{\n" +
-            "    void Execute(string procName, object args);\n" +
-            "    T Execute<T>(string procName, object args);\n" +
-            "    T ExecuteForJson<T>(string procName, object args);\n" +
+            "    Task ExecuteAsync(string procName, object args);\n" +
+            "    Task<T> ExecuteAsync<T>(string procName, object args);\n" +
+            "    Task<T> ExecuteForJsonAsync<T>(string procName, object args);\n" +
             "}\n" +
 
             "public interface IModelApiAdapter\n{\n" +
-            "    void Execute(string path, object args);\n" +
-            "    T Execute<T>(string path, object args);\n" +
+            "    Task ExecuteAsync(string path, object args);\n" +
+            "    Task<T> ExecuteAsync<T>(string path, object args);\n" +
             "}\n" +
 
             "public interface IModelDbWrapper\n{\n" +
-            "    void Execute(Action impl);\n" +
-            "    T Execute<T>(Func<T> impl);\n" +
+            "    Task ExecuteAsync(Func<Task> impl);\n" +
+            "    Task<T> ExecuteAsync<T>(Func<Task<T>> impl);\n" +
             "}\n";
 
         public static async Task<MemoryStream> ExecuteProcess(AdditionalText file)

@@ -60,7 +60,7 @@ public class ServiceGrammar
         foreach (var action in dto.Actions)
         {
             Program.AppendLine("        {0} {1}({2});",
-                action.ReturnType,
+                action.ReturnType == "void" ? "Task" : $"Task<{action.ReturnType}>",
                 action.Name,
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
         }
@@ -86,18 +86,18 @@ public class ServiceGrammar
 
         foreach (var action in dto.Actions)
         {
-            Program.AppendLine("        public {0} {1}({2})",
-                action.ReturnType,
+            Program.AppendLine("        public async {0} {1}({2})",
+                action.ReturnType == "void" ? "Task" : $"Task<{action.ReturnType}>",
                 action.Name,
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
             Program.AppendLine("        {{");
 
             if (action.ReturnType == "void")
             {
-                Program.AppendLine("            wrapper.Execute(() => impl.{0}(", action.Name);
+                Program.AppendLine("            await wrapper.ExecuteAsync(async () => await impl.{0}(", action.Name);
             } else
             {
-                Program.AppendLine("            return wrapper.Execute<{0}>(() => impl.{1}(",
+                Program.AppendLine("            return await wrapper.ExecuteAsync<{0}>(async () => await impl.{1}(",
                     action.ReturnType,
                     action.Name);
             }
@@ -129,20 +129,20 @@ public class ServiceGrammar
 
         foreach (var action in dto.Actions)
         {
-            Program.AppendLine("        public {0} {1}({2})",
-                action.ReturnType,
+            Program.AppendLine("        public async {0} {1}({2})",
+                action.ReturnType == "void" ? "Task" : $"Task<{action.ReturnType}>",
                 action.Name,
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
             Program.AppendLine("        {{");
 
             if (action.ReturnType == "void")
             {
-                Program.AppendLine("            api.Execute(\"{0}/{1}\", new\n            {{",
+                Program.AppendLine("            await api.ExecuteAsync(\"{0}/{1}\", new\n            {{",
                     dto.ApiRoute,
                     action.Name);
             } else
             {
-                Program.AppendLine("            return api.Execute<{0}>(\"{1}/{2}\", new\n            {{",
+                Program.AppendLine("            return await api.ExecuteAsync<{0}>(\"{1}/{2}\", new\n            {{",
                     action.ReturnType,
                     dto.ApiRoute,
                     action.Name);

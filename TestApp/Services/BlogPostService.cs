@@ -11,18 +11,18 @@ public class BlogPostService : BlogPost.IBackendService
         this.repo = repo;
     }
 
-    public BlogPost.WithComments Get(int bpID)
+    public async Task<BlogPost.WithComments> Get(int bpID)
     {
-        return repo.BlogPost_GetWithComments(bpID);
+        return await repo.BlogPost_GetWithComments(bpID);
     }
 
-    public List<BlogPost> GetByUser(int suID)
+    public async Task<List<BlogPost>> GetByUser(int suID)
     {
-        return repo.BlogPost_GetByUserID(suID);
+        return await repo.BlogPost_GetByUserID(suID);
     }
 
-    public BlogPost MakePost(string bpContent)
+    public async Task<BlogPost> MakePost(string bpContent)
     {
-        return repo.BlogPost_Create(1, bpContent);
+        return await repo.BlogPost_Create(1, bpContent);
     }
 }

@@ -58,20 +58,20 @@ public class RepoGrammar
 
         foreach (var proc in dto.Procs)
         {
-            Program.AppendLine("        public {0} {1}({2})",
-                proc.ReturnType,
+            Program.AppendLine("        public async {0} {1}({2})",
+                proc.ReturnType == "void" ? "Task" : $"Task<{proc.ReturnType}>",
                 proc.Name.Replace(".", "__"),
                 string.Join(',', proc.Params.Select((it) => $"{it.type} {it.name}")));
             Program.AppendLine("        {{");
 
             if (proc.ReturnType == "void")
             {
-                Program.AppendLine("            db.Execute{0}(\"{1}\", new\n            {{",
+                Program.AppendLine("            await db.Execute{0}Async(\"{1}\", new\n            {{",
                     proc.IsJson ? "ForJson" : "",
                     proc.Name);
             } else
             {
-                Program.AppendLine("            return db.Execute{0}<{1}>(\"{2}\", new\n            {{",
+                Program.AppendLine("            return await db.Execute{0}Async<{1}>(\"{2}\", new\n            {{",
                     proc.IsJson ? "ForJson" : "",
                     proc.ReturnType,
                     proc.Name);

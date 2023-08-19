@@ -8,8 +8,4 @@
     <BaseOutputPath>..\TestApp.Generated\Tools\SourceGenerator</BaseOutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
 </Project>
