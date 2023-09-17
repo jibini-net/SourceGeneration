@@ -5,7 +5,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <BaseOutputPath>..\TestApp.Generated\Tools\SourceGenerator</BaseOutputPath>
+    <BaseOutputPath>..\..\TurtlePublic.Generated\Tools\SourceGenerator</BaseOutputPath>
   </PropertyGroup>
 
 </Project>

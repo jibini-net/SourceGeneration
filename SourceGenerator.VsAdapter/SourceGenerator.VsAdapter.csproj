@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>disable</Nullable>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <BaseOutputPath>..\TestApp.Generated\Tools\SourceGenerator.VsAdapter</BaseOutputPath>
+    <BaseOutputPath>..\..\TurtlePublic.Generated\Tools\SourceGenerator.VsAdapter</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
