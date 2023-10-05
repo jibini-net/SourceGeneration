@@ -18,29 +18,29 @@ public partial class TopLevelGrammar
             {
                 case (int)LCurly:
                     var cSharp = MatchCSharp(stream);
-                    Program.AppendLine(cSharp.Replace("{", "{{").Replace("}", "}}"));
+                    //Program.AppendLine(cSharp.Replace("{", "{{").Replace("}", "}}"));
                     break;
 
                 case (int)Schema:
                     var schema = SchemaGrammar.Match(stream);
-                    SchemaGrammar.Write(schema);
+                    //SchemaGrammar.Write(schema);
                     break;
 
                 case (int)Partial:
                     var partial = PartialGrammar.Match(stream, modelName);
-                    PartialGrammar.Write(partial);
+                    //PartialGrammar.Write(partial);
                     break;
                     
                 case (int)Repo:
                     var repo = RepoGrammar.Match(stream);
-                    RepoGrammar.Write(repo);
+                    //RepoGrammar.Write(repo);
                     break;
                     
                 case (int)Service:
                     var services = ServiceGrammar.Match(stream, modelName);
-                    ServiceGrammar.WriteServiceInterface(services);
-                    ServiceGrammar.WriteDbService(services);
-                    ServiceGrammar.WriteApiService(services);
+                    //ServiceGrammar.WriteServiceInterface(services);
+                    //ServiceGrammar.WriteDbService(services);
+                    //ServiceGrammar.WriteApiService(services);
                     break;
                     
                 default:

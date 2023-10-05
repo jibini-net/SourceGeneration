@@ -1,0 +1,71 @@
+﻿@using SourceGenerator
+
+@{
+    Visited.Clear();
+    var (svg, height) = FsaNode(Grammar);
+
+    <svg style="width: 100%;height: @(height)px;">
+        @svg(0, 0)
+    </svg>
+}
+
+@code {
+    private (Func<decimal, decimal, RenderFragment> svg, decimal height) FsaNode(Fsa node)
+    {
+        var neighbors = node.Next
+            .Select((kv) => (c: (char?)kv.Key, n: kv.Value))
+            .Union(node.Epsilon
+                .Select((it) => (c: null as char?, n: it)))
+            .Where((it) => !Visited.Contains(it.n))
+            .ToList();
+        Visited.Add(node);
+
+        var nextFragments = neighbors
+            .Select((it) => FsaNode(it.n))
+            .ToList();
+        var height = Math.Max(50, nextFragments.Sum((it) => it.height));
+
+        return (
+            (x, y) =>
+            {
+                var _y = y;
+                y += height / 2 - 25;
+                return
+                @<g>
+                    @foreach (var (svg, height) in nextFragments)
+                    {
+                        <line x1="@(x + 25)" x2="@(x + 25 + 80)"
+                            y1="@(y + 25)" y2="@(_y + 25 + (height / 2 - 25))"
+                            stroke="black" />
+
+                        @svg(x + 80, _y)
+                        _y += height;
+                    }
+
+                    <circle cx="@(x + 25)"
+                            cy="@(y + 25)"
+                            r="18"
+                            stroke="@(node.Accepts.Count > 0 ? "red" : "")"
+                            stroke-width="3"
+                            fill="@(Highlight.Contains(node) ? "lightgrey" : "")" />
+                    <text x="@(x + 25 - 4)"
+                            y="@(y + 25 + 6)"
+                            fill="white"
+                            font-size="20">
+                        @(node.Letter == '\0'
+                            ? ""
+                            : node.Letter)
+                    </text>
+                </g>;
+            },
+            height);
+    }
+
+    [Parameter]
+    public Fsa Grammar { get; set; }
+
+    [Parameter]
+    public HashSet<Fsa> Highlight { get; set; } = new();
+
+    private HashSet<Fsa> Visited { get; set; } = new();
+}

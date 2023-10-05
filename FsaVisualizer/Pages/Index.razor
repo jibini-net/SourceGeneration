@@ -1,9 +1,74 @@
-﻿@page "/"
+﻿@using SourceGenerator
+@page "/"
+@using static SourceGenerator.Token
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>
+    @foreach (var (c, i) in regex.Select((it, i) => (it, i)))
+    {
+        @if (highlightedIndex == i)
+        {
+            <span style="color: lightgrey;">@c</span>
+        } else
+        {
+            <span>@c</span>
+        }
+    }
+</h1>
 
-Welcome to your new app.
+@if (wip is not null)
+{
+    <div style="margin-bottom: 1rem;">
+        <FsaNetwork Grammar="@wip" Highlight="@building" />
+    </div>
+}
+<FsaNetwork Grammar="@Grammar" Highlight="@visiting" />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private Fsa Grammar = new();
+    private Fsa wip;
+    private HashSet<Fsa> visiting = new();
+    private HashSet<Fsa> building = new();
+    private string regex = "i|like|to|code|,|that|much|should|be|apparent";
+    bool toggle;
+    private int highlightedIndex;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        while (true)
+        {
+            var nfa = Grammar = new Fsa();
+            await nfa.Build(regex, 1, async (i) =>
+            {
+                highlightedIndex = i;
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(60);
+            });
+            await InvokeAsync(StateHasChanged);
+
+            Grammar = await nfa.ConvertToDfa(async (queue, fsa) =>
+            {
+                wip = fsa;
+                visiting = queue.SelectMany((it) => it.closure).ToHashSet();
+                building = queue.Select((it) => it.node).ToHashSet();
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(40);
+            });
+            wip = null;
+            await InvokeAsync(StateHasChanged);
+
+            await Task.Delay(2000);
+            if (toggle = !toggle)
+            {
+                regex = "ant(|eater|hill|hem)|car(|pet|pool)|animal";
+            } else
+            {
+                regex = "darn|dang(|nabbit| it)|(oh, |)heck(|!)|(oh, |)(sugar|shoot)";
+            }
+            highlightedIndex = 0;
+        }
+    }
+}

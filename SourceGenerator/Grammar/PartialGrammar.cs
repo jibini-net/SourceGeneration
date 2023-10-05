@@ -53,3 +53,4 @@ public class PartialGrammar
 
         return result;
     }
+}

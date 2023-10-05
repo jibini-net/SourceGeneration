@@ -51,108 +51,118 @@ public class Fsa
      * Paths are not reused nor optimized at this stage. If a letter is already
      * in the "next" list of a state, it is added as an epsilon transition.
      */
-    public void Build(string word, int accept, out List<Fsa> frontier)
+    public Task Build(string word, int accept, out List<Fsa> frontier, Func<int, Task> cb)
     {
-        frontier = new() { this };
-        // State which will be restored to when using "+" expression operator
-        var restoreTo = this;
-        var parensDepth = 0;
-        var isEscaped = false;
-
-        for (var regIndex = 0; regIndex < word.Length; regIndex++)
+        var _f = frontier = new() { this };
+        return Task.Run(async () =>
         {
-            var c = word[regIndex];
+            // State which will be restored to when using "+" expression operator
+            var restoreTo = this;
+            var parensDepth = 0;
+            var isEscaped = false;
 
-            if (parensDepth > 0 || (c == ')' && !isEscaped))
+            for (var regIndex = 0; regIndex < word.Length; regIndex++)
             {
-                // We are currently "within parentheses;" discard chars
-                switch (c)
+                var c = word[regIndex];
+                await cb.Invoke(regIndex);
+
+                if (parensDepth > 0 || (c == ')' && !isEscaped))
                 {
-                    case '(':
-                        parensDepth++;
-                        break;
-
-                    case ')':
-                        if (--parensDepth < 0) goto outer_break;
-                        else break;
-                }
-                // Discard all characters, including last balanced ')'
-                continue;
-            }
-
-            if (!isEscaped)
-            {
-                switch (c)
-                {
-                    case '\\':
-                        isEscaped = true;
-                        continue;
-
-                    case '|':
-                        {
-                            var subExpr = new Fsa();
-                            Epsilon.Add(subExpr);
-                            subExpr.Build(word.Substring(regIndex + 1), accept, out var _frontier);
-                            // Merge the "ORed" frontier with the parent frontier
-                            frontier.AddRange(_frontier);
-                        }
-                        goto outer_break;
-
-                    case '(':
-                        {
-                            // Enter parentheses discarding mode
+                    // We are currently "within parentheses;" discard chars
+                    switch (c)
+                    {
+                        case '(':
                             parensDepth++;
-                            var subExpr = (restoreTo = new Fsa());
-                            // Merge all states to parentheses using eps transitions
-                            foreach (var state in frontier)
+                            break;
+
+                        case ')':
+                            if (--parensDepth < 0) goto outer_break;
+                            else break;
+                    }
+                    // Discard all characters, including last balanced ')'
+                    continue;
+                }
+
+                if (!isEscaped)
+                {
+                    switch (c)
+                    {
+                        case '\\':
+                            isEscaped = true;
+                            continue;
+
+                        case '|':
                             {
-                                state.Epsilon.Add(subExpr);
+                                var subExpr = new Fsa();
+                                Epsilon.Add(subExpr);
+                                await subExpr.Build(word.Substring(regIndex + 1), accept, out var _frontier,
+                                    async (i) => await cb.Invoke(regIndex + i + 1));
+                                // Merge the "ORed" frontier with the parent frontier
+                                _f.AddRange(_frontier);
                             }
-                            subExpr.Build(word.Substring(regIndex + 1), 0, out frontier);
-                        }
-                        continue;
+                            goto outer_break;
 
-                    case '+':
-                        foreach (var state in frontier)
-                        {
-                            state.Epsilon.Add(restoreTo);
-                        }
-                        continue;
+                        case '(':
+                            {
+                                // Enter parentheses discarding mode
+                                parensDepth++;
+                                var subExpr = (restoreTo = new Fsa());
+                                // Merge all states to parentheses using eps transitions
+                                foreach (var state in _f)
+                                {
+                                    state.Epsilon.Add(subExpr);
+                                }
+                                await subExpr.Build(word.Substring(regIndex + 1), 0, out var __f,
+                                    async (i) => await cb.Invoke(regIndex + i + 1));
+                                _f.Clear();
+                                _f.AddRange(__f);
+                            }
+                            continue;
+
+                        case '+':
+                            foreach (var state in _f)
+                            {
+                                state.Epsilon.Add(restoreTo);
+                            }
+                            continue;
+                    }
+                }
+                // Any non-escaping character resets to not being escaped
+                isEscaped = false;
+
+                // Always create a new node, which will likely become nondeterministic
+                var useState = new Fsa(c);
+                // Creates intermediate node to avoid infinite cyclic flow
+                restoreTo = new Fsa();
+                restoreTo.Next[c] = useState;
+
+                foreach (var state in _f)
+                {
+                    if (state.Next.ContainsKey(c))
+                    {
+                        // Tokens are nondeterministic via eps transitions
+                        state.Epsilon.Add(restoreTo);
+                    } else
+                    {
+                        state.Next[c] = useState;
+                    }
+                }
+                // After appending a char, frontier is always one merged branch
+                //frontier = new() { useState };
+                _f.Clear();
+                _f.Add(useState);
+            }
+        outer_break:
+
+            if (accept > 0)
+            {
+                foreach (var state in _f)
+                {
+                    // If there are already elements, tokens may be ambiguous
+                    state.Accepts.Add(accept);
                 }
             }
-            // Any non-escaping character resets to not being escaped
-            isEscaped = false;
-
-            // Always create a new node, which will likely become nondeterministic
-            var useState = new Fsa(c);
-            // Creates intermediate node to avoid infinite cyclic flow
-            restoreTo = new Fsa();
-            restoreTo.Next[c] = useState;
-
-            foreach (var state in frontier)
-            {
-                if (state.Next.ContainsKey(c))
-                {
-                    // Tokens are nondeterministic via eps transitions
-                    state.Epsilon.Add(restoreTo);
-                } else
-                {
-                    state.Next[c] = useState;
-                }
-            }
-            // After appending a char, frontier is always one merged branch
-            frontier = new() { useState };
-        }
-    outer_break:
-
-        if (accept > 0)
-        {
-            foreach (var state in frontier)
-            {
-                // If there are already elements, tokens may be ambiguous
-                state.Accepts.Add(accept);
-            }
-        }
+        });
     }
 
     /*
@@ -163,9 +173,9 @@ public class Fsa
      * Paths are not reused nor optimized at this stage. If a letter is already
      * in the "next" list of a state, it is added as an epsilon transition.
      */
-    public void Build(string word, int accept)
+    public async Task Build(string word, int accept, Func<int, Task> cb)
     {
-        Build(word, accept, out var _);
+        await Build(word, accept, out var _, cb);
     }
 
     /*
@@ -209,7 +219,7 @@ public class Fsa
         var closure = EpsilonClosure().Distinct().ToList();
         int textIndex = startIndex, longestEnd = -1, match = 0;
 
-        for (;;)
+        for (; ; )
         {
             // Any accept state in the frontier is a valid match
             var acceptState = closure.Where((it) => it.Accepts.Count > 0).FirstOrDefault();
@@ -266,7 +276,7 @@ public class Fsa
      * Do not modify the NFA again after calling the conversion to DFA; the NFA
      * would continue to function, but this method would not.
      */
-    public Fsa ConvertToDfa()
+    public async Task<Fsa> ConvertToDfa(Func<Queue<(Fsa node, List<Fsa> closure)>, Fsa, Task> cb)
     {
         var result = new Fsa()
         {
@@ -278,6 +288,7 @@ public class Fsa
         var replace = new Dictionary<HashSet<Fsa>, Fsa>(HashSet<Fsa>.CreateSetComparer());
 
         queue.Enqueue((result, EpsilonClosure().Distinct().ToList()));
+        await cb.Invoke(queue, result);
         do
         {
             var (node, oldClosure) = queue.Dequeue();
@@ -309,6 +320,7 @@ public class Fsa
                 replace[withLetters] = created;
 
                 queue.Enqueue((created, closure.ToList()));
+                await cb.Invoke(queue, result);
             }
         } while (queue.Count > 0);
 
