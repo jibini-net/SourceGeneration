@@ -53,25 +53,3 @@ public class PartialGrammar
 
         return result;
     }
-
-    public static void Write(Dto dto)
-    {
-        Program.AppendLine("    public partial class {0} : {1}",
-            dto.Name,
-            dto.SuperClass);
-        Program.AppendLine("    {{");
-
-        foreach (var field in dto.Fields)
-        {
-            Program.AppendLine("        public {0} {1} {{ get; set; }}",
-               field.TypeName,
-               field.Name);
-            if (!string.IsNullOrEmpty(field.Initial))
-            {
-                Program.AppendLine("            = {0};", field.Initial);
-            }
-        }
-        
-        Program.AppendLine("    }}");
-    }
-}

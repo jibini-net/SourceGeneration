@@ -45,18 +45,3 @@ public class SchemaGrammar
 
         return result;
     }
-
-    public static void Write(Dto dto)
-    {
-        foreach (var field in dto.Fields)
-        {
-            Program.AppendLine("    public {0} {1} {{ get; set; }}",
-                field.TypeName,
-                field.Name);
-            if (!string.IsNullOrEmpty(field.Initial))
-            {
-                Program.AppendLine("        = {0};", field.Initial);
-            }
-        }
-    }
-}
