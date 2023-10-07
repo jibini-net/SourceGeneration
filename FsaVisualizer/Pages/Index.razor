@@ -2,28 +2,57 @@
 @page "/"
 @using static SourceGenerator.Token
 
-<PageTitle>Index</PageTitle>
+<PageTitle>FSA Generation Demo</PageTitle>
 
-<h1>
-    @foreach (var (c, i) in regex.Select((it, i) => (it, i)))
-    {
-        @if (highlightedIndex == i)
-        {
-            <span style="color: lightgrey;">@c</span>
-        } else
-        {
-            <span>@c</span>
-        }
-    }
-</h1>
+<center>
 
-@if (wip is not null)
-{
-    <div style="margin-bottom: 1rem;">
-        <FsaNetwork Grammar="@wip" Highlight="@building" />
+    <div class="d-flex flex-row" style="width: fit-content;">
+        <div class="my-auto">
+            <h2 class="mt-3">FSA Generation Demo</h2>
+            <h3>@title</h3>
+        </div>
+        <div class="d-flex flex-column justify-content-center ms-5 py-4">
+            <h5>Step Through</h5>
+            <input type="checkbox" @bind="@_hold" @bind:after="CheckHoldAsync" id="hold" />
+            <label for="hold" style="font-size: 0.8rem;" class="my-auto">Hold</label>
+            <button class="btn btn-@(hold ? "" : "outline-")primary mt-2" disabled="@(!hold)"
+                onclick="@(async () =>
+                {
+                    try
+                    {
+                        holdGate.Release();
+                    } catch (Exception)
+                    {
+                    }
+                })">Step</button>
+        </div>
     </div>
-}
-<FsaNetwork Grammar="@Grammar" Highlight="@visiting" />
+
+    <h1 style="font-family: monospace;" class="my-5">
+        @foreach (var (c, i) in regex.Select((it, i) => (it, i)))
+        {
+            if (highlightedIndex == i)
+            {
+                <span style="color: lightgrey;">@c</span>
+            } else
+            {
+                <span>@c</span>
+            }
+        }
+    </h1>
+
+    @if (wip is not null)
+    {
+        <div style="margin-bottom: 1rem;width: fit-content;">
+            <FsaNetwork Grammar="@wip" Highlight="@building" />
+        </div>
+    }
+
+    <div style="width: fit-content;">
+        <FsaNetwork Grammar="@Grammar" Highlight="@visiting" />
+    </div>
+
+</center>
 
 @code {
     private Fsa Grammar = new();
@@ -33,6 +62,10 @@
     private string regex = "i|like|to|code|,|that|much|should|be|apparent";
     bool toggle;
     private int highlightedIndex;
+    private string title;
+    private SemaphoreSlim holdMutex = new(1, 1);
+    private SemaphoreSlim holdGate = new(1, 1);
+    private bool _hold, hold;
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,13 +73,27 @@
 
         while (true)
         {
+            title = "1) Parse regex to NFA";
+            await InvokeAsync(StateHasChanged);
+
             var nfa = Grammar = new Fsa();
             await nfa.Build(regex, 1, async (i) =>
             {
                 highlightedIndex = i;
                 await InvokeAsync(StateHasChanged);
-                await Task.Delay(60);
+
+                await holdMutex.WaitAsync();
+                if (hold)
+                {
+                    await holdGate.WaitAsync();
+                } else
+                {
+                    await Task.Delay(40);
+                }
+                holdMutex.Release();
             });
+
+            title = "2) Convert NFA to DFA";
             await InvokeAsync(StateHasChanged);
 
             Grammar = await nfa.ConvertToDfa(async (queue, fsa) =>
@@ -55,20 +102,50 @@
                 visiting = queue.SelectMany((it) => it.closure).ToHashSet();
                 building = queue.Select((it) => it.node).ToHashSet();
                 await InvokeAsync(StateHasChanged);
-                await Task.Delay(40);
+
+                await holdMutex.WaitAsync();
+                if (hold)
+                {
+                    await holdGate.WaitAsync();
+                } else
+                {
+                    await Task.Delay(60);
+                }
+                holdMutex.Release();
             });
+
+            title = "3) Maintain DFA to match tokens";
             wip = null;
             await InvokeAsync(StateHasChanged);
 
             await Task.Delay(2000);
             if (toggle = !toggle)
             {
-                regex = "ant(|eater|hill|hem)|car(|pet|pool)|animal";
+                regex = "ant(|(eater)+|hill|hem)|car(|pet|pool)|animal+";
             } else
             {
-                regex = "darn|dang(|nabbit| it)|(oh, |)heck(|!)|(oh, |)(sugar|shoot)";
+                regex = "darn|dang(|nabbit| it)|((oh, )+|)heck(|!)|(oh, |)(sugar|shoot)";
             }
             highlightedIndex = 0;
         }
+    }
+
+    private async Task CheckHoldAsync()
+    {
+        await holdMutex.WaitAsync();
+        hold = _hold;
+        if (hold)
+        {
+            await holdGate.WaitAsync();
+        } else
+        {
+            try
+            {
+                holdGate.Release();
+            } catch (Exception)
+            {
+            }
+        }
+        holdMutex.Release();
     }
 }

@@ -64,7 +64,13 @@ public class Fsa
             for (var regIndex = 0; regIndex < word.Length; regIndex++)
             {
                 var c = word[regIndex];
-                await cb.Invoke(regIndex);
+                var notifyAsync = async () =>
+                {
+                    if (parensDepth == 0)
+                    {
+                        await cb.Invoke(regIndex);
+                    }
+                };
 
                 if (parensDepth > 0 || (c == ')' && !isEscaped))
                 {
@@ -89,6 +95,7 @@ public class Fsa
                     {
                         case '\\':
                             isEscaped = true;
+                            await notifyAsync();
                             continue;
 
                         case '|':
@@ -117,6 +124,7 @@ public class Fsa
                                 _f.Clear();
                                 _f.AddRange(__f);
                             }
+                            await notifyAsync();
                             continue;
 
                         case '+':
@@ -124,6 +132,7 @@ public class Fsa
                             {
                                 state.Epsilon.Add(restoreTo);
                             }
+                            await notifyAsync();
                             continue;
                     }
                 }
@@ -151,6 +160,7 @@ public class Fsa
                 //frontier = new() { useState };
                 _f.Clear();
                 _f.Add(useState);
+                await notifyAsync();
             }
         outer_break:
 

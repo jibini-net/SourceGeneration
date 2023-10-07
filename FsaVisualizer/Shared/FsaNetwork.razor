@@ -1,42 +1,96 @@
 ﻿@using SourceGenerator
 
 @{
-    Visited.Clear();
-    var (svg, height) = FsaNode(Grammar);
+    visited.Clear();
+    cycles.Clear();
+    coords.Clear();
 
-    <svg style="width: 100%;height: @(height)px;">
+    var (svg, _depth, _height) = FsaNode(Grammar);
+    width = 50 + 80 * (_depth - 1);
+    height = _height;
+
+    <svg style="width: @(width)px;height: @(height)px;">
+        <defs>
+            <marker id="triangleBlack"
+                    viewBox="0 0 10 10"
+                    refX="25"
+                    refY="5"
+                    markerUnits="strokeWidth"
+                    markerWidth="10"
+                    markerHeight="10"
+                    orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="black" />
+            </marker>
+        </defs>
+
         @svg(0, 0)
     </svg>
+
+    <div style="width: @(width)px;height: @(height)px;z-index: -1;display: block;position: absolute;margin-top: -@(height)px;">
+        <svg style="width: 100%;height: 100%;">
+            <marker id="triangleBlue"
+                    viewBox="0 0 10 10"
+                    refX="22"
+                    refY="5"
+                    markerUnits="strokeWidth"
+                    markerWidth="5"
+                    markerHeight="5"
+                    orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="blue" />
+            </marker>
+            @foreach (var (from, to) in cycles)
+            {
+                var (fromX, fromY) = coords[from];
+                var (toX, toY) = coords[to];
+
+                <line x1="@(fromX + 25)" x2="@(toX + 25)"
+                      y1="@(fromY + 25)" y2="@(toY + 25)"
+                      stroke="blue"
+                      stroke-dasharray="5,5"
+                      stroke-width="3"
+                      marker-end="url(#triangleBlue)" />
+            }
+        </svg>
+    </div>
 }
 
 @code {
-    private (Func<decimal, decimal, RenderFragment> svg, decimal height) FsaNode(Fsa node)
+    private (Func<decimal, decimal, RenderFragment> svg, decimal depth, decimal height) FsaNode(Fsa node)
     {
-        var neighbors = node.Next
+        var _neighbors = node.Next
             .Select((kv) => (c: (char?)kv.Key, n: kv.Value))
             .Union(node.Epsilon
                 .Select((it) => (c: null as char?, n: it)))
-            .Where((it) => !Visited.Contains(it.n))
+            .GroupBy((it) => visited.Contains(it.n))
             .ToList();
-        Visited.Add(node);
+        var neighbors = _neighbors.FirstOrDefault((it) => !it.Key)?.ToList() ?? new();
+        var already = _neighbors.FirstOrDefault((it) => it.Key)?.ToList() ?? new();
+
+        cycles.AddRange(already.Select((it) => (node, it.n)));
+        visited.Add(node);
 
         var nextFragments = neighbors
             .Select((it) => FsaNode(it.n))
             .ToList();
         var height = Math.Max(50, nextFragments.Sum((it) => it.height));
+        var depth = nextFragments.Select((it) => it.depth).DefaultIfEmpty(0).Max() + 1;
 
         return (
             (x, y) =>
             {
                 var _y = y;
                 y += height / 2 - 25;
+                coords[node] = (x, y);
+
                 return
                 @<g>
-                    @foreach (var (svg, height) in nextFragments)
+
+                    @foreach (var (svg, _, height) in nextFragments)
                     {
                         <line x1="@(x + 25)" x2="@(x + 25 + 80)"
                             y1="@(y + 25)" y2="@(_y + 25 + (height / 2 - 25))"
-                            stroke="black" />
+                            stroke="black"
+                            marker-end="url(#triangleBlack)" />
 
                         @svg(x + 80, _y)
                         _y += height;
@@ -47,8 +101,11 @@
                             r="18"
                             stroke="@(node.Accepts.Count > 0 ? "red" : "")"
                             stroke-width="3"
-                            fill="@(Highlight.Contains(node) ? "lightgrey" : "")" />
-                    <text x="@(x + 25 - 4)"
+                            fill="@(removed.Contains(node) ? "#ffb99f"
+                                : (additions.Contains(node) ? "#96e7c1"
+                                    : (Highlight.Contains(node) ? "lightgrey"
+                                        : "")))" />
+                    <text x="@(x + 25 - 5)"
                             y="@(y + 25 + 6)"
                             fill="white"
                             font-size="20">
@@ -56,16 +113,39 @@
                             ? ""
                             : node.Letter)
                     </text>
+
                 </g>;
             },
+            depth,
             height);
     }
 
     [Parameter]
     public Fsa Grammar { get; set; }
 
-    [Parameter]
-    public HashSet<Fsa> Highlight { get; set; } = new();
+    private HashSet<Fsa> additions = new();
+    private HashSet<Fsa> removed = new();
+    private HashSet<Fsa> _highlight = new();
 
-    private HashSet<Fsa> Visited { get; set; } = new();
+    [Parameter]
+    public HashSet<Fsa> Highlight { get => _highlight; set
+    {
+        var _additions = value
+            .Where((it) => !_highlight.Contains(it))
+            .ToHashSet();
+        var _removed = _highlight
+            .Where((it) => !value.Contains(it))
+            .ToHashSet();
+        if (_additions.Count > 0 || _removed.Count > 0)
+        {
+            additions = _additions;
+            removed = _removed;
+            _highlight = value;
+        }
+    }}
+
+    private HashSet<Fsa> visited { get; set; } = new();
+    private List<(Fsa, Fsa)> cycles { get; set; } = new();
+    private decimal width, height;
+    private Dictionary<Fsa, (decimal, decimal)> coords = new();
 }
