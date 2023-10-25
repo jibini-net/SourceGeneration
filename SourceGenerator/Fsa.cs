@@ -336,4 +336,37 @@ public class Fsa
 
         return result;
     }
+
+    private List<Fsa> _flat
+    {
+        get
+        {
+            var visited = new HashSet<Fsa>() { this };
+            void findChildren(Fsa it)
+            {
+                foreach (var n in it.Next.Values
+                    .Concat(it.Epsilon)
+                    .Where(visited.Add))
+                {
+                    findChildren(n);
+                }
+            }
+            findChildren(this);
+            return visited.ToList();
+        }
+    }
+
+    public async Task<Fsa> MinimizeDfa(Func<List<List<Fsa>>, Task> cb)
+    {
+        var partitions = new List<List<Fsa>>();
+        var initialParts = _flat
+            .GroupBy((it) => it.Accepts.Count > 0)
+            .ToDictionary((it) => it.Key, (it) => it.ToList());
+
+        partitions.Add(initialParts.GetValueOrDefault(true, new()));
+        partitions.Add(initialParts.GetValueOrDefault(false, new()));
+        
+        await cb(partitions);
+        return this;
+    }
 }

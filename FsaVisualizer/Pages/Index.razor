@@ -101,6 +101,19 @@
 
         while (true)
         {
+            async Task checkIfHeldAsync(int noHold)
+            {
+                await holdMutex.WaitAsync();
+                if (hold)
+                {
+                    await holdGate.WaitAsync();
+                } else
+                {
+                    await Task.Delay(noHold);
+                }
+                holdMutex.Release();
+            }
+
             title = "1) Parse regex to NFA";
             await InvokeAsync(StateHasChanged);
 
@@ -110,15 +123,7 @@
                 highlightedIndex = i;
                 await InvokeAsync(StateHasChanged);
 
-                await holdMutex.WaitAsync();
-                if (hold)
-                {
-                    await holdGate.WaitAsync();
-                } else
-                {
-                    await Task.Delay(40);
-                }
-                holdMutex.Release();
+                await checkIfHeldAsync(40);
             });
 
             title = "2) Convert NFA to DFA";
@@ -131,19 +136,28 @@
                 building = queue.Select((it) => it.node).ToHashSet();
                 await InvokeAsync(StateHasChanged);
 
-                await holdMutex.WaitAsync();
-                if (hold)
-                {
-                    await holdGate.WaitAsync();
-                } else
-                {
-                    await Task.Delay(60);
-                }
-                holdMutex.Release();
+                await checkIfHeldAsync(60);
             });
 
-            title = "3) Maintain DFA to match tokens";
+            building.Clear();
+            visiting.Clear();
             wip = null;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(4000);
+
+            title = "3) Minimize states";
+            await InvokeAsync(StateHasChanged);
+
+            Grammar = await Grammar.MinimizeDfa(async (partitions) =>
+            {
+                visiting = partitions.FirstOrDefault()?.ToHashSet() ?? new();
+                await InvokeAsync(StateHasChanged);
+
+                await checkIfHeldAsync(40);
+            });
+            await Task.Delay(12000);
+
+            title = "4) Maintain DFA to match tokens";
             await InvokeAsync(StateHasChanged);
 
             await Task.Delay(2000);
