@@ -77,7 +77,7 @@
     }
 
     <div style="width: fit-content;">
-        <FsaNetwork Grammar="@Grammar" Highlight="@visiting" />
+        <FsaNetwork Grammar="@Grammar" Highlight="@visiting" Partitions="@partitions" />
     </div>
 
 </center>
@@ -94,6 +94,7 @@
     private SemaphoreSlim holdMutex = new(1, 1);
     private SemaphoreSlim holdGate = new(1, 1);
     private bool _hold, hold;
+    private List<List<Fsa>> partitions = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -143,24 +144,30 @@
             visiting.Clear();
             wip = null;
             await InvokeAsync(StateHasChanged);
-            await Task.Delay(4000);
+            await Task.Delay(2600);
 
             title = "3) Minimize states";
             await InvokeAsync(StateHasChanged);
 
-            Grammar = await Grammar.MinimizeDfa(async (partitions) =>
+            var first = true;
+            Grammar = await Grammar.MinimizeDfa(async (parts) =>
             {
-                visiting = partitions.FirstOrDefault()?.ToHashSet() ?? new();
+                partitions = parts;
                 await InvokeAsync(StateHasChanged);
+                if (first != (first = false))
+                {
+                    await Task.Delay(2000);
+                }
 
                 await checkIfHeldAsync(40);
             });
-            await Task.Delay(12000);
+            await Task.Delay(1200);
+            partitions.Clear();
 
             title = "4) Maintain DFA to match tokens";
             await InvokeAsync(StateHasChanged);
 
-            await Task.Delay(2000);
+            await Task.Delay(3400);
             if (toggle = !toggle)
             {
                 regex = "ant(|(eater)+|hill|hem)|car(|pet|pool)|animal+";

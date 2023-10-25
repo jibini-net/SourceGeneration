@@ -77,6 +77,25 @@
         var height = Math.Max(50, nextFragments.Sum((it) => it.height));
         var depth = nextFragments.Select((it) => it.depth).DefaultIfEmpty(0).Max() + 1;
 
+        var partColors = PartitionColors();
+        string determineColor(Fsa node)
+        {
+            if (Partitions.Count > 0)
+                try
+                {
+                    return partColors[groupIndices[node]];
+                } catch (Exception)
+                {
+                }
+            if (removed.Contains(node))
+                return "#d76666";
+            if (additions.Contains(node))
+                return "#71cb6f";
+            if (Highlight.Contains(node))
+                return "lightgrey";
+            return "";
+        }
+
         return (
             (x, y) =>
             {
@@ -103,10 +122,7 @@
                             r="18"
                             stroke="@(node.Accepts.Count > 0 ? "green" : "")"
                             stroke-width="3"
-                            fill="@(removed.Contains(node) ? "#d76666"
-                                : (additions.Contains(node) ? "#71cb6f"
-                                    : (Highlight.Contains(node) ? "lightgrey"
-                                        : "")))" />
+                            fill="@determineColor(node)" />
                     <text x="@(x + 25 - 5)"
                             y="@(y + 25 + 6)"
                             fill="white"
@@ -116,7 +132,8 @@
                             : node.Letter)
                     </text>
 
-                </g>;
+            </g>
+    ;
             },
             depth,
             height);
@@ -128,6 +145,8 @@
     private HashSet<Fsa> additions = new();
     private HashSet<Fsa> removed = new();
     private HashSet<Fsa> _highlight = new();
+    private List<List<Fsa>> _partitions = new();
+    private Dictionary<Fsa, int> groupIndices = new();
 
     [Parameter]
     public HashSet<Fsa> Highlight { get => _highlight; set
@@ -145,6 +164,33 @@
             _highlight = value;
         }
     }}
+
+    [Parameter]
+    public List<List<Fsa>> Partitions { get => _partitions; set
+    {
+        _partitions = value;
+        groupIndices = value
+            .Select((it, i) => (it, i))
+            .SelectMany((it) => it.it.Select((_it) => (_it, it.i)))
+            .ToDictionary((it) => it._it, (it) => it.i);
+    }}
+
+    private List<string> PartitionColors()
+    {
+        double period = 2 * Math.PI;
+        double offsetPerRgb = period / 3;
+        double offsetPerPart = period / _partitions.Count;
+
+        return _partitions
+            .Select((_, i) =>
+            {
+                var r = Math.Sin(offsetPerRgb * 0 + offsetPerPart * i);
+                var g = Math.Sin(offsetPerRgb * 1 + offsetPerPart * i);
+                var b = Math.Sin(offsetPerRgb * 2 + offsetPerPart * i);
+                return $"rgba({r * 255:0.000}, {g * 255:0.000}, {b * 255:0.000}, 1.0)";
+            })
+            .ToList();
+    }
 
     private HashSet<Fsa> visited { get; set; } = new();
     private List<(Fsa, Fsa)> cycles { get; set; } = new();

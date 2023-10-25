@@ -367,6 +367,9 @@ public class Fsa
         partitions.Add(initialParts.GetValueOrDefault(false, new()));
         
         await cb(partitions);
+
+        await cb(_flat.Select((it) => new List<Fsa>() { it }).ToList());
+
         return this;
     }
 }
