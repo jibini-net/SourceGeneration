@@ -229,7 +229,7 @@ public class Fsa
         var closure = EpsilonClosure().Distinct().ToList();
         int textIndex = startIndex, longestEnd = -1, match = 0;
 
-        for (; ; )
+        for (;;)
         {
             // Any accept state in the frontier is a valid match
             var acceptState = closure.Where((it) => it.Accepts.Count > 0).FirstOrDefault();
@@ -367,7 +367,9 @@ public class Fsa
         {
             if (x.Count != y.Count)
                 return false;
-            return GetHashCode(x) == GetHashCode(y);
+            //return GetHashCode(x) == GetHashCode(y);
+            return x.Count == y.Count
+                && x.All((it) => y.TryGetValue(it.Key, out var _v) && it.Value as object == _v as object);
         }
 
         public int GetHashCode(IDictionary<TKey, TValue> obj)
@@ -391,7 +393,7 @@ public class Fsa
         }
     }
 
-    public async Task<Fsa> MinimizeDfa(Func<List<List<Fsa>>, Task> cb)
+    public async Task<Fsa> MinimizeDfa(Func<List<List<Fsa>>, List<List<Fsa>>, Fsa, Task> cb)
     {
         var partitions = new List<List<Fsa>>();
         var remap = new Dictionary<Fsa, List<Fsa>>();
@@ -399,8 +401,6 @@ public class Fsa
         var initialParts = flat
             .GroupBy((it) => it.Accepts.Count > 0)
             .ToDictionary((it) => it.Key, (it) => it.ToList());
-
-        await cb(new List<List<Fsa>>() { flat });
 
         var accepts = initialParts.GetValueOrDefault(true, new());
         partitions.Add(accepts);
@@ -416,7 +416,13 @@ public class Fsa
             remap[n] = nonAccepts;
         }
 
-        await cb(partitions);
+        var _rm = RemapPartitions(partitions, out var _map);
+        await cb(
+            partitions,
+            partitions
+                .Select((it) => new List<Fsa>() { _map[it.First()] })
+                .ToList(),
+            _rm);
 
         var prevCount = 0;
         while (prevCount != partitions.Count)
@@ -441,10 +447,8 @@ public class Fsa
                 var partsRanges = newParts
                     .Select((it) => it.ToList())
                     .ToList();
-
                 partitions[i] = partsRanges.First();
                 partitions.AddRange(partsRanges.Skip(1));
-                await cb(partitions);
 
                 foreach (var p in partsRanges)
                 {
@@ -453,9 +457,46 @@ public class Fsa
                         remap[n] = p;
                     }
                 }
+
+                _rm = RemapPartitions(partitions, out _map);
+                await cb(
+                    partitions,
+                    partitions
+                        .Select((it) => new List<Fsa>() { _map[it.First()] })
+                        .ToList(),
+                    _rm);
             }
         }
 
-        return this;
+        return RemapPartitions(partitions, out var _);
+    }
+
+    private Fsa RemapPartitions(List<List<Fsa>> parts, out Dictionary<Fsa, Fsa> _partMap)
+    {
+        _partMap = parts
+            .Select((p) => (p, repl: new Fsa()))
+            .SelectMany((it) => it.p.Select((n) => (n, it.repl)))
+            .ToDictionary((it) => it.n, (it) => it.repl);
+        var partMap = _partMap;
+        var visited = new Dictionary<Fsa, Fsa>();
+
+        Fsa remapPartitions(Fsa it)
+        {
+            if (visited.TryGetValue(it, out var _n))
+            {
+                return _n;
+            }
+            var replace = partMap[it];
+            visited[it] = replace;
+
+            replace.Accepts = replace.Accepts.Union(it.Accepts).ToList();
+            foreach (var (c, n) in it.Next)
+            {
+                replace.Next[c] = remapPartitions(n);
+            }
+
+            return replace;
+        }
+        return remapPartitions(this);
     }
 }

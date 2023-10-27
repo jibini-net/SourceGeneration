@@ -3,9 +3,16 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />-->
     <title>FsaVisualizer</title>
-    <base href="/" />
+    <script>
+        if (window.location.host.includes("localhost")) {
+            document.write("<base href=\"/\" />");
+        } else
+        {
+            document.write("<base href=\"/Fsa/\" />");
+        }
+    </script>
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png" />

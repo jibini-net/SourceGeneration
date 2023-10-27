@@ -66,7 +66,9 @@
                 .Select((it) => (c: null as char?, n: it)))
             .GroupBy((it) => visited.Contains(it.n))
             .ToDictionary((it) => it.Key, (it) => it.ToList());
-        var neighbors = _neighbors.GetValueOrDefault(false, new());
+        var neighbors = _neighbors.GetValueOrDefault(false, new())
+            .DistinctBy((it) => it.n)
+            .ToList();
         var already = _neighbors.GetValueOrDefault(true, new());
 
         foreach (var n in neighbors)

@@ -41,10 +41,15 @@
         }
     </h1>
 
+    @if (partitions.Count > 0)
+    {
+        <h1 class="d-flex justify-content-center mb-3" style="width: 100%;"><i class="spinner-border my-auto me-2" /> @partitions.SelectMany((it) => it).Count() <i class="oi oi-arrow-right mx-2" /> @partitions.Count</h1>
+    }
+
     @if (wip is not null)
     {
         <div class="d-flex flex-row" style="margin-bottom: 1rem;width: fit-content;">
-            <FsaNetwork Grammar="@wip" Highlight="@building" />
+            <FsaNetwork Grammar="@wip" Highlight="@building" Partitions="@partitions2" />
             <div class="ms-3 ps-3" style="font-size: 0.8rem;border-left: 1px dotted darkgrey;">
 
                 <div class="d-flex flex-row mb-1">
@@ -77,10 +82,6 @@
     }
 
     <div style="width: fit-content;margin-bottom: 4rem;">
-        @if (partitions.Count > 0)
-        {
-            <h1 class="d-flex justify-content-center mb-3" style="width: 100%;"><i class="spinner-border my-auto me-2" /> @partitions.SelectMany((it) => it).Count() <i class="oi oi-arrow-right mx-2" /> @partitions.Count</h1>
-        }
         <FsaNetwork Grammar="@Grammar" Highlight="@visiting" Partitions="@partitions" />
     </div>
 
@@ -91,7 +92,7 @@
     private Fsa wip;
     private HashSet<Fsa> visiting = new();
     private HashSet<Fsa> building = new();
-    private string regex = "(a|b)(|(a|b|0|1|2)+)";
+    private string regex = "(_|a|b)(|(_|a|b|0|1|2)+)";
     bool toggle;
     private int highlightedIndex;
     private string title;
@@ -99,6 +100,7 @@
     private SemaphoreSlim holdGate = new(1, 1);
     private bool _hold, hold;
     private List<List<Fsa>> partitions = new();
+    private List<List<Fsa>> partitions2 = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,20 +160,21 @@
             title = "3) Minimize states";
             await InvokeAsync(StateHasChanged);
 
-            var first = true;
-            Grammar = await Grammar.MinimizeDfa(async (parts) =>
+            wip = await Grammar.MinimizeDfa(async (parts, parts2, fsa) =>
             {
                 partitions = parts;
+                partitions2 = parts2;
+                wip = fsa;
                 await InvokeAsync(StateHasChanged);
-                if (first != (first = false))
-                {
-                    await Task.Delay(700);
-                }
 
-                await checkIfHeldAsync(700);
+                await checkIfHeldAsync(1600);
             });
-            await Task.Delay(1200);
             partitions.Clear();
+            partitions2.Clear();
+
+            await Task.Delay(2400);
+            Grammar = wip;
+            wip = null;
 
             title = "4) Maintain DFA to match tokens";
             await InvokeAsync(StateHasChanged);
@@ -179,10 +182,10 @@
             await Task.Delay(3400);
             if (toggle = !toggle)
             {
-                regex = "(|\\+|-)((0|1)+|(|(0|1)+\\.(0|1)+)";
+                regex = "(|\\+|-)((0|1)+(|L)|((|(0|1)+)\\.(0|1)+)(f|d))";
             } else
             {
-                regex = "0(x|b)(0|1|a|A|b|B)+(|L)";
+                regex = "0(b((0|1)(0|1))+|x((A|B)(A|B))+)(|L|u)";
             }
             highlightedIndex = 0;
         }
