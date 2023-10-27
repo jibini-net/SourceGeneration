@@ -356,19 +356,105 @@ public class Fsa
         }
     }
 
+    // https://codereview.stackexchange.com/questions/30332/proper-way-to-compare-two-dictionaries
+    public class DictionaryComparer<TKey, TValue> : IEqualityComparer<IDictionary<TKey, TValue>>
+    {
+        public DictionaryComparer()
+        {
+        }
+
+        public bool Equals(IDictionary<TKey, TValue> x, IDictionary<TKey, TValue> y)
+        {
+            if (x.Count != y.Count)
+                return false;
+            return GetHashCode(x) == GetHashCode(y);
+        }
+
+        public int GetHashCode(IDictionary<TKey, TValue> obj)
+        {
+            int hash = 0;
+            foreach (KeyValuePair<TKey, TValue> pair in obj)
+            {
+                int key = pair.Key.GetHashCode();
+                int value = pair.Value != null ? pair.Value.GetHashCode() : 0;
+                hash ^= ShiftAndWrap(key, 2) ^ value;
+            }
+            return hash;
+        }
+
+        private int ShiftAndWrap(int value, int positions)
+        {
+            positions &= 0x1F;
+            uint number = BitConverter.ToUInt32(BitConverter.GetBytes(value), 0);
+            uint wrapped = number >> (32 - positions);
+            return BitConverter.ToInt32(BitConverter.GetBytes((number << positions) | wrapped), 0);
+        }
+    }
+
     public async Task<Fsa> MinimizeDfa(Func<List<List<Fsa>>, Task> cb)
     {
         var partitions = new List<List<Fsa>>();
-        var initialParts = _flat
+        var remap = new Dictionary<Fsa, List<Fsa>>();
+        var flat = _flat.ToList();
+        var initialParts = flat
             .GroupBy((it) => it.Accepts.Count > 0)
             .ToDictionary((it) => it.Key, (it) => it.ToList());
 
-        partitions.Add(initialParts.GetValueOrDefault(true, new()));
-        partitions.Add(initialParts.GetValueOrDefault(false, new()));
-        
+        await cb(new List<List<Fsa>>() { flat });
+
+        var accepts = initialParts.GetValueOrDefault(true, new());
+        partitions.Add(accepts);
+        foreach (var n in accepts)
+        {
+            remap[n] = accepts;
+        }
+
+        var nonAccepts = initialParts.GetValueOrDefault(false, new());
+        partitions.Add(nonAccepts);
+        foreach (var n in nonAccepts)
+        {
+            remap[n] = nonAccepts;
+        }
+
         await cb(partitions);
 
-        await cb(_flat.Select((it) => new List<Fsa>() { it }).ToList());
+        var prevCount = 0;
+        while (prevCount != partitions.Count)
+        {
+            prevCount = partitions.Count;
+
+            for (var i = 0; i < prevCount; i++)
+            {
+                var part = partitions[i];
+                var newParts = part
+                    .GroupBy((p) => p.Next
+                            .ToDictionary(
+                                (it) => it.Key,
+                                (it) => remap[it.Value]),
+                        new DictionaryComparer<char, List<Fsa>>())
+                    .ToList();
+                if (newParts.Count() == 1)
+                {
+                    continue;
+                }
+
+                var partsRanges = newParts
+                    .Select((it) => it.ToList())
+                    .ToList();
+
+                partitions[i] = partsRanges.First();
+                partitions.AddRange(partsRanges.Skip(1));
+                await cb(partitions);
+
+                foreach (var p in partsRanges)
+                {
+                    foreach (var n in p)
+                    {
+                        remap[n] = p;
+                    }
+                }
+            }
+        }
 
         return this;
     }

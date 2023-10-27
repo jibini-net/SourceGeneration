@@ -76,7 +76,11 @@
         </div>
     }
 
-    <div style="width: fit-content;">
+    <div style="width: fit-content;margin-bottom: 4rem;">
+        @if (partitions.Count > 0)
+        {
+            <h1 class="d-flex justify-content-center mb-3" style="width: 100%;"><i class="spinner-border my-auto me-2" /> @partitions.SelectMany((it) => it).Count() <i class="oi oi-arrow-right mx-2" /> @partitions.Count</h1>
+        }
         <FsaNetwork Grammar="@Grammar" Highlight="@visiting" Partitions="@partitions" />
     </div>
 
@@ -87,7 +91,7 @@
     private Fsa wip;
     private HashSet<Fsa> visiting = new();
     private HashSet<Fsa> building = new();
-    private string regex = "i|like|to|code|,|that|much|should|be|apparent";
+    private string regex = "(a|b)(|(a|b|0|1|2)+)";
     bool toggle;
     private int highlightedIndex;
     private string title;
@@ -124,27 +128,32 @@
                 highlightedIndex = i;
                 await InvokeAsync(StateHasChanged);
 
-                await checkIfHeldAsync(40);
+                await checkIfHeldAsync(300);
             });
+
+            await Task.Delay(3200);
 
             title = "2) Convert NFA to DFA";
             await InvokeAsync(StateHasChanged);
 
-            Grammar = await nfa.ConvertToDfa(async (queue, fsa) =>
+            wip = await nfa.ConvertToDfa(async (queue, fsa) =>
             {
                 wip = fsa;
                 visiting = queue.SelectMany((it) => it.closure).ToHashSet();
                 building = queue.Select((it) => it.node).ToHashSet();
                 await InvokeAsync(StateHasChanged);
 
-                await checkIfHeldAsync(60);
+                await checkIfHeldAsync(400);
             });
+            await InvokeAsync(StateHasChanged);
 
+            await Task.Delay(1200);
             building.Clear();
             visiting.Clear();
+            Grammar = wip;
             wip = null;
             await InvokeAsync(StateHasChanged);
-            await Task.Delay(2600);
+            await Task.Delay(2100);
 
             title = "3) Minimize states";
             await InvokeAsync(StateHasChanged);
@@ -156,10 +165,10 @@
                 await InvokeAsync(StateHasChanged);
                 if (first != (first = false))
                 {
-                    await Task.Delay(2000);
+                    await Task.Delay(700);
                 }
 
-                await checkIfHeldAsync(40);
+                await checkIfHeldAsync(700);
             });
             await Task.Delay(1200);
             partitions.Clear();
@@ -170,10 +179,10 @@
             await Task.Delay(3400);
             if (toggle = !toggle)
             {
-                regex = "ant(|(eater)+|hill|hem)|car(|pet|pool)|animal+";
+                regex = "(|\\+|-)((0|1)+|(|(0|1)+\\.(0|1)+)";
             } else
             {
-                regex = "darn|dang(|nabbit| it)|((oh, )+|)heck(|!)|(oh, |)(sugar|shoot)";
+                regex = "0(x|b)(0|1|a|A|b|B)+(|L)";
             }
             highlightedIndex = 0;
         }

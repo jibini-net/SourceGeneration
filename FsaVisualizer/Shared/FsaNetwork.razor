@@ -59,17 +59,21 @@
 @code {
     private (Func<decimal, decimal, RenderFragment> svg, decimal depth, decimal height) FsaNode(Fsa node)
     {
+        visited.Add(node);
         var _neighbors = node.Next
             .Select((kv) => (c: (char?)kv.Key, n: kv.Value))
             .Union(node.Epsilon
                 .Select((it) => (c: null as char?, n: it)))
             .GroupBy((it) => visited.Contains(it.n))
-            .ToList();
-        var neighbors = _neighbors.FirstOrDefault((it) => !it.Key)?.ToList() ?? new();
-        var already = _neighbors.FirstOrDefault((it) => it.Key)?.ToList() ?? new();
+            .ToDictionary((it) => it.Key, (it) => it.ToList());
+        var neighbors = _neighbors.GetValueOrDefault(false, new());
+        var already = _neighbors.GetValueOrDefault(true, new());
 
+        foreach (var n in neighbors)
+        {
+            visited.Add(n.n);
+        }
         cycles.AddRange(already.Select((it) => (node, it.n)));
-        visited.Add(node);
 
         var nextFragments = neighbors
             .Select((it) => FsaNode(it.n))
@@ -132,8 +136,7 @@
                             : node.Letter)
                     </text>
 
-            </g>
-    ;
+                </g>;
             },
             depth,
             height);
@@ -177,7 +180,7 @@
 
     private List<string> PartitionColors()
     {
-        double period = 2 * Math.PI;
+        double period = 2.0d * Math.PI;
         double offsetPerRgb = period / 3;
         double offsetPerPart = period / _partitions.Count;
 
@@ -187,7 +190,11 @@
                 var r = Math.Sin(offsetPerRgb * 0 + offsetPerPart * i);
                 var g = Math.Sin(offsetPerRgb * 1 + offsetPerPart * i);
                 var b = Math.Sin(offsetPerRgb * 2 + offsetPerPart * i);
-                return $"rgba({r * 255:0.000}, {g * 255:0.000}, {b * 255:0.000}, 1.0)";
+                if (i % 2 == 0)
+                {
+                    r = 1.0 - r;
+                }
+                return $"rgba({r * 200:0.000}, {g * 230:0.000}, {b * 230:0.000}, 1.0)";
             })
             .ToList();
     }
