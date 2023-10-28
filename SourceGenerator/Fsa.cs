@@ -368,6 +368,7 @@ public class Fsa
             if (x.Count != y.Count)
                 return false;
             //return GetHashCode(x) == GetHashCode(y);
+            // Original code did not resolve hash collisions
             return x.Count == y.Count
                 && x.All((it) => y.TryGetValue(it.Key, out var _v) && it.Value as object == _v as object);
         }
@@ -393,6 +394,7 @@ public class Fsa
         }
     }
 
+    // TODO Partition accept states by what they accept
     public async Task<Fsa> MinimizeDfa(Func<List<List<Fsa>>, List<List<Fsa>>, Fsa, Task> cb)
     {
         var partitions = new List<List<Fsa>>();
@@ -492,7 +494,18 @@ public class Fsa
             replace.Accepts = replace.Accepts.Union(it.Accepts).ToList();
             foreach (var (c, n) in it.Next)
             {
-                replace.Next[c] = remapPartitions(n);
+                if (replace.Next.ContainsKey(c))
+                {
+                    // Not a valid representation, but creates a graph which
+                    // should render a "work-in-progress" minimization. Cannot
+                    // possibily build the valid graph when the partitions are
+                    // in an invalid state.
+                    // TODO: Remove from actual, non-demonstrative code
+                    replace.Epsilon.Add(remapPartitions(n));
+                } else
+                {
+                    replace.Next[c] = remapPartitions(n);
+                }
             }
 
             return replace;

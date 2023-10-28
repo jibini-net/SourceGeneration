@@ -49,40 +49,50 @@
     @if (wip is not null)
     {
         <div class="d-flex flex-row" style="margin-bottom: 1rem;width: fit-content;">
+            
             <FsaNetwork Grammar="@wip" Highlight="@building" Partitions="@partitions2" />
-            <div class="ms-3 ps-3" style="font-size: 0.8rem;border-left: 1px dotted darkgrey;">
+            
+            @if (partitions.Count == 0)
+            {
+                
+                <div class="ms-3 ps-3" style="font-size: 0.8rem;border-left: 1px dotted darkgrey;">
 
-                <div class="d-flex flex-row mb-1">
-                    <div class="p-2 me-1" style="background: green;"></div>
-                    <span class="my-auto">Accept State</span>
+                    <div class="d-flex flex-row mb-1">
+                        <div class="p-2 me-1" style="background: green;"></div>
+                        <span class="my-auto">Accept State</span>
+                    </div>
+
+                    <div class="d-flex flex-row mb-1">
+                        <div class="p-2 me-1" style="background: lightgrey;"></div>
+                        <span class="my-auto">Frontier</span>
+                    </div>
+
+                    <div class="d-flex flex-row mb-1">
+                        <div class="p-2 me-1" style="background: #d76666;"></div>
+                        <span class="my-auto">Removed from Frontier</span>
+                    </div>
+
+                    <div class="d-flex flex-row mb-1">
+                        <div class="p-2 me-1" style="background: #71cb6f;"></div>
+                        <span class="my-auto">Added to Frontier</span>
+                    </div>
+
+                    <div class="d-flex flex-row mb-1">
+                        <div class="p-2 me-1" style="background: blue;"></div>
+                        <span class="my-auto">Cyclic/Irregular Edge</span>
+                    </div>
+
                 </div>
 
-                <div class="d-flex flex-row mb-1">
-                    <div class="p-2 me-1" style="background: lightgrey;"></div>
-                    <span class="my-auto">Frontier</span>
-                </div>
+            }
 
-                <div class="d-flex flex-row mb-1">
-                    <div class="p-2 me-1" style="background: #d76666;"></div>
-                    <span class="my-auto">Removed from Frontier</span>
-                </div>
-
-                <div class="d-flex flex-row mb-1">
-                    <div class="p-2 me-1" style="background: #71cb6f;"></div>
-                    <span class="my-auto">Added to Frontier</span>
-                </div>
-
-                <div class="d-flex flex-row mb-1">
-                    <div class="p-2 me-1" style="background: blue;"></div>
-                    <span class="my-auto">Cyclic/Irregular Edge</span>
-                </div>
-
-            </div>
         </div>
     }
 
     <div style="width: fit-content;margin-bottom: 4rem;">
+
         <FsaNetwork Grammar="@Grammar" Highlight="@visiting" Partitions="@partitions" />
+    
     </div>
 
 </center>
@@ -92,7 +102,14 @@
     private Fsa wip;
     private HashSet<Fsa> visiting = new();
     private HashSet<Fsa> building = new();
-    private string regex = "(_|a|b)(|(_|a|b|0|1|2)+)";
+    private string[] regexes = new[]
+    {
+        "SELECT|(a|b)(|(a|b|0|1)+)|FROM",
+        "(|\\+|-)((0|1)+(|L)|((|(0|1)+)\\.(0|1)+)(f|d))",
+        "0(b((0|1)(0|1))+|x((A|B)(A|B))+)(|L|u)"
+    };
+    private int regexIndex;
+    private string regex => regexes[regexIndex];
     bool toggle;
     private int highlightedIndex;
     private string title;
@@ -106,7 +123,7 @@
     {
         await base.OnInitializedAsync();
 
-        while (true)
+        for (;; regexIndex++, regexIndex %= regexes.Length)
         {
             async Task checkIfHeldAsync(int noHold)
             {
@@ -180,13 +197,6 @@
             await InvokeAsync(StateHasChanged);
 
             await Task.Delay(3400);
-            if (toggle = !toggle)
-            {
-                regex = "(|\\+|-)((0|1)+(|L)|((|(0|1)+)\\.(0|1)+)(f|d))";
-            } else
-            {
-                regex = "0(b((0|1)(0|1))+|x((A|B)(A|B))+)(|L|u)";
-            }
             highlightedIndex = 0;
         }
     }
