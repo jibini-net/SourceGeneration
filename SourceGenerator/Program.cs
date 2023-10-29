@@ -72,6 +72,10 @@ internal class Program
 
             // Significant performance improvement after initial training
             dfa = nfa.ConvertToDfa();
+            AppendLine($"// DFA CREATED AT {(DateTime.Now - initTime).TotalMilliseconds}ms");
+            dfa = dfa.MinimizeDfa();
+            AppendLine($"// DFA MINIMIZED AT {(DateTime.Now - initTime).TotalMilliseconds}ms");
+            
             // In case multiple processes are compiling cache
             var tempFile = $"GrammarDfaCache-{Guid.NewGuid()}.bin";
             using (var outStream = File.OpenWrite(tempFile))
@@ -90,7 +94,7 @@ internal class Program
                 File.Delete(tempFile);
             }
 
-            AppendLine($"// DFA INITIALIZED IN {(DateTime.Now - initTime).TotalMilliseconds}ms");
+            AppendLine($"// DFA COMPLETE IN {(DateTime.Now - initTime).TotalMilliseconds}ms");
         }
 
         var startTime = DateTime.Now;

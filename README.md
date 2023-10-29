@@ -1,7 +1,9 @@
-# SourceGenerationTests
+# SourceGeneration
 Descriptor language for .NET model source code generation
 
-Series of tests to generate a number of individual pieces of boilerplate source:
+Several branches exist as submodules of other projects. This allows custom language features if a project calls for them, or for translation to languages other than C#.
+
+Included is a test Solution to demonstrate creating several individual pieces of boilerplate source:
  - database repository
  - DTO model
  - partial classes
