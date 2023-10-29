@@ -372,27 +372,21 @@ public class Fsa
         }
     }
 
-    public async Task<Fsa> MinimizeDfa()
+    public Fsa MinimizeDfa()
     {
-        var partitions = new List<List<Fsa>>();
         var remap = new Dictionary<Fsa, List<Fsa>>();
-        var flat = _flat.ToList();
-        var initialParts = flat
-            .GroupBy((it) => it.Accepts.Count > 0)
-            .ToDictionary((it) => it.Key, (it) => it.ToList());
-
-        var accepts = initialParts.GetValueOrDefault(true, new());
-        partitions.Add(accepts);
-        foreach (var n in accepts)
+        // Initial partition is by accept versus non-accept states, and also the
+        // token(s) which are accepted by accept states
+        var partitions = _flat
+            .GroupBy((it) => string.Join(',', it.Accepts.Distinct().Order()))
+            .Select((it) => it.ToList())
+            .ToList();
+        foreach (var p in partitions)
         {
-            remap[n] = accepts;
-        }
-
-        var nonAccepts = initialParts.GetValueOrDefault(false, new());
-        partitions.Add(nonAccepts);
-        foreach (var n in nonAccepts)
-        {
-            remap[n] = nonAccepts;
+            foreach (var n in p)
+            {
+                remap[n] = p;
+            }
         }
 
         var prevCount = 0;
@@ -403,6 +397,8 @@ public class Fsa
             for (var i = 0; i < prevCount; i++)
             {
                 var part = partitions[i];
+                // Next partitions are on any nodes in disagreement about which
+                // other partitions result from transitions on alphabet
                 var newParts = part
                     .GroupBy((p) => p.Next
                             .ToDictionary(
@@ -418,6 +414,7 @@ public class Fsa
                 var partsRanges = newParts
                     .Select((it) => it.ToList())
                     .ToList();
+                // Replace partition at index, append any additional partitions
                 partitions[i] = partsRanges.First();
                 partitions.AddRange(partsRanges.Skip(1));
 
@@ -431,16 +428,18 @@ public class Fsa
             }
         }
 
-        return RemapPartitions(partitions, out var _);
+        return RemapPartitions(partitions);
     }
 
-    private Fsa RemapPartitions(List<List<Fsa>> parts, out Dictionary<Fsa, Fsa> _partMap)
+    private Fsa RemapPartitions(List<List<Fsa>> parts)
     {
-        _partMap = parts
+        var partMap = parts
+            // Create one replacement node for each partition
             .Select((p) => (p, repl: new Fsa()))
+            // Relate all child nodes to replacement
             .SelectMany((it) => it.p.Select((n) => (n, it.repl)))
+            // Index all replacement nodes selected above
             .ToDictionary((it) => it.n, (it) => it.repl);
-        var partMap = _partMap;
         var visited = new Dictionary<Fsa, Fsa>();
 
         Fsa remapPartitions(Fsa it)
@@ -455,22 +454,17 @@ public class Fsa
             replace.Accepts = replace.Accepts.Union(it.Accepts).ToList();
             foreach (var (c, n) in it.Next)
             {
-                if (replace.Next.ContainsKey(c))
+                var replaceNext = remapPartitions(n);
+                if (replace.Next.TryGetValue(c, out var _v) && _v != replaceNext)
                 {
-                    // Not a valid representation, but creates a graph which
-                    // should render a "work-in-progress" minimization. Cannot
-                    // possibily build the valid graph when the partitions are
-                    // in an invalid state.
-                    // TODO: Remove from actual, non-demonstrative code
-                    replace.Epsilon.Add(remapPartitions(n));
-                } else
-                {
-                    replace.Next[c] = remapPartitions(n);
+                    throw new Exception("Disagreement between partitions rebuilding minimized states");
                 }
+                replace.Next[c] = replaceNext;
             }
 
             return replace;
         }
+
         return remapPartitions(this);
     }
 }
