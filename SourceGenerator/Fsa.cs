@@ -326,8 +326,8 @@ public class Fsa
         {
             if (x.Count != y.Count)
                 return false;
+            // Original code does not properly resolve hash collisions
             //return GetHashCode(x) == GetHashCode(y);
-            // Original code did not resolve hash collisions
             return x.Count == y.Count
                 && x.All((it) => y.TryGetValue(it.Key, out var _v) && it.Value as object == _v as object);
         }
@@ -353,6 +353,10 @@ public class Fsa
         }
     }
 
+    /// <summary>
+    /// Traverses the entire network to find a distinct flattened node list.
+    /// Extremely expensive, so call sparingly.
+    /// </summary>
     private List<Fsa> _flat
     {
         get
@@ -372,6 +376,14 @@ public class Fsa
         }
     }
 
+    /// <summary>
+    /// Creates the minimal number of states and transitions which match the
+    /// same tokens as the original DFA, also in linear time.
+    /// 
+    /// States are calculated by iterative paritioning of nodes, breaking out
+    /// partitions whose members are found to be distinguishable by their
+    /// outgoing transitions on any letter in the alphabet.
+    /// </summary>
     public Fsa MinimizeDfa()
     {
         var remap = new Dictionary<Fsa, List<Fsa>>();
@@ -389,6 +401,7 @@ public class Fsa
             }
         }
 
+        // Continues until all partitions are indistinguishable internally
         var prevCount = 0;
         while (prevCount != partitions.Count)
         {
@@ -406,6 +419,7 @@ public class Fsa
                                 (it) => remap[it.Value]),
                         new DictionaryComparer<char, List<Fsa>>())
                     .ToList();
+                // Partition members are (currently) indistinguishable
                 if (newParts.Count() == 1)
                 {
                     continue;
@@ -431,6 +445,10 @@ public class Fsa
         return RemapPartitions(partitions);
     }
 
+    /// <summary>
+    /// Reconstructs the minimal state graph for the DFA given a valid set of
+    /// partitions. The members in each partition must be indistinguishable.
+    /// </summary>
     private Fsa RemapPartitions(List<List<Fsa>> parts)
     {
         var partMap = parts
