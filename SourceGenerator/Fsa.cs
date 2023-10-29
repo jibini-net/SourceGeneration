@@ -192,7 +192,7 @@ public class Fsa
     }
 
     /*
-     * Traverses the DFA in a breadth-first fashion, allowing vectorized
+     * Traverses the FSA in a breadth-first fashion, allowing vectorized
      * traversal of a frontier in case of nondeterministic automata.
      * 
      * A "frontier" refers to the set of nodes currently being visited. An
@@ -206,27 +206,61 @@ public class Fsa
      */
     public (int accepted, string match) Search(string text, int startIndex)
     {
-        var closure = EpsilonClosure().Distinct().ToList();
+        // Used for deterministic paths
+        var node = this;
+        // Used once determinism ends
+        List<Fsa> closure = null;// = EpsilonClosure().Distinct().ToList();
         int textIndex = startIndex, longestEnd = -1, match = 0;
+        var nfaMode = false;
 
         for (;;)
         {
-            // Any accept state in the frontier is a valid match
-            var acceptState = closure.Where((it) => it.Accepts.Count > 0).FirstOrDefault();
-            if (acceptState is not null)
+            if (!nfaMode && (node?.Epsilon?.Count ?? 0) > 0)
             {
-                longestEnd = textIndex;
-                match = acceptState.Accepts.Min();
+                nfaMode = true;
+                closure = node.EpsilonClosure().Distinct().ToList();
             }
 
-            // "Invalid state" due to end of input or lack of next states
-            if (textIndex >= text.Length || closure.Count == 0)
+            if (nfaMode)
             {
-                break;
+                // Any accept state in the frontier is a valid match
+                var acceptState = closure.Where((it) => it.Accepts.Count > 0).FirstOrDefault();
+                if (acceptState is not null)
+                {
+                    longestEnd = textIndex;
+                    match = acceptState.Accepts.Min();
+                }
+
+                // "Invalid state" due to end of input or lack of next states
+                if (textIndex >= text.Length || closure.Count == 0)
+                {
+                    break;
+                }
+            } else
+            {
+                // Any accept state in the frontier is a valid match
+                if ((node?.Accepts?.Count ?? 0) > 0)
+                {
+                    longestEnd = textIndex;
+                    match = node.Accepts.Min();
+                }
+
+                // "Invalid state" due to end of input or lack of next states
+                if (textIndex >= text.Length || node is null)
+                {
+                    break;
+                }
             }
+
             var c = text[textIndex++];
-            var frontier = closure.SelectMany((it) => it.AdjacentSet(c)).Distinct();
-            closure = frontier.SelectMany((it) => it.EpsilonClosure()).Distinct().ToList();
+            if (nfaMode)
+            {
+                var frontier = closure.SelectMany((it) => it.AdjacentSet(c)).Distinct();
+                closure = frontier.SelectMany((it) => it.EpsilonClosure()).Distinct().ToList();
+            } else
+            {
+                node = node.Next.GetValueOrDefault(c);
+            }
         }
 
         if (longestEnd == -1)
