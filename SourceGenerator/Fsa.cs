@@ -314,4 +314,163 @@ public class Fsa
 
         return result;
     }
+
+    // https://codereview.stackexchange.com/questions/30332/proper-way-to-compare-two-dictionaries
+    public class DictionaryComparer<TKey, TValue> : IEqualityComparer<IDictionary<TKey, TValue>>
+    {
+        public DictionaryComparer()
+        {
+        }
+
+        public bool Equals(IDictionary<TKey, TValue> x, IDictionary<TKey, TValue> y)
+        {
+            if (x.Count != y.Count)
+                return false;
+            //return GetHashCode(x) == GetHashCode(y);
+            // Original code did not resolve hash collisions
+            return x.Count == y.Count
+                && x.All((it) => y.TryGetValue(it.Key, out var _v) && it.Value as object == _v as object);
+        }
+
+        public int GetHashCode(IDictionary<TKey, TValue> obj)
+        {
+            int hash = 0;
+            foreach (KeyValuePair<TKey, TValue> pair in obj)
+            {
+                int key = pair.Key.GetHashCode();
+                int value = pair.Value != null ? pair.Value.GetHashCode() : 0;
+                hash ^= ShiftAndWrap(key, 2) ^ value;
+            }
+            return hash;
+        }
+
+        private int ShiftAndWrap(int value, int positions)
+        {
+            positions &= 0x1F;
+            uint number = BitConverter.ToUInt32(BitConverter.GetBytes(value), 0);
+            uint wrapped = number >> (32 - positions);
+            return BitConverter.ToInt32(BitConverter.GetBytes((number << positions) | wrapped), 0);
+        }
+    }
+
+    private List<Fsa> _flat
+    {
+        get
+        {
+            var visited = new HashSet<Fsa>() { this };
+            void findChildren(Fsa it)
+            {
+                foreach (var n in it.Next.Values
+                    .Concat(it.Epsilon)
+                    .Where(visited.Add))
+                {
+                    findChildren(n);
+                }
+            }
+            findChildren(this);
+            return visited.ToList();
+        }
+    }
+
+    public async Task<Fsa> MinimizeDfa()
+    {
+        var partitions = new List<List<Fsa>>();
+        var remap = new Dictionary<Fsa, List<Fsa>>();
+        var flat = _flat.ToList();
+        var initialParts = flat
+            .GroupBy((it) => it.Accepts.Count > 0)
+            .ToDictionary((it) => it.Key, (it) => it.ToList());
+
+        var accepts = initialParts.GetValueOrDefault(true, new());
+        partitions.Add(accepts);
+        foreach (var n in accepts)
+        {
+            remap[n] = accepts;
+        }
+
+        var nonAccepts = initialParts.GetValueOrDefault(false, new());
+        partitions.Add(nonAccepts);
+        foreach (var n in nonAccepts)
+        {
+            remap[n] = nonAccepts;
+        }
+
+        var prevCount = 0;
+        while (prevCount != partitions.Count)
+        {
+            prevCount = partitions.Count;
+
+            for (var i = 0; i < prevCount; i++)
+            {
+                var part = partitions[i];
+                var newParts = part
+                    .GroupBy((p) => p.Next
+                            .ToDictionary(
+                                (it) => it.Key,
+                                (it) => remap[it.Value]),
+                        new DictionaryComparer<char, List<Fsa>>())
+                    .ToList();
+                if (newParts.Count() == 1)
+                {
+                    continue;
+                }
+
+                var partsRanges = newParts
+                    .Select((it) => it.ToList())
+                    .ToList();
+                partitions[i] = partsRanges.First();
+                partitions.AddRange(partsRanges.Skip(1));
+
+                foreach (var p in partsRanges)
+                {
+                    foreach (var n in p)
+                    {
+                        remap[n] = p;
+                    }
+                }
+            }
+        }
+
+        return RemapPartitions(partitions, out var _);
+    }
+
+    private Fsa RemapPartitions(List<List<Fsa>> parts, out Dictionary<Fsa, Fsa> _partMap)
+    {
+        _partMap = parts
+            .Select((p) => (p, repl: new Fsa()))
+            .SelectMany((it) => it.p.Select((n) => (n, it.repl)))
+            .ToDictionary((it) => it.n, (it) => it.repl);
+        var partMap = _partMap;
+        var visited = new Dictionary<Fsa, Fsa>();
+
+        Fsa remapPartitions(Fsa it)
+        {
+            if (visited.TryGetValue(it, out var _n))
+            {
+                return _n;
+            }
+            var replace = partMap[it];
+            visited[it] = replace;
+
+            replace.Accepts = replace.Accepts.Union(it.Accepts).ToList();
+            foreach (var (c, n) in it.Next)
+            {
+                if (replace.Next.ContainsKey(c))
+                {
+                    // Not a valid representation, but creates a graph which
+                    // should render a "work-in-progress" minimization. Cannot
+                    // possibily build the valid graph when the partitions are
+                    // in an invalid state.
+                    // TODO: Remove from actual, non-demonstrative code
+                    replace.Epsilon.Add(remapPartitions(n));
+                } else
+                {
+                    replace.Next[c] = remapPartitions(n);
+                }
+            }
+
+            return replace;
+        }
+        return remapPartitions(this);
+    }
 }
