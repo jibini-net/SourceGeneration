@@ -10,6 +10,8 @@ public enum Token
     Repo,
     Service,
     Json,
+    State,
+    Interface,
     Ident,
     LCurly,
     RCurly,
@@ -19,8 +21,6 @@ public enum Token
     Splat,
     Assign,
     Arrow,
-    State,
-    Interface,
     LRfReduce,
     RRfReduce
 }

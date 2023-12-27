@@ -8,9 +8,9 @@ using static Token;
  * Implementation of source generation and semantic evaluation. The parser
  * operates top-down using recursive descent.
  */
-public partial class ModelTopGrammar
+public partial class TopLevelGrammar
 {
-    public static void Match(TokenStream stream, string modelName)
+    public static void MatchModel(TokenStream stream, string modelName)
     {
         while (stream.Next > 0)
         {
@@ -43,6 +43,43 @@ public partial class ModelTopGrammar
                     ServiceGrammar.WriteApiService(services);
                     break;
                     
+                default:
+                    throw new Exception($"Invalid token '{stream.Text}' for top-level");
+            }
+        }
+    }
+
+    public static void MatchView(TokenStream stream, string modelName)
+    {
+        while (stream.Next > 0)
+        {
+            switch (stream.Next)
+            {
+                case (int)LCurly:
+                    var cSharp = MatchCSharp(stream);
+                    Program.AppendLine(cSharp.Replace("{", "{{").Replace("}", "}}"));
+                    break;
+
+                case (int)State:
+                    var schema = SchemaGrammar.Match(stream);
+                    SchemaGrammar.Write(schema, accessLevel: "private");
+                    break;
+
+                case (int)Interface:
+                    //var inter = InterfaceGrammar.Match(stream, modelName);
+                    //InterfaceGrammar.Write(inter);
+                    // "interface" "{" "}"
+                    stream.Poll();
+                    if (stream.Poll() != (int)LCurly)
+                    {
+                        throw new Exception("Expected left curly");
+                    }
+                    if (stream.Poll() != (int)RCurly)
+                    {
+                        throw new Exception("Expected right curly");
+                    }
+                    break;
+
                 default:
                     throw new Exception($"Invalid token '{stream.Text}' for top-level");
             }

@@ -13,9 +13,8 @@ using System.Threading.Tasks;
 
 namespace SourceGenerator.VsAdapter
 {
-    //TODO Separate into two ISourceGenerator impls. if possible
     [Generator]
-    public class ModelSourceGenerator : ISourceGenerator
+    public class SourceGeneratorAdapter : ISourceGenerator
     {
 #if DEBUG
         public static readonly string BuildMode = "Debug";
@@ -26,9 +25,9 @@ namespace SourceGenerator.VsAdapter
         public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
         public static string CallingPath = "";
 
-        private string ReadEmbeddedResource(string fileName)
+        internal string ReadEmbeddedResource(string fileName)
         {
-            var assy = typeof(ModelSourceGenerator).Assembly;
+            var assy = GetType().Assembly;
             var streamName = $"{assy.GetName().Name}.{fileName}";
 
             using (var file = assy.GetManifestResourceStream(streamName))

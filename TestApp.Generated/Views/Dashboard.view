@@ -1,0 +1,8 @@
+state {
+	string title,
+	string description,
+	SiteUser loggedIn
+}
+
+interface {
+}

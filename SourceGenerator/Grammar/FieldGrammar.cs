@@ -22,7 +22,7 @@ public class FieldGrammar
         // {type name}
         if (stream.Next == (int)LCurly)
         {
-            result.TypeName = ModelTopGrammar.MatchCSharp(stream);
+            result.TypeName = TopLevelGrammar.MatchCSharp(stream);
         } else if (stream.Poll() != (int)Ident)
         {
             throw new Exception("Expected field type name");
@@ -42,7 +42,7 @@ public class FieldGrammar
         {
             // "=" "{" {C# expression} "}"
             stream.Poll();
-            result.Initial = ModelTopGrammar.MatchCSharp(stream);
+            result.Initial = TopLevelGrammar.MatchCSharp(stream);
         }
 
         return result;

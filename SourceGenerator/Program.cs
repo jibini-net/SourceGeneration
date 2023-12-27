@@ -126,10 +126,10 @@ internal class Program
             switch (Path.GetExtension(sourceFile).ToLowerInvariant())
             {
                 case ".model":
-                    ModelTopGrammar.Match(source, objectName);
+                    TopLevelGrammar.MatchModel(source, objectName);
                     break;
                 case ".view":
-                    AppendLine($"    // Hello, {objectName}!");
+                    TopLevelGrammar.MatchView(source, objectName);
                     break;
             }
         } catch (Exception ex)
