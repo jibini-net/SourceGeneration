@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace SourceGenerator.VsAdapter
 {
+    //TODO Separate into two ISourceGenerator impls. if possible
     [Generator]
     public class ModelSourceGenerator : ISourceGenerator
     {
@@ -24,24 +26,22 @@ namespace SourceGenerator.VsAdapter
         public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
         public static string CallingPath = "";
 
-        public const string INCLUDES =
-            "namespace Generated;\n" +
+        private string ReadEmbeddedResource(string fileName)
+        {
+            var assy = typeof(ModelSourceGenerator).Assembly;
+            var streamName = $"{assy.GetName().Name}.{fileName}";
 
-            "public interface IModelDbAdapter\n{\n" +
-            "    Task ExecuteAsync(string procName, object args);\n" +
-            "    Task<T> ExecuteAsync<T>(string procName, object args);\n" +
-            "    Task<T> ExecuteForJsonAsync<T>(string procName, object args);\n" +
-            "}\n" +
+            using (var file = assy.GetManifestResourceStream(streamName))
+            using (var reader = new StreamReader(file))
+            {
+                return reader.ReadToEnd();
+            }
+        }
 
-            "public interface IModelApiAdapter\n{\n" +
-            "    Task ExecuteAsync(string path, object args);\n" +
-            "    Task<T> ExecuteAsync<T>(string path, object args);\n" +
-            "}\n" +
-
-            "public interface IModelDbWrapper\n{\n" +
-            "    Task ExecuteAsync(Func<Task> impl);\n" +
-            "    Task<T> ExecuteAsync<T>(Func<Task<T>> impl);\n" +
-            "}\n";
+        private string _INCLUDES;
+        public string INCLUDES => _INCLUDES is null
+            ? _INCLUDES = ReadEmbeddedResource("_Includes.txt")
+            : _INCLUDES;
 
         public static async Task<MemoryStream> ExecuteProcess(AdditionalText file)
         {
@@ -86,7 +86,11 @@ namespace SourceGenerator.VsAdapter
                     : throw new Exception("Cannot determine calling path");
             }
 
-            var files = context.AdditionalFiles.Where((it) => it.Path.ToLowerInvariant().EndsWith(".model")).ToList();
+            var findExts = new[] { ".model", ".view" }.ToImmutableHashSet();
+            var files = context.AdditionalFiles
+                .Where((it) => findExts.Contains(
+                    Path.GetExtension(it.Path).ToLowerInvariant()))
+                .ToList();
             var completed = new SemaphoreSlim(0, files.Count);
             var sources = new BlockingCollection<(string file, MemoryStream source)>();
 
@@ -96,10 +100,10 @@ namespace SourceGenerator.VsAdapter
                 {
                     try
                     {
-                        var name = Path.GetFileNameWithoutExtension(file.Path);
+                        var name = Path.GetFileName(file.Path);
                         var source = await ExecuteProcess(file);
 
-                        sources.Add(($"{name}.Model.g.cs", source));
+                        sources.Add(($"{name}.g.cs", source));
                     } catch (Exception ex)
                     {
                         context.ReportDiagnostic(Diagnostic.Create(
@@ -142,7 +146,7 @@ namespace SourceGenerator.VsAdapter
             var sourceBuilder = new StringBuilder();
             sourceBuilder.AppendLine("namespace Generated;");
             sourceBuilder.AppendLine("using Microsoft.Extensions.DependencyInjection;");
-            foreach (var file in files)
+            foreach (var file in files.Where((it) => Path.GetExtension(it.Path).ToLowerInvariant() == ".model"))
             {
                 var name = Path.GetFileNameWithoutExtension(file.Path);
                 sourceBuilder.AppendFormat("public static class {0}Extensions\n{{\n", name);

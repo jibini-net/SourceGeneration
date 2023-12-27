@@ -18,5 +18,9 @@ public enum Token
     Comma,
     Splat,
     Assign,
-    Arrow
+    Arrow,
+    State,
+    Interface,
+    LRfReduce,
+    RRfReduce
 }

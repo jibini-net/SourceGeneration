@@ -47,7 +47,7 @@ public class ActionGrammar
             string parType;
             if (stream.Next == (int)LCurly)
             {
-                parType = TopLevelGrammar.MatchCSharp(stream);
+                parType = ModelTopGrammar.MatchCSharp(stream);
             } else if (stream.Poll() != (int)Ident)
             {
                 throw new Exception("Expected proc parameter type");
@@ -85,7 +85,7 @@ public class ActionGrammar
 
             if (stream.Next == (int)LCurly)
             {
-                result.ReturnType = TopLevelGrammar.MatchCSharp(stream);
+                result.ReturnType = ModelTopGrammar.MatchCSharp(stream);
             } else if (stream.Poll() != (int)Ident)
             {
                 throw new Exception("Expected proc return type name");

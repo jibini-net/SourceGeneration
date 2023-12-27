@@ -66,6 +66,10 @@ internal class Program
             nfa.Build("\\.\\.\\.",  (int)Splat);
             nfa.Build("\\=",        (int)Assign);
             nfa.Build("\\=\\>",     (int)Arrow);
+            nfa.Build("state",      (int)State);
+            nfa.Build("interface",  (int)Interface);
+            nfa.Build("\\<\\>",     (int)LRfReduce);
+            nfa.Build("\\<\\/\\>",  (int)RRfReduce);
             nfa.Build("( |\n|\r|\t)+", 9999);
 
             AppendLine($"// INITIAL NFA TRAINED AT {(DateTime.Now - initTime).TotalMilliseconds}ms");
@@ -113,13 +117,21 @@ internal class Program
             Grammar = dfa
         };
 
-        var modelName = Path.GetFileNameWithoutExtension(sourceFile);
-        AppendLine($"public class {modelName}");
+        var objectName = Path.GetFileNameWithoutExtension(sourceFile);
+        AppendLine($"public class {objectName}");
         AppendLine("{{");
 
         try
         {
-            TopLevelGrammar.Match(source, modelName);
+            switch (Path.GetExtension(sourceFile).ToLowerInvariant())
+            {
+                case ".model":
+                    ModelTopGrammar.Match(source, objectName);
+                    break;
+                case ".view":
+                    AppendLine($"    // Hello, {objectName}!");
+                    break;
+            }
         } catch (Exception ex)
         {
             int lineNumber = 1, prevLine = 0;

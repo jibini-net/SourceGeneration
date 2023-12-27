@@ -8,7 +8,7 @@ using static Token;
  * Implementation of source generation and semantic evaluation. The parser
  * operates top-down using recursive descent.
  */
-public partial class TopLevelGrammar
+public partial class ModelTopGrammar
 {
     public static void Match(TokenStream stream, string modelName)
     {
