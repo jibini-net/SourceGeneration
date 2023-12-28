@@ -13,8 +13,31 @@ interface {
 		=> string
 }
 
-<>
-
-<">
-
-html
+html(
+	head(
+		base(| href = {"/"} |)
+	)
+	body(
+		div(
+			|
+			class = {"d-flex flex-row mb-4"},
+			style = {"width: 100%;"}
+			|
+			div(
+				h6(
+					{"Title:"}
+					{title}
+				)
+			)
+			div(| class = {"ms-auto"} |
+				unsafe({GetProfileHtml()})
+			)
+		)
+		div(| class = {"mb-4"} |
+			p(
+				{"Description: "}
+				{description}
+			)
+		)
+	)
+)

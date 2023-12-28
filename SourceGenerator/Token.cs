@@ -21,8 +21,9 @@ public enum Token
     Splat,
     Assign,
     Arrow,
-    LRfReduce,
-    RRfReduce,
-    LMultiLine,
-    RMultiLine
+    //LRfReduce,
+    //RRfReduce,
+    //LMultiLine,
+    //RMultiLine,
+    Bar
 }

@@ -91,11 +91,9 @@ public partial class TopLevelGrammar
                     ServiceGrammar.WriteViewInterface(services);
                     break;
 
-                case (int)LRfReduce:
-                case (int)LMultiLine:
                 case (int)Ident:
-                    buildDomLine(stream.Text);
-                    stream.Poll();
+                    var domElement = HtmlNodeGrammar.Match(stream);
+                    buildDomLine(System.Text.Json.JsonSerializer.Serialize(domElement));
                     break;
 
                 default:
@@ -106,7 +104,10 @@ public partial class TopLevelGrammar
         Program.AppendLine("    public async Task<string> RenderAsync()\n    {{");
         Program.AppendLine("        var build = new System.Text.StringBuilder();");
         Program.AppendLine("        using var writer = new StringWriter(build);");
-        Program.Append(renderBuilder.ToString().Replace("{", "{{").Replace("}", "}}"));
+        Program.Append(renderBuilder
+            .ToString()
+            .Replace("{", "{{")
+            .Replace("}", "}}"));
         Program.AppendLine("        return build.ToString();");
         Program.AppendLine("    }}");
 

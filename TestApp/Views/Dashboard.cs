@@ -1,4 +1,5 @@
 ﻿using Generated;
+using System.Web;
 
 namespace TestApp.Views;
 
@@ -20,5 +21,10 @@ public class Dashboard : DashboardBase
     public override string GetProfileHtml()
         => IsGuest()
             ? "<span>Guest</span>"
-            : $"<strong>{loggedIn.suFirstName}</strong>";
+            : $@"
+                <div class=""d-flex flex-row"">
+                    <strong>{HttpUtility.HtmlEncode(loggedIn.suFirstName)}</strong>
+                    <a href=""logout"" class=""ms-2"">Log out</a>
+                </div>
+                ".Trim();
 }
