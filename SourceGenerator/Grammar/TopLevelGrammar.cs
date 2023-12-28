@@ -64,6 +64,13 @@ public partial class TopLevelGrammar
         Program.AppendLine("    // Extend and fully implement all actions in a subclass");
 
         var renderBuilder = new StringBuilder();
+        void buildDomLine(string line)
+        {
+            line = line
+                .Replace("\\", "\\\\")
+                .Replace("\"", "\\\"");
+            renderBuilder.AppendLine($"        await writer.WriteLineAsync(\"{line}\");");
+        }
 
         while (stream.Next > 0)
         {
@@ -87,13 +94,21 @@ public partial class TopLevelGrammar
                 case (int)LRfReduce:
                 case (int)LMultiLine:
                 case (int)Ident:
-                    renderBuilder.AppendLine("");
+                    buildDomLine(stream.Text);
+                    stream.Poll();
                     break;
 
                 default:
                     throw new Exception($"Invalid token '{stream.Text}' for top-level");
             }
         }
+
+        Program.AppendLine("    public async Task<string> RenderAsync()\n    {{");
+        Program.AppendLine("        var build = new System.Text.StringBuilder();");
+        Program.AppendLine("        using var writer = new StringWriter(build);");
+        Program.Append(renderBuilder.ToString().Replace("{", "{{").Replace("}", "}}"));
+        Program.AppendLine("        return build.ToString();");
+        Program.AppendLine("    }}");
 
         Program.AppendLine("}}");
     }

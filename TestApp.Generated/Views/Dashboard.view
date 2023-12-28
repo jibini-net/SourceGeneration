@@ -12,3 +12,9 @@ interface {
 	GetProfileHtml()
 		=> string
 }
+
+<>
+
+<">
+
+html
