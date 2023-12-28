@@ -117,19 +117,18 @@ internal class Program
             Grammar = dfa
         };
 
-        var objectName = Path.GetFileNameWithoutExtension(sourceFile);
-        AppendLine($"public class {objectName}");
-        AppendLine("{{");
+        var ext = Path.GetExtension(sourceFile).ToLowerInvariant();
+        var modelName = Path.GetFileNameWithoutExtension(sourceFile);
 
         try
         {
-            switch (Path.GetExtension(sourceFile).ToLowerInvariant())
+            switch (ext)
             {
                 case ".model":
-                    TopLevelGrammar.MatchModel(source, objectName);
+                    TopLevelGrammar.MatchModel(source, modelName);
                     break;
                 case ".view":
-                    TopLevelGrammar.MatchView(source, objectName);
+                    TopLevelGrammar.MatchView(source, modelName);
                     break;
             }
         } catch (Exception ex)
@@ -152,7 +151,6 @@ internal class Program
             Process.GetCurrentProcess().Kill();
         }
 
-        AppendLine("}}");
         AppendLine($"// GENERATED IN {(DateTime.Now - startTime).TotalMilliseconds}ms");
 
         Console.Write(sourceBuilder.ToString());

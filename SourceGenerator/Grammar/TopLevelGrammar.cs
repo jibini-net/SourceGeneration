@@ -12,6 +12,10 @@ public partial class TopLevelGrammar
 {
     public static void MatchModel(TokenStream stream, string modelName)
     {
+        Program.AppendLine("public class {0}",
+            modelName);
+        Program.AppendLine("{{");
+
         while (stream.Next > 0)
         {
             switch (stream.Next)
@@ -47,10 +51,17 @@ public partial class TopLevelGrammar
                     throw new Exception($"Invalid token '{stream.Text}' for top-level");
             }
         }
+
+        Program.AppendLine("}}");
     }
 
     public static void MatchView(TokenStream stream, string modelName)
     {
+        Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
+            modelName);
+        Program.AppendLine("{{");
+        Program.AppendLine("    // Extend and fully implement all actions in a subclass");
+
         while (stream.Next > 0)
         {
             switch (stream.Next)
@@ -62,28 +73,20 @@ public partial class TopLevelGrammar
 
                 case (int)State:
                     var schema = SchemaGrammar.Match(stream);
-                    SchemaGrammar.Write(schema, accessLevel: "private");
+                    SchemaGrammar.Write(schema, accessLevel: "protected");
                     break;
 
                 case (int)Interface:
-                    //var inter = InterfaceGrammar.Match(stream, modelName);
-                    //InterfaceGrammar.Write(inter);
-                    // "interface" "{" "}"
-                    stream.Poll();
-                    if (stream.Poll() != (int)LCurly)
-                    {
-                        throw new Exception("Expected left curly");
-                    }
-                    if (stream.Poll() != (int)RCurly)
-                    {
-                        throw new Exception("Expected right curly");
-                    }
+                    var services = ServiceGrammar.Match(stream, modelName);
+                    ServiceGrammar.WriteViewInterface(services);
                     break;
 
                 default:
                     throw new Exception($"Invalid token '{stream.Text}' for top-level");
             }
         }
+
+        Program.AppendLine("}}");
     }
 
     public static string MatchCSharp(TokenStream stream)
@@ -91,7 +94,7 @@ public partial class TopLevelGrammar
         // "{"
         if (stream.Poll() != (int)LCurly)
         {
-            throw new Exception("Wrap C# code in curly brackets");
+            throw new Exception("Wrap verbatim C# code in curly braces");
         }
         var bracketDepth = 1;
 

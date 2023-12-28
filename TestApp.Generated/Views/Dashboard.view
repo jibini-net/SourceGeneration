@@ -5,4 +5,10 @@ state {
 }
 
 interface {
+	SetTitle(string title),
+	SetDescription(string description),
+	IsGuest()
+		=> bool,
+	GetProfileHtml()
+		=> string
 }
