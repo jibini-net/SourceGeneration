@@ -57,19 +57,21 @@ internal class Program
             nfa.Build("repo",       (int)Repo);
             nfa.Build("service",    (int)Service);
             nfa.Build("json",       (int)Json);
-            nfa.Build(word,         (int)Ident);
-            nfa.Build("\\{",        (int)LCurly);
-            nfa.Build("\\}",        (int)RCurly);
-            nfa.Build("\\(",        (int)LParen);
-            nfa.Build("\\)",        (int)RParen);
-            nfa.Build("\\,",        (int)Comma);
-            nfa.Build("\\.\\.\\.",  (int)Splat);
-            nfa.Build("\\=",        (int)Assign);
-            nfa.Build("\\=\\>",     (int)Arrow);
             nfa.Build("state",      (int)State);
             nfa.Build("interface",  (int)Interface);
-            nfa.Build("\\<\\>",     (int)LRfReduce);
-            nfa.Build("\\<\\/\\>",  (int)RRfReduce);
+            nfa.Build(word,         (int)Ident);
+            nfa.Build("{",          (int)LCurly);
+            nfa.Build("}",          (int)RCurly);
+            nfa.Build("\\(",        (int)LParen);
+            nfa.Build("\\)",        (int)RParen);
+            nfa.Build(",",          (int)Comma);
+            nfa.Build("...",        (int)Splat);
+            nfa.Build("=",          (int)Assign);
+            nfa.Build("=>",         (int)Arrow);
+            nfa.Build("<>",         (int)LRfReduce);
+            nfa.Build("</>",        (int)RRfReduce);
+            nfa.Build("<\">",       (int)LMultiLine);
+            nfa.Build("</\">",      (int)RMultiLine);
             nfa.Build("( |\n|\r|\t)+", 9999);
 
             AppendLine($"// INITIAL NFA TRAINED AT {(DateTime.Now - initTime).TotalMilliseconds}ms");
@@ -152,7 +154,6 @@ internal class Program
         }
 
         AppendLine($"// GENERATED IN {(DateTime.Now - startTime).TotalMilliseconds}ms");
-
         Console.Write(sourceBuilder.ToString());
     }
 }

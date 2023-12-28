@@ -1,5 +1,6 @@
 ﻿namespace SourceGenerator.Grammar;
 
+using System.Text;
 using System.Text.RegularExpressions;
 
 using static Token;
@@ -62,6 +63,8 @@ public partial class TopLevelGrammar
         Program.AppendLine("{{");
         Program.AppendLine("    // Extend and fully implement all actions in a subclass");
 
+        var renderBuilder = new StringBuilder();
+
         while (stream.Next > 0)
         {
             switch (stream.Next)
@@ -79,6 +82,12 @@ public partial class TopLevelGrammar
                 case (int)Interface:
                     var services = ServiceGrammar.Match(stream, modelName);
                     ServiceGrammar.WriteViewInterface(services);
+                    break;
+
+                case (int)LRfReduce:
+                case (int)LMultiLine:
+                case (int)Ident:
+                    renderBuilder.AppendLine("");
                     break;
 
                 default:

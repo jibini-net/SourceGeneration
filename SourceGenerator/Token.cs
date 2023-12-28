@@ -22,5 +22,7 @@ public enum Token
     Assign,
     Arrow,
     LRfReduce,
-    RRfReduce
+    RRfReduce,
+    LMultiLine,
+    RMultiLine
 }
