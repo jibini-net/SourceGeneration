@@ -34,9 +34,12 @@ html(
 			)
 		)
 		div(| class = {"mb-4"} |
-			p(
+			p(| class = {"mb-4"} |
 				{"Description: "}
 				{description}
+			)
+			p(
+				{DateTime.Today}
 			)
 		)
 	)

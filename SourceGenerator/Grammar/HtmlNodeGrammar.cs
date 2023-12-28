@@ -106,7 +106,7 @@ public class HtmlNodeGrammar
     {
         var esc = (string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
         var attribs = dto.Attribs
-            .Select((it) => $" {esc(it.Key)}=\\\"\" + ({it.Value}) + \"\\\"");
+            .Select((it) => $" {esc(it.Key)}=\\\"\" + ({it.Value}).ToString().Replace(\"\\\"\", \"&quot;\") + \"\\\"");
         
         writeLine($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
 
@@ -117,7 +117,7 @@ public class HtmlNodeGrammar
                 Write(child, writeLine);
             } else
             {
-                writeLine(child.InnerContent);
+                writeLine($"System.Web.HttpUtility.HtmlEncode(({child.InnerContent}).ToString())");
             }
         }
 
