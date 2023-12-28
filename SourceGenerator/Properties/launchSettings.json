@@ -2,7 +2,7 @@
   "profiles": {
     "SourceGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "..\\..\\..\\..\\Models\\SiteUser.model"
+      "commandLineArgs": "..\\..\\..\\..\\Views\\Dashboard.view"
     }
   }
 }

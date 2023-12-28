@@ -28,6 +28,5 @@ repo {
         => Permission.Test
 }
 
-service
-{
+service {
 }

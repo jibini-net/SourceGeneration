@@ -1,0 +1,43 @@
+state {
+	string title,
+	string description,
+	SiteUser loggedIn
+}
+
+interface {
+	SetTitle(string title),
+	SetDescription(string description),
+	IsGuest()
+		=> bool,
+	GetProfileHtml()
+		=> string
+}
+
+html(
+	head(
+		base(| href = {"/"} |)
+	)
+	body(
+		div(
+			|
+			class = {"d-flex flex-row mb-4"},
+			style = {"width: 100%;"}
+			|
+			div(
+				h6(
+					{"Title:"}
+					{title}
+				)
+			)
+			div(| class = {"ms-auto"} |
+				unsafe({GetProfileHtml()})
+			)
+		)
+		div(| class = {"mb-4"} |
+			p(
+				{"Description: "}
+				{description}
+			)
+		)
+	)
+)

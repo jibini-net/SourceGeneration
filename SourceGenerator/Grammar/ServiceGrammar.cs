@@ -162,4 +162,28 @@ public class ServiceGrammar
 
         Program.AppendLine("    }}");
     }
+
+    public static void WriteViewInterface(Dto dto)
+    {
+        Program.AppendLine("    public interface IView");
+        Program.AppendLine("    {{");
+
+        foreach (var action in dto.Actions)
+        {
+            Program.AppendLine("        {0} {1}({2});",
+                action.ReturnType,
+                action.Name,
+                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+        }
+
+        Program.AppendLine("    }}");
+
+        foreach (var action in dto.Actions)
+        {
+            Program.AppendLine("    public abstract {0} {1}({2});",
+                action.ReturnType,
+                action.Name,
+                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+        }
+    }
 }

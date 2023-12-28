@@ -1,5 +1,6 @@
 ﻿namespace SourceGenerator.Grammar;
 
+using System.Text;
 using System.Text.RegularExpressions;
 
 using static Token;
@@ -10,8 +11,12 @@ using static Token;
  */
 public partial class TopLevelGrammar
 {
-    public static void Match(TokenStream stream, string modelName)
+    public static void MatchModel(TokenStream stream, string modelName)
     {
+        Program.AppendLine("public class {0}",
+            modelName);
+        Program.AppendLine("{{");
+
         while (stream.Next > 0)
         {
             switch (stream.Next)
@@ -47,6 +52,63 @@ public partial class TopLevelGrammar
                     throw new Exception($"Invalid token '{stream.Text}' for top-level");
             }
         }
+
+        Program.AppendLine("}}");
+    }
+
+    public static void MatchView(TokenStream stream, string modelName)
+    {
+        Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
+            modelName);
+        Program.AppendLine("{{");
+        Program.AppendLine("    // Extend and fully implement all actions in a subclass");
+
+        var renderBuilder = new StringBuilder();
+        void buildDomLine(string line)
+        {
+            renderBuilder.AppendLine($"        await writer.WriteLineAsync({line});");
+        }
+
+        while (stream.Next > 0)
+        {
+            switch (stream.Next)
+            {
+                case (int)LCurly:
+                    var cSharp = MatchCSharp(stream);
+                    Program.AppendLine(cSharp.Replace("{", "{{").Replace("}", "}}"));
+                    break;
+
+                case (int)State:
+                    var schema = SchemaGrammar.Match(stream);
+                    SchemaGrammar.Write(schema, accessLevel: "protected");
+                    break;
+
+                case (int)Interface:
+                    var services = ServiceGrammar.Match(stream, modelName);
+                    ServiceGrammar.WriteViewInterface(services);
+                    break;
+
+                case (int)Ident:
+                    var domElement = HtmlNodeGrammar.Match(stream);
+                    HtmlNodeGrammar.Write(domElement, buildDomLine);
+                    break;
+
+                default:
+                    throw new Exception($"Invalid token '{stream.Text}' for top-level");
+            }
+        }
+
+        Program.AppendLine("    public async Task<string> RenderAsync()\n    {{");
+        Program.AppendLine("        var build = new System.Text.StringBuilder();");
+        Program.AppendLine("        using var writer = new StringWriter(build);");
+        Program.Append(renderBuilder
+            .ToString()
+            .Replace("{", "{{")
+            .Replace("}", "}}"));
+        Program.AppendLine("        return build.ToString();");
+        Program.AppendLine("    }}");
+
+        Program.AppendLine("}}");
     }
 
     public static string MatchCSharp(TokenStream stream)
@@ -54,7 +116,7 @@ public partial class TopLevelGrammar
         // "{"
         if (stream.Poll() != (int)LCurly)
         {
-            throw new Exception("Wrap C# code in curly brackets");
+            throw new Exception("Wrap verbatim C# code in curly braces");
         }
         var bracketDepth = 1;
 

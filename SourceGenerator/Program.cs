@@ -57,15 +57,22 @@ internal class Program
             nfa.Build("repo",       (int)Repo);
             nfa.Build("service",    (int)Service);
             nfa.Build("json",       (int)Json);
+            nfa.Build("state",      (int)State);
+            nfa.Build("interface",  (int)Interface);
             nfa.Build(word,         (int)Ident);
-            nfa.Build("\\{",        (int)LCurly);
-            nfa.Build("\\}",        (int)RCurly);
+            nfa.Build("{",          (int)LCurly);
+            nfa.Build("}",          (int)RCurly);
             nfa.Build("\\(",        (int)LParen);
             nfa.Build("\\)",        (int)RParen);
-            nfa.Build("\\,",        (int)Comma);
-            nfa.Build("\\.\\.\\.",  (int)Splat);
-            nfa.Build("\\=",        (int)Assign);
-            nfa.Build("\\=\\>",     (int)Arrow);
+            nfa.Build(",",          (int)Comma);
+            nfa.Build("...",        (int)Splat);
+            nfa.Build("=",          (int)Assign);
+            nfa.Build("=>",         (int)Arrow);
+            //nfa.Build("<>",         (int)LRfReduce);
+            //nfa.Build("</>",        (int)RRfReduce);
+            //nfa.Build("<\">",       (int)LMultiLine);
+            //nfa.Build("</\">",      (int)RMultiLine);
+            nfa.Build("\\|",        (int)Bar);
             nfa.Build("( |\n|\r|\t)+", 9999);
 
             AppendLine($"// INITIAL NFA TRAINED AT {(DateTime.Now - initTime).TotalMilliseconds}ms");
@@ -113,13 +120,20 @@ internal class Program
             Grammar = dfa
         };
 
+        var ext = Path.GetExtension(sourceFile).ToLowerInvariant();
         var modelName = Path.GetFileNameWithoutExtension(sourceFile);
-        AppendLine($"public class {modelName}");
-        AppendLine("{{");
 
         try
         {
-            TopLevelGrammar.Match(source, modelName);
+            switch (ext)
+            {
+                case ".model":
+                    TopLevelGrammar.MatchModel(source, modelName);
+                    break;
+                case ".view":
+                    TopLevelGrammar.MatchView(source, modelName);
+                    break;
+            }
         } catch (Exception ex)
         {
             int lineNumber = 1, prevLine = 0;
@@ -140,9 +154,7 @@ internal class Program
             Process.GetCurrentProcess().Kill();
         }
 
-        AppendLine("}}");
         AppendLine($"// GENERATED IN {(DateTime.Now - startTime).TotalMilliseconds}ms");
-
         Console.Write(sourceBuilder.ToString());
     }
 }

@@ -46,11 +46,12 @@ public class SchemaGrammar
         return result;
     }
 
-    public static void Write(Dto dto)
+    public static void Write(Dto dto, string accessLevel = "public")
     {
         foreach (var field in dto.Fields)
         {
-            Program.AppendLine("    public {0} {1} {{ get; set; }}",
+            Program.AppendLine("    {0} {1} {2} {{ get; set; }}",
+                accessLevel,
                 field.TypeName,
                 field.Name);
             if (!string.IsNullOrEmpty(field.Initial))
