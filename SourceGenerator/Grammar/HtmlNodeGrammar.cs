@@ -77,7 +77,6 @@ public class HtmlNodeGrammar
         // [{fragment} ...]
         while (stream.Next != (int)RParen)
         {
-            //TODO Separate into HTML node top-levels
             switch (stream.Next)
             {
                 case (int)Ident:
@@ -101,5 +100,27 @@ public class HtmlNodeGrammar
         stream.Poll();
 
         return result;
+    }
+
+    public static void Write(Dto dto, Action<string> writeLine)
+    {
+        var esc = (string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        var attribs = dto.Attribs
+            .Select((it) => $" {esc(it.Key)}=\\\"\" + ({it.Value}) + \"\\\"");
+        
+        writeLine($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
+
+        foreach (var child in dto.Children)
+        {
+            if (!string.IsNullOrEmpty(child.Tag))
+            {
+                Write(child, writeLine);
+            } else
+            {
+                writeLine(child.InnerContent);
+            }
+        }
+
+        writeLine($"\"</{dto.Tag}>\"");
     }
 }

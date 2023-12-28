@@ -66,10 +66,7 @@ public partial class TopLevelGrammar
         var renderBuilder = new StringBuilder();
         void buildDomLine(string line)
         {
-            line = line
-                .Replace("\\", "\\\\")
-                .Replace("\"", "\\\"");
-            renderBuilder.AppendLine($"        await writer.WriteLineAsync(\"{line}\");");
+            renderBuilder.AppendLine($"        await writer.WriteLineAsync({line});");
         }
 
         while (stream.Next > 0)
@@ -93,7 +90,7 @@ public partial class TopLevelGrammar
 
                 case (int)Ident:
                     var domElement = HtmlNodeGrammar.Match(stream);
-                    buildDomLine(System.Text.Json.JsonSerializer.Serialize(domElement));
+                    HtmlNodeGrammar.Write(domElement, buildDomLine);
                     break;
 
                 default:
