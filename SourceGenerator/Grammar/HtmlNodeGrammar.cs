@@ -18,14 +18,43 @@ public class HtmlNodeGrammar
 
     public static Dto Match(TokenStream stream)
     {
-        // {tag} "("
-        var result = new Dto()
+        var result = new Dto();
+
+        switch (stream.Next)
         {
-            Tag = stream.Text,
-            Attribs = new(),
-            Children = new()
-        };
-        stream.Poll();
+            case (int)LCurly:
+                var cSharp = TopLevelGrammar.MatchCSharp(stream);
+                result.InnerContent = cSharp;
+                return result;
+
+            case (int)Ident:
+                // Handled below the switch statement
+                break;
+
+            case (int)LRfReduce:
+                // "<>" [{fragment} ...] "</>"
+                stream.Poll();
+                result.Children = new();
+                while (stream.Next != (int)RRfReduce)
+                {
+                    var child = Match(stream);
+                    result.Children.Add(child);
+                }
+                stream.Poll();
+                return result;
+
+            case (int)LMultiLine:
+                break;
+        }
+
+        // {tag} "("
+        if (stream.Poll() != (int)Ident)
+        {
+            throw new Exception("Expected HTML tag identifier");
+        }
+        result.Tag = stream.Text;
+        result.Attribs = new();
+        result.Children = new();
         if (stream.Poll() != (int)LParen)
         {
             throw new Exception("Expected left parens");
@@ -77,23 +106,8 @@ public class HtmlNodeGrammar
         // [{fragment} ...]
         while (stream.Next != (int)RParen)
         {
-            switch (stream.Next)
-            {
-                case (int)Ident:
-                    result.Children.Add(Match(stream));
-                    break;
-
-                case (int)LCurly:
-                    var cSharp = TopLevelGrammar.MatchCSharp(stream);
-                    result.Children.Add(new()
-                    {
-                        InnerContent = cSharp
-                    });
-                    break;
-
-                default:
-                    throw new Exception($"Unexpected token '{stream.Text}' for HTML element");
-            }
+            var child = Match(stream);
+            result.Children.Add(child);
         }
 
         // ")"
@@ -104,23 +118,29 @@ public class HtmlNodeGrammar
 
     public static void Write(Dto dto, Action<string> writeLine)
     {
-        var esc = (string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
-        var attribs = dto.Attribs
-            .Select((it) => $" {esc(it.Key)}=\\\"\" + ({it.Value}).ToString().Replace(\"\\\"\", \"&quot;\") + \"\\\"");
-        
-        writeLine($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
+        if (dto.Children is null)
+        {
+            writeLine($"System.Web.HttpUtility.HtmlEncode(({dto.InnerContent}).ToString())");
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(dto.Tag))
+        {
+            var esc = (string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            var attribs = dto.Attribs
+                .Select((it) => $" {esc(it.Key)}=\\\"\" + ({it.Value}).ToString().Replace(\"\\\"\", \"&quot;\") + \"\\\"");
+
+            writeLine($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
+        }
 
         foreach (var child in dto.Children)
         {
-            if (!string.IsNullOrEmpty(child.Tag))
-            {
-                Write(child, writeLine);
-            } else
-            {
-                writeLine($"System.Web.HttpUtility.HtmlEncode(({child.InnerContent}).ToString())");
-            }
+            Write(child, writeLine);
         }
 
-        writeLine($"\"</{dto.Tag}>\"");
+        if (!string.IsNullOrEmpty(dto.Tag))
+        {
+            writeLine($"\"</{dto.Tag}>\"");
+        }
     }
 }

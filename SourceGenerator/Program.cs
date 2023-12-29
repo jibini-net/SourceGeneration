@@ -68,10 +68,10 @@ internal class Program
             nfa.Build("...",        (int)Splat);
             nfa.Build("=",          (int)Assign);
             nfa.Build("=>",         (int)Arrow);
-            //nfa.Build("<>",         (int)LRfReduce);
-            //nfa.Build("</>",        (int)RRfReduce);
-            //nfa.Build("<\">",       (int)LMultiLine);
-            //nfa.Build("</\">",      (int)RMultiLine);
+            nfa.Build("<>",         (int)LRfReduce);
+            nfa.Build("</>",        (int)RRfReduce);
+            nfa.Build("<\">",       (int)LMultiLine);
+            nfa.Build("</\">",      (int)RMultiLine);
             nfa.Build("\\|",        (int)Bar);
             nfa.Build("( |\n|\r|\t)+", 9999);
 

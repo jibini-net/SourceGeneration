@@ -88,13 +88,10 @@ public partial class TopLevelGrammar
                     ServiceGrammar.WriteViewInterface(services);
                     break;
 
-                case (int)Ident:
+                default:
                     var domElement = HtmlNodeGrammar.Match(stream);
                     HtmlNodeGrammar.Write(domElement, buildDomLine);
                     break;
-
-                default:
-                    throw new Exception($"Invalid token '{stream.Text}' for top-level");
             }
         }
 
