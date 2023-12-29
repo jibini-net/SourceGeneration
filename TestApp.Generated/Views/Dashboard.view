@@ -8,12 +8,17 @@ interface {
 	SetTitle(string title),
 	SetDescription(string description),
 	IsGuest()
-		=> bool,
+		=> Task<bool>,
 	GetProfileHtml()
-		=> string
+		=> Task<string>
 }
 
-html(
+<>
+    {"Hello, world!"}
+    {DateTime.Today}
+</>
+
+html( 
 	head(
 		base(| href = {"/"} |)
 	)
@@ -30,13 +35,16 @@ html(
 				)
 			)
 			div(| class = {"ms-auto"} |
-				unsafe({GetProfileHtml()})
+				unsafe({await GetProfileHtml()})
 			)
 		)
 		div(| class = {"mb-4"} |
-			p(
+			p(| class = {"mb-4"} |
 				{"Description: "}
 				{description}
+			)
+			p(
+				{DateTime.Today}
 			)
 		)
 	)

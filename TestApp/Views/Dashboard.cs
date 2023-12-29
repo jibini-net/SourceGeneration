@@ -5,21 +5,21 @@ namespace TestApp.Views;
 
 public class Dashboard : DashboardBase
 {
-    public override void SetTitle(string title)
+    override public void SetTitle(string title)
     {
         this.title = title;
     }
 
-    public override void SetDescription(string description)
+    override public void SetDescription(string description)
     {
         this.description = description;
     }
 
-    public override bool IsGuest()
-        => (loggedIn?.suID ?? 0) == 0;
+    override public Task<bool> IsGuest()
+        => Task.FromResult((loggedIn?.suID ?? 0) == 0);
 
-    public override string GetProfileHtml()
-        => IsGuest()
+    override public async Task<string> GetProfileHtml()
+        => (await IsGuest())
             ? "<span>Guest</span>"
             : $@"
                 <div class=""d-flex flex-row"">
