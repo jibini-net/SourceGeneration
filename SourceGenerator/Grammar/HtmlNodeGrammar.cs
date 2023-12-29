@@ -16,16 +16,72 @@ public class HtmlNodeGrammar
         public string InnerContent { get; set; }
     }
 
+    public static (string name, string value) MatchAttribute(TokenStream stream)
+    {
+        // {attrib name}
+        string name;
+        if (stream.Next == (int)LCurly)
+        {
+            name = TopLevelGrammar.MatchCSharp(stream);
+        } else if (stream.Poll() != (int)Ident)
+        {
+            throw new Exception("Expected name for HTML attribute");
+        } else
+        {
+            name = stream.Text;
+        }
+
+        // "=" "{" {C# code} "}
+        if (stream.Poll() != (int)Assign)
+        {
+            throw new Exception("Expected '='");
+        }
+        var value = TopLevelGrammar.MatchCSharp(stream);
+
+        return (name, value);
+    }
+
+    public static Dto MatchFragmentReduce(TokenStream stream)
+    {
+        var result = new Dto()
+        {
+            Children = new()
+        };
+
+        // "<>"
+        if (stream.Poll() != (int)LRfReduce)
+        {
+            throw new Exception("Expected '<>'");
+        }
+
+        // [{fragment} ...]
+        while (stream.Next != (int)RRfReduce)
+        {
+            var child = Match(stream);
+            result.Children.Add(child);
+        }
+
+        // "</>"
+        stream.Poll();
+
+        return result;
+    }
+
+    public static Dto MatchStringSegment(TokenStream stream)
+    {
+        throw new Exception("Not yet implemented");
+    }
+
     public static Dto Match(TokenStream stream)
     {
-        var result = new Dto();
-
         switch (stream.Next)
         {
             case (int)LCurly:
                 var cSharp = TopLevelGrammar.MatchCSharp(stream);
-                result.InnerContent = cSharp;
-                return result;
+                return new()
+                {
+                    InnerContent = cSharp
+                };
 
             case (int)Ident:
                 // Handled below the switch statement
@@ -33,18 +89,11 @@ public class HtmlNodeGrammar
 
             case (int)LRfReduce:
                 // "<>" [{fragment} ...] "</>"
-                stream.Poll();
-                result.Children = new();
-                while (stream.Next != (int)RRfReduce)
-                {
-                    var child = Match(stream);
-                    result.Children.Add(child);
-                }
-                stream.Poll();
-                return result;
+                return MatchFragmentReduce(stream);
 
             case (int)LMultiLine:
-                break;
+                // "<\">" [{string content}] "</\">"
+                return MatchStringSegment(stream);
         }
 
         // {tag} "("
@@ -52,9 +101,12 @@ public class HtmlNodeGrammar
         {
             throw new Exception("Expected HTML tag identifier");
         }
-        result.Tag = stream.Text;
-        result.Attribs = new();
-        result.Children = new();
+        var result = new Dto()
+        {
+            Tag = stream.Text,
+            Attribs = new(),
+            Children = new()
+        };
         if (stream.Poll() != (int)LParen)
         {
             throw new Exception("Expected left parens");
@@ -68,29 +120,12 @@ public class HtmlNodeGrammar
 
             while (stream.Next != (int)Bar)
             {
-                // {attrib name}
-                string name;
-                if (stream.Next == (int)LCurly)
-                {
-                    name = TopLevelGrammar.MatchCSharp(stream);
-                } else if (stream.Poll() != (int)Ident)
-                {
-                    throw new Exception("Expected name for HTML attribute");
-                } else
-                {
-                    name = stream.Text;
-                }
-
-                // "=" "{" {C# code} "}
-                if (stream.Poll() != (int)Assign)
-                {
-                    throw new Exception("Expected '='");
-                }
+                var (name, value) = MatchAttribute(stream);
                 if (result.Attribs.ContainsKey(name))
                 {
                     throw new Exception($"Duplicate attribute named '{name}'");
                 }
-                result.Attribs[name] = TopLevelGrammar.MatchCSharp(stream);
+                result.Attribs[name] = value;
 
                 // ","
                 if (stream.Next != (int)Bar && stream.Poll() != (int)Comma)
@@ -118,18 +153,20 @@ public class HtmlNodeGrammar
 
     public static void Write(Dto dto, Action<string> writeLine)
     {
+        var htmlEnc = "System.Web.HttpUtility.HtmlEncode";
+        string escStr(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        var escAttr = ".ToString().Replace(\"\\\"\", \"&quot;\")";
+        string attrib(string k, string v) => $" {escStr(k)}=\\\"\" + ({v}){escAttr} + \"\\\"";
+
         if (dto.Children is null)
         {
-            writeLine($"System.Web.HttpUtility.HtmlEncode(({dto.InnerContent}).ToString())");
+            writeLine($"{htmlEnc}(({dto.InnerContent}).ToString())");
             return;
         }
 
         if (!string.IsNullOrEmpty(dto.Tag))
         {
-            var esc = (string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
-            var attribs = dto.Attribs
-                .Select((it) => $" {esc(it.Key)}=\\\"\" + ({it.Value}).ToString().Replace(\"\\\"\", \"&quot;\") + \"\\\"");
-
+            var attribs = dto.Attribs.Select((kv) => attrib(kv.Key, kv.Value));
             writeLine($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
         }
 

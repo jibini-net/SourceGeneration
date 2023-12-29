@@ -129,6 +129,7 @@ namespace SourceGenerator.VsAdapter
             // Add all sources from main thread for safety
             context.AddSource("_Includes.g.cs", INCLUDES);
             context.AddSource("_ServiceCollection.g.cs", GenerateServiceCollection(files));
+            context.AddSource("_ViewCollection.g.cs", GenerateViewCollection(files));
             foreach (var source in sources)
             {
                 var sourceText = SourceText.From(source.source, Encoding.UTF8, canBeEmbedded: true);
@@ -164,6 +165,28 @@ namespace SourceGenerator.VsAdapter
                 sourceBuilder.AppendFormat("        services.AddScoped<{0}.ApiService>();\n", name);
                 sourceBuilder.AppendFormat("        services.AddScoped<{0}.IService>((sp) => sp.GetRequiredService<{1}.ApiService>());\n",
                     name,
+                    name);
+                sourceBuilder.AppendLine("    }");
+
+                sourceBuilder.AppendLine("}");
+            }
+            return sourceBuilder.ToString();
+        }
+
+        private static string GenerateViewCollection(List<AdditionalText> files)
+        {
+            var sourceBuilder = new StringBuilder();
+            sourceBuilder.AppendLine("namespace Generated;");
+            sourceBuilder.AppendLine("using Microsoft.Extensions.DependencyInjection;");
+            foreach (var file in files.Where((it) => Path.GetExtension(it.Path).ToLowerInvariant() == ".view"))
+            {
+                var name = Path.GetFileNameWithoutExtension(file.Path);
+                sourceBuilder.AppendFormat("public static class {0}Extensions\n{{\n", name);
+
+                sourceBuilder.AppendFormat("    public static void Add{0}View<T>(this IServiceCollection services)\n", name);
+                sourceBuilder.AppendFormat("        where T : class, {0}Base.IView\n    {{\n", name);
+                sourceBuilder.AppendFormat("        services.AddScoped<T>();\n", name);
+                sourceBuilder.AppendFormat("        services.AddScoped<{0}Base.IView>((sp) => sp.GetRequiredService<T>());\n",
                     name);
                 sourceBuilder.AppendLine("    }");
 

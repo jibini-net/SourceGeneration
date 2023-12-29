@@ -25,6 +25,11 @@ public static class ServiceCollectionExtensions
         services.AddPermissionFrontend();
         services.AddSiteUserFrontend();
     }
+
+    public static void AddViewServices(this IServiceCollection services)
+    {
+        services.AddDashboardView<Dashboard>();
+    }
 }
 
 public class Program
@@ -32,9 +37,12 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
-        //builder.Services.AddBackendServices();
+        builder.Services.AddBackendServices();
         // or
         //builder.Services.AddFrontendServices();
+
+        // +
+        builder.Services.AddViewServices();
 
         var app = builder.Build();
         app.Start();
@@ -42,13 +50,13 @@ public class Program
         /*
         {
             var blogPosts = app.Services.GetRequiredService<BlogPost.IService>();
-            blogPosts.Get(1);
-            blogPosts.MakePost("Hello, world!");
+            await blogPosts.Get(1);
+            await blogPosts.MakePost("Hello, world!");
         }
         */
 
         {
-            var dashboard = new Dashboard();
+            var dashboard = app.Services.GetRequiredService<DashboardBase.IView>();
             dashboard.SetTitle("Hello, world!");
             dashboard.SetDescription("Foo bar");
             var html = await dashboard.RenderAsync();

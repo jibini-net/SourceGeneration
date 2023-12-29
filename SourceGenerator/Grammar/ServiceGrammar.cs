@@ -176,6 +176,7 @@ public class ServiceGrammar
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
         }
 
+        Program.AppendLine("        Task<string> RenderAsync();");
         Program.AppendLine("    }}");
 
         foreach (var action in dto.Actions)
