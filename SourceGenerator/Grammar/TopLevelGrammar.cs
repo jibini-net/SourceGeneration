@@ -75,7 +75,9 @@ public partial class TopLevelGrammar
             {
                 case (int)LCurly:
                     var cSharp = MatchCSharp(stream);
-                    Program.AppendLine(cSharp.Replace("{", "{{").Replace("}", "}}"));
+                    Program.AppendLine(cSharp
+                        .Replace("{", "{{")
+                        .Replace("}", "}}"));
                     break;
 
                 case (int)State:

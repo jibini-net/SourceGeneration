@@ -13,10 +13,15 @@ interface {
 		=> Task<string>
 }
 
-<>
-    {"Hello, world!"}
-    {DateTime.Today}
-</>
+unsafe(<">
+
+    <script>
+        function test() {
+            alert("Hello, world!");
+        }
+    </script>
+
+</">)
 
 html( 
 	head(
@@ -30,8 +35,7 @@ html(
 			|
 			div(
 				h6(
-					{"Title:"}
-					{title}
+					{"Title: " + title}
 				)
 			)
 			div(| class = {"ms-auto"} |
@@ -40,11 +44,10 @@ html(
 		)
 		div(| class = {"mb-4"} |
 			p(| class = {"mb-4"} |
-				{"Description: "}
-				{description}
+				{"Description: " + description}
 			)
-			p(
-				{DateTime.Today}
+			button(| onclick = {"test();"} |
+				{"Show Alert"}
 			)
 		)
 	)
