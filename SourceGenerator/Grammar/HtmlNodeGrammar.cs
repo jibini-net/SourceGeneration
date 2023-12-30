@@ -67,9 +67,41 @@ public class HtmlNodeGrammar
         return result;
     }
 
+    //TODO Escaping?
     public static Dto MatchStringSegment(TokenStream stream)
     {
-        throw new Exception("Not yet implemented");
+        string escStr(string s) => s
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"")
+            .Replace("\r", "")
+            .Replace("\n", "\\n\"\n            + \"");
+
+        // "<\">"
+        if (stream.Poll() != (int)LMultiLine)
+        {
+            throw new Exception("Expected '<\">'");
+        }
+
+        // {string content}
+        var startIndex = stream.Offset;
+        while (stream.Next != (int)RMultiLine)
+        {
+            stream.Seek(stream.Offset + 1);
+            if (stream.Offset >= stream.Source.Length)
+            {
+                throw new Exception("Expected '</\">'");
+            }
+        }
+        var length = stream.Offset - startIndex;
+        var content = stream.Source.Substring(startIndex, length);
+
+        // "</\">"
+        stream.Poll();
+
+        return new()
+        {
+            InnerContent = $"\"{escStr(content)}\""
+        };
     }
 
     public static Dto Match(TokenStream stream)
@@ -148,13 +180,29 @@ public class HtmlNodeGrammar
         // ")"
         stream.Poll();
 
+        if (result.Tag == "unsafe")
+        {
+            if (result.Attribs.Count > 0)
+            {
+                throw new Exception("'unsafe' has no available attributes");
+            }
+            if (result.Children.Count != 1 || result.Children.First().Children is not null)
+            {
+                throw new Exception("'unsafe' must have exactly one literal child");
+            }
+        }
+
         return result;
     }
 
-    public static void Write(Dto dto, Action<string> writeLine)
+    //TODO Improve
+    public static void Write(Dto dto, Action<string> writeLine, bool unsafeHtml = false)
     {
-        var htmlEnc = "System.Web.HttpUtility.HtmlEncode";
+        var htmlEnc = unsafeHtml
+            ? ""
+            : "System.Web.HttpUtility.HtmlEncode";
         string escStr(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        
         var escAttr = ".ToString().Replace(\"\\\"\", \"&quot;\")";
         string attrib(string k, string v) => $" {escStr(k)}=\\\"\" + ({v}){escAttr} + \"\\\"";
 
@@ -164,7 +212,8 @@ public class HtmlNodeGrammar
             return;
         }
 
-        if (!string.IsNullOrEmpty(dto.Tag))
+        var drawTags = !string.IsNullOrEmpty(dto.Tag) && dto.Tag != "unsafe";
+        if (drawTags)
         {
             var attribs = dto.Attribs.Select((kv) => attrib(kv.Key, kv.Value));
             writeLine($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
@@ -172,10 +221,10 @@ public class HtmlNodeGrammar
 
         foreach (var child in dto.Children)
         {
-            Write(child, writeLine);
+            Write(child, writeLine, unsafeHtml: dto.Tag == "unsafe");
         }
 
-        if (!string.IsNullOrEmpty(dto.Tag))
+        if (drawTags)
         {
             writeLine($"\"</{dto.Tag}>\"");
         }
