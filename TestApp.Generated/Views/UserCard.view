@@ -5,13 +5,13 @@ state {
 interface {
 }
 
-unsafe(
-	{((loggedIn?.suID ?? 0) == 0)
-        ? "<span>Guest</span>"
-        : $@"
-            <div class=""d-flex flex-row"">
-                <strong>{System.Web.HttpUtility.HtmlEncode(loggedIn.suFirstName)}</strong>
-                <a href=""logout"" class=""ms-2"">Log out</a>
-            </div>
-            ".Trim()}
+if(
+	{(loggedIn?.suID ?? 0) == 0}
+	span({"Guest"})
+	<>
+		strong({loggedIn.suFirstName})
+		a(| href = {"logout"}|
+			{"Log out"}
+		)
+	</>
 )

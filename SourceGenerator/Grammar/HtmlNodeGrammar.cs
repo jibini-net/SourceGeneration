@@ -180,23 +180,69 @@ public class HtmlNodeGrammar
         // ")"
         stream.Poll();
 
-        if (result.Tag == "unsafe")
+        if (SpecialTags.TryGetValue(result.Tag ?? "", out var kv))
         {
-            if (result.Attribs.Count > 0)
-            {
-                throw new Exception("'unsafe' has no available attributes");
-            }
-            if (result.Children.Count != 1 || result.Children.First().Children is not null)
-            {
-                throw new Exception("'unsafe' must have exactly one literal child");
-            }
+            var (validator, _) = kv;
+            validator(result);
         }
 
         return result;
     }
 
+    public delegate void SpecialValidator(Dto dto);
+    public delegate void SpecialRenderBuilder(Dto dto, Action<string> buildDom, Action<string> buildLogic);
+
+    public static Dictionary<string, (SpecialValidator, SpecialRenderBuilder)> SpecialTags = new()
+    {
+        ["unsafe"] = (
+            (dto) =>
+            {
+                if (dto.Attribs.Count > 0)
+                {
+                    throw new Exception("'unsafe' has no available attributes");
+                }
+                if (dto.Children.Count != 1 || dto.Children.Single().Children is not null)
+                {
+                    throw new Exception("'unsafe' must have exactly one literal child");
+                }
+            },
+            (dto, buildDom, buildLogic) =>
+            {
+                var child = dto.Children.Single();
+                Write(child, buildDom, buildLogic, unsafeHtml: true);
+            }),
+
+        ["if"] = (
+            (dto) =>
+            {
+                if (dto.Attribs.Count > 0)
+                {
+                    throw new Exception("'if' has no available attributes");
+                }
+                if (dto.Children.Count < 2
+                    || dto.Children.Count > 3
+                    || dto.Children.First().Children is not null)
+                {
+                    throw new Exception("Usage: 'if({predicate} {success} [else])'");
+                }
+            },
+            (dto, buildDom, buildLogic) =>
+            {
+                buildLogic($"if ({dto.Children.First().InnerContent}) {{");
+                Write(dto.Children[1], buildDom, buildLogic);
+                buildLogic("}");
+                if (dto.Children.Count >= 3)
+                {
+                    buildLogic("else {");
+                    Write(dto.Children[2], buildDom, buildLogic);
+                    buildLogic("}");
+                }
+            }
+        )
+    };
+
     //TODO Improve
-    public static void WriteSubComponent(Dto dto, Action<string> write)
+    public static void WriteSubComponent(Dto dto, Action<string> buildDom)
     {
         var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
         var creationAction = $@"
@@ -206,59 +252,63 @@ public class HtmlNodeGrammar
                 return await component.RenderAsync();
             }})).Invoke()
             ".Trim();
-        write(creationAction);
+        buildDom(creationAction);
     }
 
     //TODO Improve
-    public static void WriteDomElement(Dto dto, Action<string> write)
+    public static void WriteDomElement(Dto dto, Action<string> buildDom, Action<string> buildLogic)
     {
         string escStr(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
         var escAttr = ".ToString().Replace(\"\\\"\", \"&quot;\")";
         string attrib(string k, string v) => $" {escStr(k)}=\\\"\" + ({v}){escAttr} + \"\\\"";
 
-        var drawTags = !string.IsNullOrEmpty(dto.Tag) && dto.Tag != "unsafe";
+        var drawTags = !string.IsNullOrEmpty(dto.Tag);
         if (drawTags)
         {
             var attribs = dto.Attribs.Select((kv) => attrib(kv.Key, kv.Value));
-            write($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
+            buildDom($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
         }
 
         foreach (var child in dto.Children)
         {
-            Write(child, write, unsafeHtml: dto.Tag == "unsafe");
+            Write(child, buildDom, buildLogic);
         }
 
         if (drawTags)
         {
-            write($"\"</{dto.Tag}>\"");
+            buildDom($"\"</{dto.Tag}>\"");
         }
     }
 
     //TODO Improve
-    public static void WriteInnerContent(Dto dto, Action<string> write, bool unsafeHtml = false)
+    public static void WriteInnerContent(Dto dto, Action<string> buildDom, bool unsafeHtml = false)
     {
         var htmlEnc = unsafeHtml
             ? ""
             : "System.Web.HttpUtility.HtmlEncode";
 
-        write($"{htmlEnc}(({dto.InnerContent}).ToString())");
+        buildDom($"{htmlEnc}(({dto.InnerContent}).ToString())");
     }
 
     //TODO Improve
-    public static void Write(Dto dto, Action<string> write, bool unsafeHtml = false)
+    public static void Write(Dto dto, Action<string> buildDom, Action<string> buildLogic, bool unsafeHtml = false)
     {
         if (dto.Children is null)
         {
-            WriteInnerContent(dto, write, unsafeHtml);
+            WriteInnerContent(dto, buildDom, unsafeHtml);
         } else if (!string.IsNullOrEmpty(dto.Tag)
             // Sub-components must follow capitalized naming convention
             && dto.Tag[0] >= 'A'
             && dto.Tag[0] <= 'Z')
         {
-            WriteSubComponent(dto, write);
+            WriteSubComponent(dto, buildDom);
+        } else if (SpecialTags.TryGetValue(dto.Tag ?? "", out var kv))
+        {
+            var (_, builder) = kv;
+            builder(dto, buildDom, buildLogic);
         } else
         {
-            WriteDomElement(dto, write);
+            WriteDomElement(dto, buildDom, buildLogic);
         }
     }
 }
