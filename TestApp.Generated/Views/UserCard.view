@@ -3,12 +3,10 @@ state {
 }
 
 interface {
-	IsGuest()
-		=> Task<bool>
 }
 
 unsafe(
-	{(await IsGuest())
+	{((loggedIn?.suID ?? 0) == 0)
         ? "<span>Guest</span>"
         : $@"
             <div class=""d-flex flex-row"">

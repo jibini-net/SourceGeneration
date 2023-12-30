@@ -196,7 +196,7 @@ public class HtmlNodeGrammar
     }
 
     //TODO Improve
-    public static void WriteSubcomponent(Dto dto, Action<string> writeLine)
+    public static void WriteSubComponent(Dto dto, Action<string> writeLine)
     {
         var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
         var creationAction = $@"
@@ -235,21 +235,27 @@ public class HtmlNodeGrammar
     }
 
     //TODO Improve
-    public static void Write(Dto dto, Action<string> writeLine, bool unsafeHtml = false)
+    public static void WriteInnerContent(Dto dto, Action<string> writeLine, bool unsafeHtml = false)
     {
         var htmlEnc = unsafeHtml
             ? ""
             : "System.Web.HttpUtility.HtmlEncode";
-        
+
+        writeLine($"{htmlEnc}(({dto.InnerContent}).ToString())");
+    }
+
+    //TODO Improve
+    public static void Write(Dto dto, Action<string> writeLine, bool unsafeHtml = false)
+    {
         if (dto.Children is null)
         {
-            writeLine($"{htmlEnc}(({dto.InnerContent}).ToString())");
+            WriteInnerContent(dto, writeLine, unsafeHtml);
         } else if (!string.IsNullOrEmpty(dto.Tag)
             // Sub-components must follow capitalized naming convention
             && dto.Tag[0] >= 'A'
             && dto.Tag[0] <= 'Z')
         {
-            WriteSubcomponent(dto, writeLine);
+            WriteSubComponent(dto, writeLine);
         } else
         {
             WriteDomElement(dto, writeLine);

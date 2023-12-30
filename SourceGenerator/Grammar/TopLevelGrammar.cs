@@ -93,7 +93,7 @@ public partial class TopLevelGrammar
 
                 case (int)Interface:
                     var services = ServiceGrammar.Match(stream, modelName);
-                    ServiceGrammar.WriteViewInterface(services);
+                    ServiceGrammar.WriteViewInterface(services, modelName);
                     break;
 
                 default:
