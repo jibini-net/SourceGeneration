@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
     public static void AddViewServices(this IServiceCollection services)
     {
         services.AddDashboardView<Dashboard>();
+        services.AddUserCardView<UserCardBase.Default>();
     }
 }
 

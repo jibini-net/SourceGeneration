@@ -6,25 +6,13 @@ state {
 
 interface {
 	SetTitle(string title),
-	SetDescription(string description),
-	IsGuest()
-		=> Task<bool>,
-	GetProfileHtml()
-		=> Task<string>
+	SetDescription(string description)
 }
 
-unsafe(<">
-
-    <script>
-        function test() {
-            alert("Hello, world!");
-        }
-    </script>
-
-</">)
-
+unsafe({"<!DOCTYPE html>"})
 html( 
 	head(
+		title({"Hello, world!"})
 		base(| href = {"/"} |)
 	)
 	body(
@@ -39,7 +27,7 @@ html(
 				)
 			)
 			div(| class = {"ms-auto"} |
-				unsafe({await GetProfileHtml()})
+				UserCard(| loggedIn = {loggedIn} |)
 			)
 		)
 		div(| class = {"mb-4"} |
@@ -50,5 +38,14 @@ html(
 				{"Show Alert"}
 			)
 		)
+		unsafe(<">
+
+			<script>
+				function test() {
+					alert("Hello, world!");
+				}
+			</script>
+
+		</">)
 	)
 )

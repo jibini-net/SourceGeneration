@@ -163,7 +163,7 @@ public class ServiceGrammar
         Program.AppendLine("    }}");
     }
 
-    public static void WriteViewInterface(Dto dto)
+    public static void WriteViewInterface(Dto dto, string modelName)
     {
         Program.AppendLine("    public interface IView");
         Program.AppendLine("    {{");
@@ -185,6 +185,14 @@ public class ServiceGrammar
                 action.ReturnType,
                 action.Name,
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+        }
+
+        if (dto.Actions.Count == 0)
+        {
+            Program.AppendLine("    public class Default : {0}Base\n    {{",
+                modelName);
+            Program.AppendLine("        public Default(IServiceProvider sp) : base(sp)\n        {{\n        }}");
+            Program.AppendLine("    }}");
         }
     }
 }
