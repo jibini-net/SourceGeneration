@@ -196,7 +196,7 @@ public class HtmlNodeGrammar
     }
 
     //TODO Improve
-    public static void WriteSubComponent(Dto dto, Action<string> writeLine)
+    public static void WriteSubComponent(Dto dto, Action<string> write)
     {
         var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
         var creationAction = $@"
@@ -206,11 +206,11 @@ public class HtmlNodeGrammar
                 return await component.RenderAsync();
             }})).Invoke()
             ".Trim();
-        writeLine(creationAction);
+        write(creationAction);
     }
 
     //TODO Improve
-    public static void WriteDomElement(Dto dto, Action<string> writeLine)
+    public static void WriteDomElement(Dto dto, Action<string> write)
     {
         string escStr(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
         var escAttr = ".ToString().Replace(\"\\\"\", \"&quot;\")";
@@ -220,45 +220,45 @@ public class HtmlNodeGrammar
         if (drawTags)
         {
             var attribs = dto.Attribs.Select((kv) => attrib(kv.Key, kv.Value));
-            writeLine($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
+            write($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
         }
 
         foreach (var child in dto.Children)
         {
-            Write(child, writeLine, unsafeHtml: dto.Tag == "unsafe");
+            Write(child, write, unsafeHtml: dto.Tag == "unsafe");
         }
 
         if (drawTags)
         {
-            writeLine($"\"</{dto.Tag}>\"");
+            write($"\"</{dto.Tag}>\"");
         }
     }
 
     //TODO Improve
-    public static void WriteInnerContent(Dto dto, Action<string> writeLine, bool unsafeHtml = false)
+    public static void WriteInnerContent(Dto dto, Action<string> write, bool unsafeHtml = false)
     {
         var htmlEnc = unsafeHtml
             ? ""
             : "System.Web.HttpUtility.HtmlEncode";
 
-        writeLine($"{htmlEnc}(({dto.InnerContent}).ToString())");
+        write($"{htmlEnc}(({dto.InnerContent}).ToString())");
     }
 
     //TODO Improve
-    public static void Write(Dto dto, Action<string> writeLine, bool unsafeHtml = false)
+    public static void Write(Dto dto, Action<string> write, bool unsafeHtml = false)
     {
         if (dto.Children is null)
         {
-            WriteInnerContent(dto, writeLine, unsafeHtml);
+            WriteInnerContent(dto, write, unsafeHtml);
         } else if (!string.IsNullOrEmpty(dto.Tag)
             // Sub-components must follow capitalized naming convention
             && dto.Tag[0] >= 'A'
             && dto.Tag[0] <= 'Z')
         {
-            WriteSubComponent(dto, writeLine);
+            WriteSubComponent(dto, write);
         } else
         {
-            WriteDomElement(dto, writeLine);
+            WriteDomElement(dto, write);
         }
     }
 }

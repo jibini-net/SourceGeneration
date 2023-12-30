@@ -9,18 +9,10 @@ interface {
 	SetDescription(string description)
 }
 
-unsafe(<">
-
-    <script>
-        function test() {
-            alert("Hello, world!");
-        }
-    </script>
-
-</">)
-
+unsafe({"<!DOCTYPE html>"})
 html( 
 	head(
+		title({"Hello, world!"})
 		base(| href = {"/"} |)
 	)
 	body(
@@ -46,5 +38,14 @@ html(
 				{"Show Alert"}
 			)
 		)
+		unsafe(<">
+
+			<script>
+				function test() {
+					alert("Hello, world!");
+				}
+			</script>
+
+		</">)
 	)
 )

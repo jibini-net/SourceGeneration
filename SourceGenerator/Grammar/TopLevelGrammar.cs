@@ -70,9 +70,9 @@ public partial class TopLevelGrammar
         Program.AppendLine("    }}");
 
         var renderBuilder = new StringBuilder();
-        void buildDomLine(string line)
+        void buildDom(string expr)
         {
-            renderBuilder.AppendLine($"        await writer.WriteLineAsync({line});");
+            renderBuilder.AppendLine($"        await writer.WriteAsync({expr});");
         }
 
         while (stream.Next > 0)
@@ -98,7 +98,7 @@ public partial class TopLevelGrammar
 
                 default:
                     var domElement = HtmlNodeGrammar.Match(stream);
-                    HtmlNodeGrammar.Write(domElement, buildDomLine);
+                    HtmlNodeGrammar.Write(domElement, buildDom);
                     break;
             }
         }
