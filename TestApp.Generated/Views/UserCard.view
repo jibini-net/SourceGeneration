@@ -1,0 +1,19 @@
+state {
+	SiteUser loggedIn
+}
+
+interface {
+	IsGuest()
+		=> Task<bool>
+}
+
+unsafe(
+	{(await IsGuest())
+        ? "<span>Guest</span>"
+        : $@"
+            <div class=""d-flex flex-row"">
+                <strong>{System.Web.HttpUtility.HtmlEncode(loggedIn.suFirstName)}</strong>
+                <a href=""logout"" class=""ms-2"">Log out</a>
+            </div>
+            ".Trim()}
+)

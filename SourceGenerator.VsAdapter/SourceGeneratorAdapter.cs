@@ -185,8 +185,8 @@ namespace SourceGenerator.VsAdapter
 
                 sourceBuilder.AppendFormat("    public static void Add{0}View<T>(this IServiceCollection services)\n", name);
                 sourceBuilder.AppendFormat("        where T : class, {0}Base.IView\n    {{\n", name);
-                sourceBuilder.AppendFormat("        services.AddScoped<T>();\n", name);
-                sourceBuilder.AppendFormat("        services.AddScoped<{0}Base.IView>((sp) => sp.GetRequiredService<T>());\n",
+                sourceBuilder.AppendFormat("        services.AddTransient<T>();\n", name);
+                sourceBuilder.AppendFormat("        services.AddTransient<{0}Base.IView>((sp) => sp.GetRequiredService<T>());\n",
                     name);
                 sourceBuilder.AppendLine("    }");
 

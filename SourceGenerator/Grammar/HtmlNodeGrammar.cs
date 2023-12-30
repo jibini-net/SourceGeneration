@@ -196,21 +196,25 @@ public class HtmlNodeGrammar
     }
 
     //TODO Improve
-    public static void Write(Dto dto, Action<string> writeLine, bool unsafeHtml = false)
+    public static void WriteSubcomponent(Dto dto, Action<string> writeLine)
     {
-        var htmlEnc = unsafeHtml
-            ? ""
-            : "System.Web.HttpUtility.HtmlEncode";
+        var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
+        var creationAction = $@"
+            await ((Func<Task<string>>)(async () => {{
+                var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
+                {string.Join("\n                ", assignActions)}
+                return await component.RenderAsync();
+            }})).Invoke()
+            ".Trim();
+        writeLine(creationAction);
+    }
+
+    //TODO Improve
+    public static void WriteDomElement(Dto dto, Action<string> writeLine)
+    {
         string escStr(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
-        
         var escAttr = ".ToString().Replace(\"\\\"\", \"&quot;\")";
         string attrib(string k, string v) => $" {escStr(k)}=\\\"\" + ({v}){escAttr} + \"\\\"";
-
-        if (dto.Children is null)
-        {
-            writeLine($"{htmlEnc}(({dto.InnerContent}).ToString())");
-            return;
-        }
 
         var drawTags = !string.IsNullOrEmpty(dto.Tag) && dto.Tag != "unsafe";
         if (drawTags)
@@ -227,6 +231,28 @@ public class HtmlNodeGrammar
         if (drawTags)
         {
             writeLine($"\"</{dto.Tag}>\"");
+        }
+    }
+
+    //TODO Improve
+    public static void Write(Dto dto, Action<string> writeLine, bool unsafeHtml = false)
+    {
+        var htmlEnc = unsafeHtml
+            ? ""
+            : "System.Web.HttpUtility.HtmlEncode";
+        
+        if (dto.Children is null)
+        {
+            writeLine($"{htmlEnc}(({dto.InnerContent}).ToString())");
+        } else if (!string.IsNullOrEmpty(dto.Tag)
+            // Sub-components must follow capitalized naming convention
+            && dto.Tag[0] >= 'A'
+            && dto.Tag[0] <= 'Z')
+        {
+            WriteSubcomponent(dto, writeLine);
+        } else
+        {
+            WriteDomElement(dto, writeLine);
         }
     }
 }

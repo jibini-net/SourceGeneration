@@ -62,6 +62,12 @@ public partial class TopLevelGrammar
             modelName);
         Program.AppendLine("{{");
         Program.AppendLine("    // Extend and fully implement all actions in a subclass");
+        
+        Program.AppendLine("    private readonly IServiceProvider sp;");
+        Program.AppendLine("    public {0}Base(IServiceProvider sp)\n    {{",
+            modelName);
+        Program.AppendLine("        this.sp = sp;");
+        Program.AppendLine("    }}");
 
         var renderBuilder = new StringBuilder();
         void buildDomLine(string line)
@@ -82,7 +88,7 @@ public partial class TopLevelGrammar
 
                 case (int)State:
                     var schema = SchemaGrammar.Match(stream);
-                    SchemaGrammar.Write(schema, accessLevel: "protected");
+                    SchemaGrammar.Write(schema, accessLevel: "internal");
                     break;
 
                 case (int)Interface:

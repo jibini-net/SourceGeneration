@@ -6,11 +6,7 @@ state {
 
 interface {
 	SetTitle(string title),
-	SetDescription(string description),
-	IsGuest()
-		=> Task<bool>,
-	GetProfileHtml()
-		=> Task<string>
+	SetDescription(string description)
 }
 
 unsafe(<">
@@ -39,7 +35,7 @@ html(
 				)
 			)
 			div(| class = {"ms-auto"} |
-				unsafe({await GetProfileHtml()})
+				UserCard(| loggedIn = {loggedIn} |)
 			)
 		)
 		div(| class = {"mb-4"} |
