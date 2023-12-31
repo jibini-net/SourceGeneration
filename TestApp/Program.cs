@@ -84,8 +84,8 @@ public class Program
             dashboard.LoadState(state.State);
 
             var html = await dashboard.RenderAsync(state);
-            Console.WriteLine(html);
-            Console.WriteLine(JsonSerializer.Serialize(state));
+            Console.WriteLine($"<!DOCTYPE html><html><body>{html}</body></html>");
+            Console.WriteLine($"<!--{JsonSerializer.Serialize(state)}-->");
         }
 
         app.WaitForShutdown();
