@@ -165,8 +165,7 @@ public class ServiceGrammar
 
     public static void WriteViewInterface(Dto dto, string modelName)
     {
-        Program.AppendLine("    public interface IView");
-        Program.AppendLine("    {{");
+        Program.AppendLine("    public interface IView : IRenderView\n    {{");
 
         foreach (var action in dto.Actions)
         {
@@ -176,7 +175,6 @@ public class ServiceGrammar
                 string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
         }
 
-        Program.AppendLine("        Task<string> RenderAsync();");
         Program.AppendLine("    }}");
 
         foreach (var action in dto.Actions)

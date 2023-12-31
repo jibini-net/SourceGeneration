@@ -249,6 +249,7 @@ public class HtmlNodeGrammar
             await ((Func<Task<string>>)(async () => {{
                 var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
                 {string.Join("\n                ", assignActions)}
+                subComponents.Add(component);
                 return await component.RenderAsync();
             }})).Invoke()
             ".Trim();

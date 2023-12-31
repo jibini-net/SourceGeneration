@@ -60,4 +60,20 @@ public class SchemaGrammar
             }
         }
     }
+
+    public static void WriteStateDump(Dto dto, string modelName)
+    {
+        string member(string name) => $"                [\"{name}\"] = {name},";
+        var members = dto.Fields.Select((it) => member(it.Name));
+
+        Program.AppendLine("    public StateDump GetState()\n    {{");
+        Program.AppendLine("        return new()\n        {{");
+        Program.AppendLine("            Tag = \"{0}\",",
+            modelName);
+        Program.AppendLine("            State = new()\n            {{");
+        Program.AppendLine(string.Join("\n", members));
+        Program.AppendLine("            }}");
+        Program.AppendLine("        }};");
+        Program.AppendLine("    }}");
+    }
 }

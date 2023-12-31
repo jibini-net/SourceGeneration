@@ -60,7 +60,7 @@ public class Program
             var dashboard = app.Services.GetRequiredService<DashboardBase.IView>();
             dashboard.SetTitle("Hello, world!");
             dashboard.SetDescription("Foo bar");
-            var html = await dashboard.RenderAsync();
+            var html = await dashboard.RenderAsync(dumpState: true);
             Console.WriteLine(html);
         }
 

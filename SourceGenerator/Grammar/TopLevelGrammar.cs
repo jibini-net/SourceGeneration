@@ -93,6 +93,7 @@ public partial class TopLevelGrammar
                 case (int)State:
                     var schema = SchemaGrammar.Match(stream);
                     SchemaGrammar.Write(schema, accessLevel: "internal");
+                    SchemaGrammar.WriteStateDump(schema, modelName);
                     break;
 
                 case (int)Interface:
@@ -107,13 +108,37 @@ public partial class TopLevelGrammar
             }
         }
 
-        Program.AppendLine("    public async Task<string> RenderAsync()\n    {{");
+        Program.AppendLine("    public async Task<string> RenderAsync(bool dumpState = false)\n    {{");
+        Program.AppendLine("        var subComponents = new List<IRenderView>();");
         Program.AppendLine("        var build = new System.Text.StringBuilder();");
         Program.AppendLine("        using var writer = new StringWriter(build);");
+
+        //TODO Uncomment
+        var htmlEnc = "";// "System.Web.HttpUtility.HtmlEncode";
+        var jsonEnc = "System.Text.Json.JsonSerializer.Serialize";
+
+        buildLogic("if (dumpState) {");
+
+        buildLogic("var stateDump = GetState();");
+        buildLogic("foreach (var child in subComponents) {");
+        buildLogic("stateDump.Children.Add(child.GetState());");
+        buildLogic("}");
+
+        HtmlNodeGrammar.WriteInnerContent(
+            new()
+            {
+                InnerContent = @$"""<!--"" + {htmlEnc}({jsonEnc}(stateDump)) + ""-->"""
+            },
+            buildDom,
+            unsafeHtml: true);
+
+        buildLogic("}");
+
         Program.Append(renderBuilder
             .ToString()
             .Replace("{", "{{")
             .Replace("}", "}}"));
+
         Program.AppendLine("        return build.ToString();");
         Program.AppendLine("    }}");
 

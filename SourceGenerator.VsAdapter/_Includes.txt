@@ -18,3 +18,16 @@ public interface IModelDbWrapper
     Task ExecuteAsync(Func<Task> impl);
     Task<T> ExecuteAsync<T>(Func<Task<T>> impl);
 }
+
+public interface IRenderView
+{
+	Task<string> RenderAsync(bool dumpState = false);
+	StateDump GetState();
+}
+
+public class StateDump
+{
+	public string Tag { get; set; }
+	public Dictionary<string, object> State { get; set; } = new();
+	public List<StateDump> Children { get; set; } = new();
+}
