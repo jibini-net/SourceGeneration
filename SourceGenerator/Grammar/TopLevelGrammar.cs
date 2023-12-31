@@ -56,7 +56,6 @@ public partial class TopLevelGrammar
         Program.AppendLine("}}");
     }
 
-    //TODO Head content
     public static void MatchView(TokenStream stream, string modelName)
     {
         Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
@@ -80,7 +79,7 @@ public partial class TopLevelGrammar
             renderBuilder.AppendLine($"        {stmt}");
         }
 
-        buildDom($"\"<meta class=\\\"{modelName}\\\" open=1>\"");
+        buildDom($"\"<!--_open-{modelName}-->\"");
 
         while (stream.Next > 0)
         {
@@ -111,7 +110,7 @@ public partial class TopLevelGrammar
             }
         }
 
-        buildDom($"\"<meta class=\\\"{modelName}\\\" close=1>\"");
+        buildDom($"\"<!--_close-{modelName}-->\"");
 
         Program.AppendLine("    public async Task<string> RenderAsync(StateDump state)\n    {{");
         Program.AppendLine("        var build = new System.Text.StringBuilder();");
