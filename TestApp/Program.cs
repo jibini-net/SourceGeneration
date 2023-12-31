@@ -1,6 +1,7 @@
 ﻿using Generated;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json;
 using TestApp.Services;
 using TestApp.Views;
 
@@ -60,8 +61,11 @@ public class Program
             var dashboard = app.Services.GetRequiredService<DashboardBase.IView>();
             dashboard.SetTitle("Hello, world!");
             dashboard.SetDescription("Foo bar");
-            var html = await dashboard.RenderAsync(dumpState: true);
+
+            var state = new StateDump();
+            var html = await dashboard.RenderAsync(state);
             Console.WriteLine(html);
+            Console.WriteLine(JsonSerializer.Serialize(state));
         }
 
         app.WaitForShutdown();

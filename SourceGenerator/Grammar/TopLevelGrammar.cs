@@ -108,31 +108,13 @@ public partial class TopLevelGrammar
             }
         }
 
-        Program.AppendLine("    public async Task<string> RenderAsync(bool dumpState = false)\n    {{");
-        Program.AppendLine("        var subComponents = new List<IRenderView>();");
+        Program.AppendLine("    public async Task<string> RenderAsync(StateDump state)\n    {{");
         Program.AppendLine("        var build = new System.Text.StringBuilder();");
+        Program.AppendLine("        var tagCounts = new Dictionary<string, int>();");
+        Program.AppendLine("        state.Tag = \"{0}\";",
+            modelName);
+        Program.AppendLine("        state.State = GetState();");
         Program.AppendLine("        using var writer = new StringWriter(build);");
-
-        //TODO Uncomment
-        var htmlEnc = "";// "System.Web.HttpUtility.HtmlEncode";
-        var jsonEnc = "System.Text.Json.JsonSerializer.Serialize";
-
-        buildLogic("if (dumpState) {");
-
-        buildLogic("var stateDump = GetState();");
-        buildLogic("foreach (var child in subComponents) {");
-        buildLogic("stateDump.Children.Add(child.GetState());");
-        buildLogic("}");
-
-        HtmlNodeGrammar.WriteInnerContent(
-            new()
-            {
-                InnerContent = @$"""<!--"" + {htmlEnc}({jsonEnc}(stateDump)) + ""-->"""
-            },
-            buildDom,
-            unsafeHtml: true);
-
-        buildLogic("}");
 
         Program.Append(renderBuilder
             .ToString()
