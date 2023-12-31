@@ -26,6 +26,7 @@ public interface IRenderView
 	void LoadState(Dictionary<string, object> state);
 }
 
+//TODO Key field
 public class StateDump
 {
 	public string Tag { get; set; }

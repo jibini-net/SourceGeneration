@@ -31,7 +31,7 @@ public class HtmlNodeGrammar
             name = stream.Text;
         }
 
-        // "=" "{" {C# code} "}
+        // "=" "{" {C# code} "}"
         if (stream.Poll() != (int)Assign)
         {
             throw new Exception("Expected '='");
