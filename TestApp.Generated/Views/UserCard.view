@@ -7,7 +7,9 @@ interface {
 
 if(
 	{(loggedIn?.suID ?? 0) == 0}
+
 	span({"Guest"})
+
 	<>
 		strong({loggedIn.suFirstName})
 		a(| href = {"logout"}|

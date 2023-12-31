@@ -1,6 +1,7 @@
 ﻿using Generated;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json;
 using TestApp.Services;
 using TestApp.Views;
 
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddDashboardView<Dashboard>();
         services.AddUserCardView<UserCardBase.Default>();
+        services.AddRecursiveViewView<RecursiveViewBase.Default>();
     }
 }
 
@@ -60,8 +62,30 @@ public class Program
             var dashboard = app.Services.GetRequiredService<DashboardBase.IView>();
             dashboard.SetTitle("Hello, world!");
             dashboard.SetDescription("Foo bar");
-            var html = await dashboard.RenderAsync();
-            Console.WriteLine(html);
+
+            var state = new StateDump()
+            {
+                Tag = "Dashboard"
+            };
+            state.State["description"] = "Overridden state";
+            state.Children.Add(new()
+            {
+                Tag = "UserCard",
+                State = new()
+                {
+                    ["loggedIn"] = new SiteUser()
+                    {
+                        suID = 1,
+                        suFirstName = "John",
+                        suLastName = "Smith"
+                    }
+                }
+            });
+            dashboard.LoadState(state.State);
+
+            var html = await dashboard.RenderAsync(state);
+            Console.WriteLine($"<!DOCTYPE html><html><body>{html}</body></html>");
+            Console.WriteLine($"<!--{JsonSerializer.Serialize(state)}-->");
         }
 
         app.WaitForShutdown();

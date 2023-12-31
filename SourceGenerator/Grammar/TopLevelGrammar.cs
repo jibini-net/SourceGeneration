@@ -56,6 +56,7 @@ public partial class TopLevelGrammar
         Program.AppendLine("}}");
     }
 
+    //TODO Head content
     public static void MatchView(TokenStream stream, string modelName)
     {
         Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
@@ -79,6 +80,8 @@ public partial class TopLevelGrammar
             renderBuilder.AppendLine($"        {stmt}");
         }
 
+        buildDom($"\"<meta class=\\\"{modelName}\\\" open=1>\"");
+
         while (stream.Next > 0)
         {
             switch (stream.Next)
@@ -93,6 +96,7 @@ public partial class TopLevelGrammar
                 case (int)State:
                     var schema = SchemaGrammar.Match(stream);
                     SchemaGrammar.Write(schema, accessLevel: "internal");
+                    SchemaGrammar.WriteStateDump(schema, modelName);
                     break;
 
                 case (int)Interface:
@@ -107,13 +111,25 @@ public partial class TopLevelGrammar
             }
         }
 
-        Program.AppendLine("    public async Task<string> RenderAsync()\n    {{");
+        buildDom($"\"<meta class=\\\"{modelName}\\\" close=1>\"");
+
+        Program.AppendLine("    public async Task<string> RenderAsync(StateDump state)\n    {{");
         Program.AppendLine("        var build = new System.Text.StringBuilder();");
+        Program.AppendLine("        var tagCounts = new Dictionary<string, int>();");
+        Program.AppendLine("        state.Tag = \"{0}\";",
+            modelName);
+        Program.AppendLine("        state.State = GetState();");
         Program.AppendLine("        using var writer = new StringWriter(build);");
+
         Program.Append(renderBuilder
             .ToString()
             .Replace("{", "{{")
             .Replace("}", "}}"));
+
+        Program.AppendLine("        state.Children = tagCounts\n" +
+                           "            .SelectMany((kv) => state.Children.Where((it) => it.Tag == kv.Key).Take(kv.Value + 1))\n" +
+                           "            .ToList();");
+
         Program.AppendLine("        return build.ToString();");
         Program.AppendLine("    }}");
 

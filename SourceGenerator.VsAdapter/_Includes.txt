@@ -18,3 +18,35 @@ public interface IModelDbWrapper
     Task ExecuteAsync(Func<Task> impl);
     Task<T> ExecuteAsync<T>(Func<Task<T>> impl);
 }
+
+public interface IRenderView
+{
+	Task<string> RenderAsync(StateDump state);
+	Dictionary<string, object> GetState();
+	void LoadState(Dictionary<string, object> state);
+}
+
+//TODO Key field
+public class StateDump
+{
+	public string Tag { get; set; }
+	public Dictionary<string, object> State { get; set; } = new();
+	public List<StateDump> Children { get; set; } = new();
+
+	public StateDump GetOrAddChild(string tag, int indexByTag)
+	{
+		var result = Children
+			.Where((it) => it.Tag == tag)
+			.Skip(indexByTag)
+			.FirstOrDefault();
+		if (result is null)
+		{
+			result = new()
+			{
+				Tag = tag
+			};
+			Children.Add(result);
+		}
+		return result;
+	}
+}

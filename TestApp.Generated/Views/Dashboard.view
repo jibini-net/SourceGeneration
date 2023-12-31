@@ -1,7 +1,6 @@
 state {
 	string title,
-	string description,
-	SiteUser loggedIn
+	string description
 }
 
 interface {
@@ -9,43 +8,58 @@ interface {
 	SetDescription(string description)
 }
 
-unsafe({"<!DOCTYPE html>"})
-html( 
-	head(
-		title({"Hello, world!"})
-		base(| href = {"/"} |)
+div(
+	|
+	class = {"d-flex flex-row mb-4"},
+	style = {"width: 100%;"}
+	|
+	div(
+		h6(
+			{"Title: " + title}
+		)
 	)
-	body(
-		div(
-			|
-			class = {"d-flex flex-row mb-4"},
-			style = {"width: 100%;"}
-			|
-			div(
-				h6(
-					{"Title: " + title}
-				)
-			)
-			div(| class = {"ms-auto"} |
-				UserCard(| loggedIn = {loggedIn} |)
-			)
-		)
-		div(| class = {"mb-4"} |
-			p(| class = {"mb-4"} |
-				{"Description: " + description}
-			)
-			button(| onclick = {"test();"} |
-				{"Show Alert"}
-			)
-		)
-		unsafe(<">
-
-			<script>
-				function test() {
-					alert("Hello, world!");
-				}
-			</script>
-
-		</">)
+	div(| class = {"ms-auto"} |
+		UserCard()
 	)
 )
+div(| class = {"mb-4"} |
+	p(| class = {"mb-4"} |
+		{"Description: " + description}
+	)
+	button(| onclick = {"test(this);"} |
+		{"Show Alert"}
+	)
+)
+RecursiveView()
+unsafe(<">
+
+	<script>
+		function findOpen(el, depth) {
+			if (!depth) {
+				depth = 0;
+			}
+			while (el.previousSibling)
+			{
+				el = el.previousSibling;
+				if (el.tagName.toLowerCase() == "meta") {
+					if (el.getAttribute("open"))
+					{
+						if (depth-- == 0)
+						{
+							return el;
+						}
+					} else if (el.getAttribute("close"))
+					{
+						depth++;
+					}
+				}
+			}
+			return findOpen(el.parentElement, depth);
+		}
+
+		function test(el) {
+			alert(findOpen(el));
+		}
+	</script>
+
+</">)
