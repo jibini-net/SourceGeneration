@@ -1,0 +1,17 @@
+state {
+	int depth = {1}
+}
+
+interface {
+}
+
+if(
+	{depth < 5}
+
+	<>
+		unsafe({$"<h{depth}>Depth {depth}</h{depth}>"})
+		RecursiveView(| depth = {depth + 1} |)
+	</>
+
+	p({"In too deep!"})
+)

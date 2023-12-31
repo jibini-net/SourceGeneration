@@ -23,6 +23,7 @@ public interface IRenderView
 {
 	Task<string> RenderAsync(StateDump state);
 	Dictionary<string, object> GetState();
+	void LoadState(Dictionary<string, object> state);
 }
 
 public class StateDump

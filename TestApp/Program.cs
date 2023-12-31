@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddDashboardView<Dashboard>();
         services.AddUserCardView<UserCardBase.Default>();
+        services.AddRecursiveViewView<RecursiveViewBase.Default>();
     }
 }
 
@@ -62,7 +63,26 @@ public class Program
             dashboard.SetTitle("Hello, world!");
             dashboard.SetDescription("Foo bar");
 
-            var state = new StateDump();
+            var state = new StateDump()
+            {
+                Tag = "Dashboard"
+            };
+            state.State["description"] = "Overridden state";
+            state.Children.Add(new()
+            {
+                Tag = "UserCard",
+                State = new()
+                {
+                    ["loggedIn"] = new SiteUser()
+                    {
+                        suID = 1,
+                        suFirstName = "John",
+                        suLastName = "Smith"
+                    }
+                }
+            });
+            dashboard.LoadState(state.State);
+
             var html = await dashboard.RenderAsync(state);
             Console.WriteLine(html);
             Console.WriteLine(JsonSerializer.Serialize(state));

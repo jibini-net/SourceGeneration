@@ -250,6 +250,7 @@ public class HtmlNodeGrammar
                 var indexByTag = (tagCounts[""{dto.Tag}""] = (tagCounts.GetValueOrDefault(""{dto.Tag}"", -1) + 1));
                 var subState = state.GetOrAddChild(""{dto.Tag}"", indexByTag);
                 var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
+                component.LoadState(subState.State);
                 {string.Join("\n                ", assignActions)}
                 return await component.RenderAsync(subState);
             }})).Invoke()
