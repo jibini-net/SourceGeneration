@@ -79,7 +79,7 @@ public partial class TopLevelGrammar
             renderBuilder.AppendLine($"        {stmt}");
         }
 
-        buildDom($"\"<!--_open-{modelName}-->\"");
+        buildDom($"$\"<!--_open-{modelName}({{indexByTag}})-->\"");
 
         while (stream.Next > 0)
         {
@@ -110,9 +110,9 @@ public partial class TopLevelGrammar
             }
         }
 
-        buildDom($"\"<!--_close-{modelName}-->\"");
+        buildDom($"$\"<!--_close-{modelName}({{indexByTag}})-->\"");
 
-        Program.AppendLine("    public async Task<string> RenderAsync(StateDump state)\n    {{");
+        Program.AppendLine("    public async Task<string> RenderAsync(StateDump state, int indexByTag = 0)\n    {{");
         Program.AppendLine("        var build = new System.Text.StringBuilder();");
         Program.AppendLine("        var tagCounts = new Dictionary<string, int>();");
         Program.AppendLine("        state.Tag = \"{0}\";",

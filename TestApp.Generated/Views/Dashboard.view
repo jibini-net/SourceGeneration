@@ -41,27 +41,31 @@ html(
 		unsafe(<">
 
 			<script>
-				function findOpen(el, depth) {
-					if (!depth) {
-						depth = 0;
-					}
+				function findPath(el) {
+					var depth = 0;
 					while (el.previousSibling) {
 						el = el.previousSibling;
 						if (el.nodeType == 8) {
 							if (el.textContent.startsWith("_open-")) {
 								if (depth-- == 0) {
-									return el;
+									return findPath(el).concat([el]);
 								}
 							} else if (el.textContent.startsWith("_close-")) {
 								depth++;
 							}
 						}
 					}
-					return findOpen(el.parentElement, depth);
+					if (el.parentElement)
+					{
+						return findPath(el.parentElement);
+					} else
+					{
+						return [];
+					}
 				}
 
 				function test(el) {
-					alert(findOpen(el).textContent);
+					alert(findPath(el).map((it) => it.textContent));
 				}
 			</script>
 

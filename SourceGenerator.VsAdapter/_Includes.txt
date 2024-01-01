@@ -21,7 +21,7 @@ public interface IModelDbWrapper
 
 public interface IRenderView
 {
-	Task<string> RenderAsync(StateDump state);
+	Task<string> RenderAsync(StateDump state, int indexByTag = 0);
 	Dictionary<string, object> GetState();
 	void LoadState(Dictionary<string, object> state);
 }
