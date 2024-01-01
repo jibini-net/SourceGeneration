@@ -290,7 +290,7 @@ public class HtmlNodeGrammar
             ? ""
             : "System.Web.HttpUtility.HtmlEncode";
 
-        buildDom($"{htmlEnc}(({dto.InnerContent}).ToString())");
+        buildDom($"{htmlEnc}(({dto.InnerContent})?.ToString() ?? \"\")");
     }
 
     //TODO Improve

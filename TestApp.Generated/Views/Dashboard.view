@@ -55,13 +55,9 @@ html(
 							}
 						}
 					}
-					if (el.parentElement)
-					{
-						return findPath(el.parentElement);
-					} else
-					{
-						return [];
-					}
+					return el.parentElement
+						? findPath(el.parentElement)
+						: [];
 				}
 
 				function test(el) {
