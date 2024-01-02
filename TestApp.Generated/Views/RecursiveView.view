@@ -13,5 +13,10 @@ if(
 		RecursiveView(| depth = {depth + 1} |)
 	</>
 
-	p({"In too deep!"})
+	<>
+		p({"In too deep!"})
+		button(| onclick = {"test(this);"} |
+			{"Show Alert"}
+		)
+	</>
 )

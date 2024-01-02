@@ -56,9 +56,10 @@ public partial class TopLevelGrammar
         Program.AppendLine("}}");
     }
 
-    //TODO Head content
     public static void MatchView(TokenStream stream, string modelName)
     {
+        Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
+        
         Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
             modelName);
         Program.AppendLine("{{");
@@ -80,7 +81,7 @@ public partial class TopLevelGrammar
             renderBuilder.AppendLine($"        {stmt}");
         }
 
-        buildDom($"\"<meta class=\\\"{modelName}\\\" open=1>\"");
+        buildDom($"$\"<!--_open-{modelName}({{indexByTag}})-->\"");
 
         while (stream.Next > 0)
         {
@@ -111,9 +112,9 @@ public partial class TopLevelGrammar
             }
         }
 
-        buildDom($"\"<meta class=\\\"{modelName}\\\" close=1>\"");
+        buildDom($"$\"<!--_close-{modelName}({{indexByTag}})-->\"");
 
-        Program.AppendLine("    public async Task<string> RenderAsync(StateDump state)\n    {{");
+        Program.AppendLine("    public async Task<string> RenderAsync(StateDump state, int indexByTag = 0)\n    {{");
         Program.AppendLine("        var build = new System.Text.StringBuilder();");
         Program.AppendLine("        var tagCounts = new Dictionary<string, int>();");
         Program.AppendLine("        state.Tag = \"{0}\";",
@@ -131,6 +132,28 @@ public partial class TopLevelGrammar
                            "            .ToList();");
 
         Program.AppendLine("        return build.ToString();");
+        Program.AppendLine("    }}");
+
+        Program.AppendLine("}}");
+
+        Program.AppendLine("[Controller]\n[Route(\"/view/{0}\")]",
+            modelName);
+        Program.AppendLine("public class {0}ViewController : ControllerBase",
+            modelName);
+        Program.AppendLine("{{");
+
+        Program.AppendLine("    private readonly {0}Base.IView component;",
+            modelName);
+        Program.AppendLine("    public {0}ViewController({0}Base.IView component)\n    {{",
+            modelName);
+        Program.AppendLine("        this.component = component;");
+        Program.AppendLine("    }}");
+
+        Program.AppendLine("    [HttpGet(\"\")]");
+        Program.AppendLine("    public async Task<IActionResult> Index()\n    {{");
+        Program.AppendLine("        var state = new StateDump();");
+        Program.AppendLine("        var html = await component.RenderAsync(state);");
+        Program.AppendLine("        return Content(html + $\"\\n<!--{{System.Text.Json.JsonSerializer.Serialize(state)}}-->\", \"text/html\");");
         Program.AppendLine("    }}");
 
         Program.AppendLine("}}");

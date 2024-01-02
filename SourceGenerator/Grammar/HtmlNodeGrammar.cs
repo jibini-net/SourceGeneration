@@ -252,7 +252,7 @@ public class HtmlNodeGrammar
                 var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
                 component.LoadState(subState.State);
                 {string.Join("\n                ", assignActions)}
-                return await component.RenderAsync(subState);
+                return await component.RenderAsync(subState, indexByTag);
             }})).Invoke()
             ".Trim();
         buildDom(creationAction);
@@ -290,7 +290,7 @@ public class HtmlNodeGrammar
             ? ""
             : "System.Web.HttpUtility.HtmlEncode";
 
-        buildDom($"{htmlEnc}(({dto.InnerContent}).ToString())");
+        buildDom($"{htmlEnc}(({dto.InnerContent})?.ToString() ?? \"\")");
     }
 
     //TODO Improve

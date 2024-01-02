@@ -39,8 +39,10 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var builder = Host.CreateApplicationBuilder(args);
-        builder.Services.AddBackendServices();
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddControllers();
+        
+        //builder.Services.AddBackendServices();
         // or
         //builder.Services.AddFrontendServices();
 
@@ -48,6 +50,8 @@ public class Program
         builder.Services.AddViewServices();
 
         var app = builder.Build();
+        app.UseRouting();
+        app.MapControllers();
         app.Start();
 
         /*
@@ -84,7 +88,7 @@ public class Program
             dashboard.LoadState(state.State);
 
             var html = await dashboard.RenderAsync(state);
-            Console.WriteLine($"<!DOCTYPE html><html><body>{html}</body></html>");
+            Console.WriteLine(html);
             Console.WriteLine($"<!--{JsonSerializer.Serialize(state)}-->");
         }
 
