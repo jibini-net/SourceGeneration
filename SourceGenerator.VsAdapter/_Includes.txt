@@ -1,5 +1,7 @@
 namespace Generated;
 
+using System.Text.Json;
+
 public interface IModelDbAdapter
 {
     Task ExecuteAsync(string procName, object args);
@@ -48,5 +50,21 @@ public class StateDump
 			Children.Add(result);
 		}
 		return result;
+	}
+}
+
+public static class Extensions
+{
+	public static T ParseIfNot<T>(this object o)
+	{
+		if (o is null)
+		{
+			return default;
+		}
+		if (o is JsonElement json && typeof(T) != typeof(JsonElement))
+		{
+			return JsonSerializer.Deserialize<T>(json);
+		}
+		return (T)o;
 	}
 }
