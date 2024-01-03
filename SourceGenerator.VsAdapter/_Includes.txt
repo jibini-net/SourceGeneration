@@ -67,4 +67,12 @@ public static class Extensions
 		}
 		return (T)o;
 	}
+
+	public static async Task<string> RenderPageAsync(this IRenderView view, StateDump state = null)
+	{
+		state ??= new();
+		var html = await view.RenderAsync(state);
+		//var stateComment = ...;
+		return html;
+	}
 }

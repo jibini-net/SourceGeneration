@@ -15,7 +15,11 @@ if(
 
 	<>
 		p({"In too deep!"})
-		button(| onclick = {"test(this);"} |
+		button(
+			|
+			class = {"btn btn-outline-secondary"},
+			onclick = {"test(this);"}
+			|
 			{"Show Alert"}
 		)
 	</>

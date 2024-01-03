@@ -8,63 +8,28 @@ interface {
 	SetDescription(string description)
 }
 
-unsafe({"<!DOCTYPE html>"})
-html(
-	head(
-		base(| href = {"/"} |)
-		title({title})
+div(
+	|
+	class = {"d-flex flex-row mb-4"},
+	style = {"width: 100%;"}
+	|
+	h3(
+		{"Title: " + title}
 	)
-	body(
-		div(
-			|
-			class = {"d-flex flex-row mb-4"},
-			style = {"width: 100%;"}
-			|
-			div(
-				h6(
-					{"Title: " + title}
-				)
-			)
-			div(| class = {"ms-auto"} |
-				UserCard()
-			)
-		)
-		div(| class = {"mb-4"} |
-			p(| class = {"mb-4"} |
-				{"Description: " + description}
-			)
-			button(| onclick = {"test(this);"} |
-				{"Show Alert"}
-			)
-		)
-		RecursiveView()
-		unsafe(<">
-
-			<script>
-				function findPath(el) {
-					var depth = 0;
-					while (el.previousSibling) {
-						el = el.previousSibling;
-						if (el.nodeType == 8) {
-							if (el.textContent.startsWith("_open-")) {
-								if (depth-- == 0) {
-									return findPath(el).concat([el]);
-								}
-							} else if (el.textContent.startsWith("_close-")) {
-								depth++;
-							}
-						}
-					}
-					return el.parentElement
-						? findPath(el.parentElement)
-						: [];
-				}
-
-				function test(el) {
-					alert(findPath(el).map((it) => it.textContent));
-				}
-			</script>
-
-		</">)
+	div(| class = {"ms-auto"} |
+		UserCard()
 	)
 )
+div(| class = {"mb-4"} |
+	p(| class = {"mb-4"} |
+		{"Description: " + description}
+	)
+	button(
+		|
+		class = {"btn btn-primary"},
+		onclick = {"test(this);"}
+		|
+		{"Show Alert"}
+	)
+)
+RecursiveView()
