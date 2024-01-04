@@ -35,6 +35,12 @@ public class TagIndex
 	public int IndexByTag { get; set; }
 }
 
+public class TagRenderRequest
+{
+	public StateDump State { get; set; }
+	public List<TagIndex> Path { get; set; }
+}
+
 //TODO Key field
 public class StateDump
 {

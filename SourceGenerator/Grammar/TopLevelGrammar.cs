@@ -153,9 +153,8 @@ public partial class TopLevelGrammar
         Program.AppendLine("        this.component = component;");
         Program.AppendLine("    }}");
 
-        Program.AppendLine("    [HttpGet(\"\")]");
-        Program.AppendLine("    public async Task<IActionResult> Index()\n    {{");
-        Program.AppendLine("        var state = new StateDump();");
+        Program.AppendLine("    [HttpPost(\"\")]");
+        Program.AppendLine("    public async Task<IActionResult> Index([FromBody] StateDump state = null)\n    {{");
         Program.AppendLine("        var html = await component.RenderPageAsync(state);");
         Program.AppendLine("        return Content(html, \"text/html\");");
         Program.AppendLine("    }}");
@@ -167,13 +166,12 @@ public partial class TopLevelGrammar
 
             string attr((string type, string name) it) => $"{it.type} {it.name}";
             var attrs = action.Params.Select(attr);
-            var attributes = string.Join(", ", attrs);
+            var attributes = string.Join(", ", attrs.Prepend(""));
 
-            Program.AppendLine("    public async Task<IActionResult> {0}({1})\n    {{",
+            Program.AppendLine("    public async Task<IActionResult> {0}([FromBody] TagRenderRequest render{1})\n    {{",
                 action.Name,
                 attributes);
-            Program.AppendLine("        var state = new StateDump();");
-            Program.AppendLine("        var html = await component.RenderComponentAsync(state, new(), async (it) =>");
+            Program.AppendLine("        var html = await component.RenderComponentAsync(render.State, render.Path, async (it) =>");
             Program.AppendLine("        {{");
 
             Program.AppendLine("            {0}it.{1}({2});",
