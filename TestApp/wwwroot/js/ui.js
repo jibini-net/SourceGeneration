@@ -55,7 +55,7 @@ function replace(startEl, html) {
     var el = startEl.nextSibling;
 
     for (var depth = 0; depth >= 0;) {
-        if (replPointer) {
+        if (replPointer && replPointer.nextSibling && replPointer.nextSibling.nextSibling) {
             replPointer = replPointer.nextSibling;
         }
 
@@ -75,7 +75,7 @@ function replace(startEl, html) {
         if (depth >= 0) {
             var oldEl = el;
             el = el.nextSibling
-            if (replPointer && replPointer.nextSibling) {
+            if (replPointer && replPointer.nextSibling && replPointer.nextSibling.nextSibling) {
                 oldEl.replaceWith(replPointer.cloneNode(true));
             } else {
                 oldEl.remove();
@@ -83,13 +83,66 @@ function replace(startEl, html) {
         }
     }
 
-    for (el = el.previousSibling; replPointer && replPointer.nextSibling; replPointer = replPointer.nextSibling) {
+    for (el = el.previousSibling;
+        replPointer && replPointer.nextSibling && replPointer.nextSibling.nextSibling;
+        replPointer = replPointer.nextSibling) {
         el.after(replPointer.cloneNode(true));
         el = el.nextSibling;
     }
+
+    while (replPointer && replPointer.nextSibling) {
+        replPointer = replPointer.nextSibling;
+    }
+    if (replPointer) {
+        setState(replPointer);
+    }
 }
 
-function test(el) {
+function getState() {
+    var htmlElement = $("html")[0];
+    var stateComment = htmlElement.nextSibling.nextSibling;
+
+    var txt = document.createElement("textarea");
+    txt.innerHTML = stateComment.textContent;
+    return JSON.parse(txt.value);
+}
+
+function setState(newComment) {
+    var htmlElement = $("html")[0];
+    var stateComment = htmlElement.nextSibling.nextSibling;
+
+    stateComment.replaceWith(newComment.cloneNode(true));
+}
+
+function dispatch(el, action, args) {
+    if (!args) {
+        args = { };
+    }
     var path = findPath(el);
-    replace(path[path.length - 1], "<!-- --><h1>Hello, world!</h1><!-- -->");
+    var state = getState();
+    var tagRenderRequest = {
+        State: state,
+        Path: path
+            .slice(1)
+            .map(parseData)
+            .map((it) => ({
+                Tag: it.tag,
+                IndexByTag: it.indexByTag
+            }))
+    };
+    var self = path[path.length - 1];
+    var selfData = parseData(self);
+    $.ajax({
+        url: `view/${selfData.tag}/${action}?${$.param(args)}`,
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(tagRenderRequest),
+        dataType: "html",
+        success: (it) => {
+            replace(self, it);
+        },
+        error: function (xhr, error) {
+            alert(`${xhr.status} - ${error}`);
+        }
+    });
 }

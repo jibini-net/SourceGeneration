@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddDashboardView<Dashboard>();
         services.AddUserCardView<UserCardBase.Default>();
-        services.AddRecursiveViewView<RecursiveViewBase.Default>();
+        services.AddRecursiveViewView<RecursiveView>();
         services.AddLayoutView<LayoutBase.Default>();
     }
 }

@@ -27,9 +27,9 @@ div(| class = {"mb-4"} |
 	button(
 		|
 		class = {"btn btn-primary"},
-		onclick = {"test(this);"}
+		onclick = {"dispatch(this, 'SetDescription', { 'description': 'Hello, world!' });"}
 		|
-		{"Show Alert"}
+		{"Change Description"}
 	)
 )
 RecursiveView()
