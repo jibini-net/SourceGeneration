@@ -1,6 +1,7 @@
 namespace Generated;
 
 using System.Text.Json;
+using System.Web;
 
 public interface IModelDbAdapter
 {
@@ -26,6 +27,12 @@ public interface IRenderView
 	Task<string> RenderAsync(StateDump state, int indexByTag = 0);
 	Dictionary<string, object> GetState();
 	void LoadState(Dictionary<string, object> state);
+}
+
+public class TagIndex
+{
+	public string Tag { get; set; }
+	public int IndexByTag { get; set; }
 }
 
 //TODO Key field
@@ -71,8 +78,32 @@ public static class Extensions
 	public static async Task<string> RenderPageAsync(this IRenderView view, StateDump state = null)
 	{
 		state ??= new();
+
+		view.LoadState(state.State);
 		var html = await view.RenderAsync(state);
-		//var stateComment = ...;
-		return html;
+
+		var stateJson = JsonSerializer.Serialize(state);
+		var stateComment = $"<!--{HttpUtility.HtmlEncode(stateJson).Replace("&quot;", "\"")}-->";
+		return html + stateComment;
+	}
+	
+	public static async Task<string> RenderComponentAsync<T>(this T view, StateDump state, List<TagIndex> target, Func<T, Task> config)
+		where T : IRenderView
+	{
+		state ??= new();
+		
+		var subState = state;
+		foreach (var step in target)
+		{
+			subState = subState.GetOrAddChild(step.Tag, step.IndexByTag);
+		}
+		view.LoadState(subState.State);
+		await config(view);
+		var html = await view.RenderAsync(subState);
+		
+		var stateJson = JsonSerializer.Serialize(state);
+		var stateComment = $"<!--{HttpUtility.HtmlEncode(stateJson).Replace("&quot;", "\"")}-->";
+		
+		return html + stateComment;
 	}
 }
