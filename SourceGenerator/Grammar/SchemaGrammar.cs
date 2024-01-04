@@ -72,9 +72,8 @@ public class SchemaGrammar
         Program.AppendLine("        }};");
         Program.AppendLine("    }}");
 
-        //TODO Check for unparsed JSON elements
         string typeOf(string name) => dto.Fields.FirstOrDefault((it) => it.Name == name).TypeName;
-        string assign(string name) => $"        {name} = ({typeOf(name)})state.GetValueOrDefault(\"{name}\", {name});";
+        string assign(string name) => $"        {name} = state.GetValueOrDefault(\"{name}\", {name})?.ParseIfNot<{typeOf(name)}>() ?? default;";
         var assignments = dto.Fields.Select((it) => assign(it.Name));
 
         Program.AppendLine("    public void LoadState(Dictionary<string, object> state)\n    {{");

@@ -3,6 +3,7 @@ state {
 }
 
 interface {
+	GoBack()
 }
 
 if(
@@ -13,10 +14,14 @@ if(
 		RecursiveView(| depth = {depth + 1} |)
 	</>
 
-	<>
-		p({"In too deep!"})
-		button(| onclick = {"test(this);"} |
-			{"Show Alert"}
+	p(
+		{"In too deep!"}
+		a(
+			|
+			class = {"btn btn-outline-secondary ms-2"},
+			onclick = {"dispatch(this, 'GoBack');"}
+			|
+			{"Go back"}
 		)
-	</>
+	)
 )
