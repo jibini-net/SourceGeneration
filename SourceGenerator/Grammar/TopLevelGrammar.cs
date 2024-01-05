@@ -59,7 +59,9 @@ public partial class TopLevelGrammar
     public static void MatchView(TokenStream stream, string modelName)
     {
         Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
-        
+        Program.AppendLine("using System.Text;");
+        Program.AppendLine("using System.Text.Json;");
+
         Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
             modelName);
         Program.AppendLine("{{");
@@ -154,7 +156,11 @@ public partial class TopLevelGrammar
         Program.AppendLine("    }}");
 
         Program.AppendLine("    [HttpPost(\"\")]");
-        Program.AppendLine("    public async Task<IActionResult> Index([FromBody] StateDump state = null)\n    {{");
+        Program.AppendLine("    public async Task<IActionResult> Index()\n    {{");
+        Program.AppendLine("        using var requestBody = new MemoryStream();");
+        Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
+        Program.AppendLine("        var stateJson = Encoding.UTF8.GetString(requestBody.ToArray());");
+        Program.AppendLine("        var state = JsonSerializer.Deserialize<StateDump>(stateJson ?? \"null\");");
         Program.AppendLine("        var html = await component.RenderPageAsync(state);");
         Program.AppendLine("        return Content(html, \"text/html\");");
         Program.AppendLine("    }}");
@@ -166,11 +172,15 @@ public partial class TopLevelGrammar
 
             string attr((string type, string name) it) => $"{it.type} {it.name}";
             var attrs = action.Params.Select(attr);
-            var attributes = string.Join(", ", attrs.Prepend(""));
+            var attributes = string.Join(", ", attrs);
 
-            Program.AppendLine("    public async Task<IActionResult> {0}([FromBody] TagRenderRequest render{1})\n    {{",
+            Program.AppendLine("    public async Task<IActionResult> {0}({1})\n    {{",
                 action.Name,
                 attributes);
+            Program.AppendLine("        using var requestBody = new MemoryStream();");
+            Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
+            Program.AppendLine("        var renderJson = Encoding.UTF8.GetString(requestBody.ToArray());");
+            Program.AppendLine("        var render = JsonSerializer.Deserialize<TagRenderRequest>(renderJson ?? \"null\");");
             Program.AppendLine("        var html = await component.RenderComponentAsync(render.State, render.Path, async (it) =>");
             Program.AppendLine("        {{");
 

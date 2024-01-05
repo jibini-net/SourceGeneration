@@ -8,7 +8,7 @@ unsafe({"<!DOCTYPE html>"})
 html(
 	head(
 		base(| href = {"/"} |)
-		title({"Hello, world!"})
+		title({"Test App"})
 		link(
 			|
 			rel = {"stylesheet"},
