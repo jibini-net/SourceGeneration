@@ -39,6 +39,7 @@ public class TagRenderRequest
 {
 	public StateDump State { get; set; }
 	public List<TagIndex> Path { get; set; }
+	public JsonElement Pars { get; set; }
 }
 
 //TODO Key field
@@ -109,7 +110,6 @@ public static class Extensions
 		
 		var stateJson = JsonSerializer.Serialize(state);
 		var stateComment = $"<!--{HttpUtility.HtmlEncode(stateJson).Replace("&quot;", "\"")}-->";
-		
 		return html + stateComment;
 	}
 }

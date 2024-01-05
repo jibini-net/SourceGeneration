@@ -167,20 +167,26 @@ public partial class TopLevelGrammar
 
         foreach (var action in actions.Actions)
         {
+            string attr((string type, string name) it) => $"public {it.type} {it.name} {{ get; set; }}";
+            var attrs = action.Params.Select(attr);
+            var attributes = string.Join("\n        ", attrs);
+
+            Program.AppendLine("    public class _{0}_Params\n    {{",
+                action.Name);
+            Program.AppendLine("        {0}",
+                attributes);
+            Program.AppendLine("    }}");
+
             Program.AppendLine("    [HttpPost(\"{0}\")]",
                 action.Name);
-
-            string attr((string type, string name) it) => $"{it.type} {it.name}";
-            var attrs = action.Params.Select(attr);
-            var attributes = string.Join(", ", attrs);
-
-            Program.AppendLine("    public async Task<IActionResult> {0}({1})\n    {{",
-                action.Name,
-                attributes);
+            Program.AppendLine("    public async Task<IActionResult> {0}()\n    {{",
+                action.Name);
             Program.AppendLine("        using var requestBody = new MemoryStream();");
             Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
             Program.AppendLine("        var renderJson = Encoding.UTF8.GetString(requestBody.ToArray());");
             Program.AppendLine("        var render = JsonSerializer.Deserialize<TagRenderRequest>(renderJson ?? \"null\");");
+            Program.AppendLine("        var pars = JsonSerializer.Deserialize<_{0}_Params>(render.Pars);",
+                action.Name);
             Program.AppendLine("        var html = await component.RenderComponentAsync(render.State, render.Path, async (it) =>");
             Program.AppendLine("        {{");
 
@@ -189,7 +195,7 @@ public partial class TopLevelGrammar
                     ? "await "
                     : "",
                 action.Name,
-                string.Join(", ", action.Params.Select((it) => it.name)));
+                string.Join(", ", action.Params.Select((it) => $"pars.{it.name}")));
 
             Program.AppendLine("            await Task.CompletedTask;");
             Program.AppendLine("        }});");

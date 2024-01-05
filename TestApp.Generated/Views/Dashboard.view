@@ -1,35 +1,43 @@
 state {
-	string title,
-	string description
+	SiteUser loggedIn = {new()}
 }
 
 interface {
-	SetTitle(string title),
-	SetDescription(string description)
+	SetLoggedIn(SiteUser loggedIn)
 }
 
-div(
-	|
-	class = {"d-flex flex-row mb-4"},
-	style = {"width: 100%;"}
-	|
-	h3(
-		{"Title: " + title}
+div(| class = {"_Dashboard px-4 py-2"} |
+	div(
+		|
+		class = {"d-flex flex-row mb-4"},
+		style = {"width: 100%;"}
+		|
+		div(| class = {"my-auto"} |
+			a(| href = {""} |
+				{"Home"}
+			)
+		)
+		div(| class = {"ms-auto"} |
+			UserCard(| loggedIn = {loggedIn} |)
+		)
 	)
-	div(| class = {"ms-auto"} |
-		UserCard()
+	if(
+		{loggedIn.suID == 0}
+
+		div(| class = {"alert alert-secondary"} |
+			{"Please "}
+			a(
+				|
+				href = {"javascript:void(0);"},
+				onclick = {"dispatch(this, 'SetLoggedIn', { loggedIn: { suID: 1, suFirstName: 'John' }});"}
+				|
+				{"log in"}
+			)
+			{" to continue"}
+		)
+
+		div(| class = {"alert alert-success"} |
+			{"Welcome, " + loggedIn.suFirstName + "!"}
+		)
 	)
 )
-div(| class = {"mb-4"} |
-	p(| class = {"mb-4"} |
-		{"Description: " + description}
-	)
-	button(
-		|
-		class = {"btn btn-primary"},
-		onclick = {"dispatch(this, 'SetDescription', { 'description': 'Hello, world!' });"}
-		|
-		{"Change Description"}
-	)
-)
-RecursiveView()

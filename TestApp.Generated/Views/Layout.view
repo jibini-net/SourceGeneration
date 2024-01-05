@@ -5,7 +5,7 @@ interface {
 }
 
 unsafe({"<!DOCTYPE html>"})
-html(
+html(| class = {"m-0 p-0"} |
 	head(
 		base(| href = {"/"} |)
 		title({"Test App"})
@@ -16,15 +16,11 @@ html(
 			|
 		)
 	)
-	body(
-		Dashboard(
-			|
-			title = {"Title"},
-			description = {"Description"}
-			|
-		)
+	body(| class = {"m-0 p-0"} |
+		Dashboard()
 		script(| src={"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"} |)
 		script(| src={"https://code.jquery.com/jquery-3.7.1.min.js"} |)
+		script(| src={"https://code.iconify.design/3/3.1.0/iconify.min.js"} |)
 		script(| src={"js/ui.js"} |)
 	)
 )

@@ -3,17 +3,63 @@ state {
 }
 
 interface {
+	LogIn(),
+
+	LogOut()
 }
 
-if(
-	{(loggedIn?.suID ?? 0) == 0}
+div(| class = {"d-flex"} |
+	if(
+		{loggedIn.suID == 0}
 
-	span({"Guest"})
+		<>
+			span(| class = {"my-auto"} |
+				{"Guest"}
+			)
+			button(
+				|
+				class = {"btn btn-success my-auto ms-2"},
+				onclick = {"onLogIn(this);"}
+				|
+				{"Log in"}
+			)
+		</>
 
-	<>
-		strong({loggedIn.suFirstName})
-		a(| href = {"logout"}|
-			{"Log out"}
-		)
-	</>
+		<>
+			span(
+				|
+				class = {"iconify my-auto"},
+				{data-icon} = {"material-symbols:person"}
+				|
+			)
+			strong(| class = {"my-auto"} |
+				{loggedIn.suFirstName}
+			)
+			button(
+				|
+				class = {"btn btn-outline-secondary my-auto ms-2"},
+				onclick = {"onLogOut(this);"}
+				|
+				{"Log out"}
+			)
+		</>
+	)
+)
+
+script(
+	unsafe(<">
+	
+		async function onLogIn(el) {
+			var dashboard = el.closest("._Dashboard");
+			await dispatch(el, 'LogIn');
+			await dispatch(dashboard, 'SetLoggedIn', { loggedIn: { suID: 1, suFirstName: "John" }});
+		}
+
+		async function onLogOut(el) {
+			var dashboard = el.closest("._Dashboard");
+			await dispatch(el, 'LogOut');
+			await dispatch(dashboard, 'SetLoggedIn', { loggedIn: {}});
+		}
+
+	</">)
 )
