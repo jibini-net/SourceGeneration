@@ -237,7 +237,26 @@ public class HtmlNodeGrammar
                     Write(dto.Children[2], buildDom, buildLogic);
                     buildLogic("}");
                 }
-            })
+            }),
+
+        ["child"] = (
+            (dto) =>
+            {
+                if (dto.Attribs.Count > 0)
+                {
+                    throw new Exception("'child' has no available attributes");
+                }
+                if (dto.Children.Count != 1
+                    || dto.Children.First().Children is not null)
+                {
+                    throw new Exception("Usage: 'child({index})'");
+                }
+            },
+            (dto, buildDom, buildLogic) =>
+            {
+                buildLogic($"await Children[{dto.Children.First().InnerContent}](state, writer);");
+            }
+        )
     };
 
     //TODO Improve

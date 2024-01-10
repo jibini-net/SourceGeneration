@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddLayoutView<LayoutBase.Default>();
         services.AddDashboardView<Dashboard>();
         services.AddUserCardView<UserCard>();
+        services.AddCascadingStateView<CascadingState>();
     }
 }
 

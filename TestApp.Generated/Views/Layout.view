@@ -1,9 +1,7 @@
 state {
-	string innerContent
 }
 
 interface {
-	SetInnerContent(string innerContent)
 }
 
 unsafe({"<!DOCTYPE html>"})
