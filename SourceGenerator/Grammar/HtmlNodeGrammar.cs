@@ -237,13 +237,24 @@ public class HtmlNodeGrammar
                     Write(dto.Children[2], buildDom, buildLogic);
                     buildLogic("}");
                 }
-            }
-        )
+            })
     };
 
     //TODO Improve
-    public static void WriteSubComponent(Dto dto, Action<string> buildDom)
+    public static void WriteSubComponent(Dto dto, Action<string> buildDom, Action<string> buildLogic)
     {
+        buildLogic("{\n");
+
+        foreach (var (child, i) in dto.Children.Select((it, i) => (it, i)))
+        {
+            buildLogic($"async Task _child_{i}(StateDump state, StringWriter writer) {{");
+
+            Write(child, buildDom, buildLogic);
+
+            buildLogic("await Task.CompletedTask;");
+            buildLogic("}\n");
+        }
+
         var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
         var creationAction = $@"
             await ((Func<Task<string>>)(async () => {{
@@ -252,10 +263,16 @@ public class HtmlNodeGrammar
                 var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
                 component.LoadState(subState.State);
                 {string.Join("\n                ", assignActions)}
+                component.Children.AddRange(new Func<StateDump, StringWriter, Task>[] {{
+                    {string.Join(", ", dto.Children.Select((_, i) => $"_child_{i}"))}
+                }});
                 return await component.RenderAsync(subState, indexByTag);
             }})).Invoke()
+
             ".Trim();
         buildDom(creationAction);
+
+        buildLogic("\n        }");
     }
 
     //TODO Improve
@@ -304,7 +321,7 @@ public class HtmlNodeGrammar
             && dto.Tag[0] >= 'A'
             && dto.Tag[0] <= 'Z')
         {
-            WriteSubComponent(dto, buildDom);
+            WriteSubComponent(dto, buildDom, buildLogic);
         } else if (SpecialTags.TryGetValue(dto.Tag ?? "", out var kv))
         {
             var (_, builder) = kv;
