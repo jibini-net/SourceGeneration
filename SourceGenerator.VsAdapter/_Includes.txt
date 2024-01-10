@@ -1,6 +1,7 @@
 namespace Generated;
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
 
 public interface IModelDbAdapter
@@ -39,11 +40,14 @@ public class TagRenderRequest
 {
 	public StateDump State { get; set; }
 	public List<TagIndex> Path { get; set; }
+	public JsonElement Pars { get; set; }
 }
 
 //TODO Key field
 public class StateDump
 {
+	[JsonIgnore]
+	public StateDump Parent { get; private set; }
 	public string Tag { get; set; }
 	public Dictionary<string, object> State { get; set; } = new();
 	public List<StateDump> Children { get; set; } = new();
@@ -62,6 +66,7 @@ public class StateDump
 			};
 			Children.Add(result);
 		}
+		result.Parent = this;
 		return result;
 	}
 }
@@ -109,7 +114,6 @@ public static class Extensions
 		
 		var stateJson = JsonSerializer.Serialize(state);
 		var stateComment = $"<!--{HttpUtility.HtmlEncode(stateJson).Replace("&quot;", "\"")}-->";
-		
 		return html + stateComment;
 	}
 }

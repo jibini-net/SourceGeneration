@@ -2,9 +2,9 @@
 
 namespace TestApp.Views;
 
-public class Dashboard : DashboardBase
+public class CascadingState : CascadingStateBase
 {
-    public Dashboard(IServiceProvider sp) : base(sp)
+    public CascadingState(IServiceProvider sp) : base(sp)
     {
     }
 

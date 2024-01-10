@@ -59,13 +59,16 @@ public partial class TopLevelGrammar
     public static void MatchView(TokenStream stream, string modelName)
     {
         Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
-        
+        Program.AppendLine("using System.Text;");
+        Program.AppendLine("using System.Text.Json;");
+
         Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
             modelName);
         Program.AppendLine("{{");
         Program.AppendLine("    // Extend and fully implement all actions in a subclass");
         
         Program.AppendLine("    private readonly IServiceProvider sp;");
+        Program.AppendLine("    public readonly List<Func<StateDump, StringWriter, Task>> Children = new();");
         Program.AppendLine("    public {0}Base(IServiceProvider sp)\n    {{",
             modelName);
         Program.AppendLine("        this.sp = sp;");
@@ -154,23 +157,37 @@ public partial class TopLevelGrammar
         Program.AppendLine("    }}");
 
         Program.AppendLine("    [HttpPost(\"\")]");
-        Program.AppendLine("    public async Task<IActionResult> Index([FromBody] StateDump state = null)\n    {{");
+        Program.AppendLine("    public async Task<IActionResult> Index()\n    {{");
+        Program.AppendLine("        using var requestBody = new MemoryStream();");
+        Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
+        Program.AppendLine("        var stateJson = Encoding.UTF8.GetString(requestBody.ToArray());");
+        Program.AppendLine("        var state = JsonSerializer.Deserialize<StateDump>(stateJson ?? \"null\");");
         Program.AppendLine("        var html = await component.RenderPageAsync(state);");
         Program.AppendLine("        return Content(html, \"text/html\");");
         Program.AppendLine("    }}");
 
         foreach (var action in actions.Actions)
         {
+            string attr((string type, string name) it) => $"public {it.type} {it.name} {{ get; set; }}";
+            var attrs = action.Params.Select(attr);
+            var attributes = string.Join("\n        ", attrs);
+
+            Program.AppendLine("    public class _{0}_Params\n    {{",
+                action.Name);
+            Program.AppendLine("        {0}",
+                attributes);
+            Program.AppendLine("    }}");
+
             Program.AppendLine("    [HttpPost(\"{0}\")]",
                 action.Name);
-
-            string attr((string type, string name) it) => $"{it.type} {it.name}";
-            var attrs = action.Params.Select(attr);
-            var attributes = string.Join(", ", attrs.Prepend(""));
-
-            Program.AppendLine("    public async Task<IActionResult> {0}([FromBody] TagRenderRequest render{1})\n    {{",
-                action.Name,
-                attributes);
+            Program.AppendLine("    public async Task<IActionResult> {0}()\n    {{",
+                action.Name);
+            Program.AppendLine("        using var requestBody = new MemoryStream();");
+            Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
+            Program.AppendLine("        var renderJson = Encoding.UTF8.GetString(requestBody.ToArray());");
+            Program.AppendLine("        var render = JsonSerializer.Deserialize<TagRenderRequest>(renderJson ?? \"null\");");
+            Program.AppendLine("        var pars = JsonSerializer.Deserialize<_{0}_Params>(render.Pars);",
+                action.Name);
             Program.AppendLine("        var html = await component.RenderComponentAsync(render.State, render.Path, async (it) =>");
             Program.AppendLine("        {{");
 
@@ -179,7 +196,7 @@ public partial class TopLevelGrammar
                     ? "await "
                     : "",
                 action.Name,
-                string.Join(", ", action.Params.Select((it) => it.name)));
+                string.Join(", ", action.Params.Select((it) => $"pars.{it.name}")));
 
             Program.AppendLine("            await Task.CompletedTask;");
             Program.AppendLine("        }});");

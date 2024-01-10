@@ -1,0 +1,9 @@
+state {
+	SiteUser loggedIn = {new()}
+}
+
+interface {
+	SetLoggedIn(SiteUser loggedIn)
+}
+
+child({0})

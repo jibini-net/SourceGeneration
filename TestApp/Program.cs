@@ -26,10 +26,10 @@ public static class ServiceCollectionExtensions
 
     public static void AddViewServices(this IServiceCollection services)
     {
-        services.AddDashboardView<Dashboard>();
-        services.AddUserCardView<UserCardBase.Default>();
-        services.AddRecursiveViewView<RecursiveView>();
         services.AddLayoutView<LayoutBase.Default>();
+        services.AddDashboardView<Dashboard>();
+        services.AddUserCardView<UserCard>();
+        services.AddCascadingStateView<CascadingState>();
     }
 }
 

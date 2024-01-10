@@ -128,21 +128,26 @@ function dispatch(el, action, args) {
             .map((it) => ({
                 Tag: it.tag,
                 IndexByTag: it.indexByTag
-            }))
+            })),
+        Pars: args
     };
     var self = path[path.length - 1];
     var selfData = parseData(self);
-    $.ajax({
-        url: `view/${selfData.tag}/${action}?${$.param(args)}`,
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(tagRenderRequest),
-        dataType: "html",
-        success: (it) => {
-            replace(self, it);
-        },
-        error: function (xhr, error) {
-            alert(`${xhr.status} - ${error}`);
-        }
+    return new Promise((res, rej) => {
+        $.ajax({
+            url: `view/${selfData.tag}/${action}`,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(tagRenderRequest),
+            dataType: "html",
+            success: (it) => {
+                replace(self, it);
+                res();
+            },
+            error: function (xhr, error) {
+                alert(`${xhr.status} - ${error}`);
+                rej(`${xhr.status} - ${error}`);
+            }
+        });
     });
 }
