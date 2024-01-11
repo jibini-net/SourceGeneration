@@ -6,4 +6,6 @@ interface {
 	SetLoggedIn(SiteUser loggedIn)
 }
 
-child({0})
+div(| class = {"_CascadingState"} |
+	child({0})
+)

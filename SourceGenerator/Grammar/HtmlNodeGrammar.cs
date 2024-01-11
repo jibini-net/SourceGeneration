@@ -255,8 +255,29 @@ public class HtmlNodeGrammar
             (dto, buildDom, buildLogic) =>
             {
                 buildLogic($"await Children[{dto.Children.First().InnerContent}](state, writer);");
-            }
-        )
+            }),
+
+        ["parent"] = (
+            (dto) =>
+            {
+                if (dto.Attribs.Count > 0)
+                {
+                    throw new Exception("'parent' has no available attributes");
+                }
+                if (dto.Children.Count != 3
+                    || dto.Children[0].Children is not null
+                    || dto.Children[1].Children is not null)
+                {
+                    throw new Exception("Usage: 'parent({tag} {name} {content})'");
+                }
+            },
+            (dto, buildDom, buildLogic) =>
+            {
+                buildLogic("{");
+                buildLogic($"var {dto.Children[1].InnerContent} = state.FindParent(\"{dto.Children[0].InnerContent}\");");
+                Write(dto.Children[2], buildDom,buildLogic);
+                buildLogic("}");
+            })
     };
 
     //TODO Improve

@@ -1,48 +1,48 @@
 state {
-	SiteUser loggedIn
 }
 
 interface {
-	LogIn(),
-
-	LogOut()
 }
 
 div(| class = {"d-flex"} |
-	if(
-		{loggedIn.suID == 0}
+	parent(
+		{CascadingState}
+		{cascade}
+		if(
+			{cascade.State["loggedIn"].ParseIfNot<SiteUser>().suID == 0}
 
-		<>
-			span(| class = {"my-auto"} |
-				{"Guest"}
-			)
-			button(
-				|
-				class = {"btn btn-success my-auto ms-2"},
-				onclick = {"onLogIn(this);"}
-				|
-				{"Log in"}
-			)
-		</>
+			<>
+				span(| class = {"my-auto"} |
+					{"Guest"}
+				)
+				button(
+					|
+					class = {"btn btn-success my-auto ms-2"},
+					onclick = {"onLogIn(this);"}
+					|
+					{"Log in"}
+				)
+			</>
 
-		<>
-			span(
-				|
-				class = {"iconify my-auto"},
-				{data-icon} = {"material-symbols:person"}
-				|
-			)
-			strong(| class = {"my-auto"} |
-				{loggedIn.suFirstName}
-			)
-			button(
-				|
-				class = {"btn btn-outline-secondary my-auto ms-2"},
-				onclick = {"onLogOut(this);"}
-				|
-				{"Log out"}
-			)
-		</>
+			<>
+				span(
+					|
+					class = {"iconify my-auto"},
+					{data-icon} = {"material-symbols:person"}
+					|
+				)
+				strong(| class = {"my-auto"} |
+					{cascade.State["loggedIn"].ParseIfNot<SiteUser>().suFirstName}
+				)
+				button(
+					|
+					class = {"btn btn-outline-secondary my-auto ms-2"},
+					onclick = {"onLogOut(this);"}
+					|
+					{"Log out"}
+				)
+			</>
+		)
 	)
 )
 
@@ -50,15 +50,13 @@ script(
 	unsafe(<">
 	
 		async function onLogIn(el) {
-			var dashboard = el.closest("._Dashboard");
-			await dispatch(el, 'LogIn');
-			await dispatch(dashboard, 'SetLoggedIn', { loggedIn: { suID: 1, suFirstName: "John" }});
+			var cascade = el.closest("._CascadingState");
+			await dispatch(cascade, 'SetLoggedIn', { loggedIn: { suID: 1, suFirstName: "John" }});
 		}
 
 		async function onLogOut(el) {
-			var dashboard = el.closest("._Dashboard");
-			await dispatch(el, 'LogOut');
-			await dispatch(dashboard, 'SetLoggedIn', { loggedIn: {}});
+			var cascade = el.closest("._CascadingState");
+			await dispatch(cascade, 'SetLoggedIn', { loggedIn: {}});
 		}
 
 	</">)
