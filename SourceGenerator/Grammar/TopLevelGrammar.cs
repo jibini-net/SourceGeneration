@@ -68,7 +68,7 @@ public partial class TopLevelGrammar
         Program.AppendLine("    // Extend and fully implement all actions in a subclass");
         
         Program.AppendLine("    private readonly IServiceProvider sp;");
-        Program.AppendLine("    public readonly List<Func<StateDump, StringWriter, Task>> Children = new();");
+        Program.AppendLine("    public readonly List<Func<StateDump, Dictionary<string, int>, StringWriter, Task>> Children = new();");
         Program.AppendLine("    public {0}Base(IServiceProvider sp)\n    {{",
             modelName);
         Program.AppendLine("        this.sp = sp;");

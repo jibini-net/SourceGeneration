@@ -8,6 +8,12 @@ unsafe({"<!DOCTYPE html>"})
 html(| class = {"m-0 p-0"} |
 	head(
 		base(| href = {"/"} |)
+		meta(
+			|
+			name={"viewport"},
+			content={"width=device-width, initial-scale=1.0"}
+			|
+		)
 		title({"Test App"})
 		link(
 			|
