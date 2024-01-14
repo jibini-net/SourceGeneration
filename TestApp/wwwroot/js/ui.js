@@ -13,6 +13,16 @@
                 indexByTag: +parens[1].substring(0, parens[1].length - 1)
             };
             break;
+        case "_!open":
+        case "_!close":
+            var parens = hyphen[1].split('(', 2);
+            return {
+                type: hyphen[0].substring(1),
+                tag: parens[0],
+                indexByTag: +parens[1].substring(0, parens[1].length - 1),
+                dependent: true
+            };
+            break;
         default:
             return undefined;
     }
@@ -120,6 +130,7 @@ function dispatch(el, action, args) {
     }
     var path = findPath(el);
     var state = getState();
+
     var tagRenderRequest = {
         State: state,
         Path: path
@@ -131,8 +142,10 @@ function dispatch(el, action, args) {
             })),
         Pars: args
     };
+
     var self = path[path.length - 1];
     var selfData = parseData(self);
+
     return new Promise((res, rej) => {
         $.ajax({
             url: `view/${selfData.tag}/${action}`,

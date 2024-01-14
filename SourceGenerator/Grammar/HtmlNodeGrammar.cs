@@ -275,7 +275,7 @@ public class HtmlNodeGrammar
             {
                 buildLogic("{");
                 buildLogic($"var {dto.Children[1].InnerContent} = state.FindParent(\"{dto.Children[0].InnerContent}\");");
-                Write(dto.Children[2], buildDom,buildLogic);
+                Write(dto.Children[2], buildDom, buildLogic);
                 buildLogic("}");
             })
     };

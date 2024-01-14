@@ -23,14 +23,14 @@ div(| class = {"px-4 py-2"} |
 		{CascadingState}
 		{cascade}
 		if(
-			{cascade.State["loggedIn"].ParseIfNot<SiteUser>().suID == 0}
+			{cascade.Get<SiteUser>("loggedIn").suID == 0}
 
 			div(| class = {"alert alert-secondary"} |
 				{"Please "}
 				a(
 					|
 					href = {"javascript:void(0);"},
-					onclick = {"dispatch(this, 'SetLoggedIn', { loggedIn: { suID: 1, suFirstName: 'John' }});"}
+					onclick = {"onLogIn(this);"}
 					|
 					{"log in"}
 				)
@@ -38,7 +38,7 @@ div(| class = {"px-4 py-2"} |
 			)
 
 			div(| class = {"alert alert-success"} |
-				{"Welcome, " + cascade.State["loggedIn"].ParseIfNot<SiteUser>().suFirstName + "!"}
+				{"Welcome, " + cascade.Get<SiteUser>("loggedIn").suFirstName + "!"}
 			)
 		)
 	)

@@ -26,10 +26,11 @@ public static class ServiceCollectionExtensions
 
     public static void AddViewServices(this IServiceCollection services)
     {
-        services.AddLayoutView<LayoutBase.Default>();
+        services.AddHostView<HostBase.Default>();
+        services.AddAppView<AppBase.Default>();
+        services.AddCascadingStateView<CascadingState>();
         services.AddDashboardView<Dashboard>();
         services.AddUserCardView<UserCard>();
-        services.AddCascadingStateView<CascadingState>();
     }
 }
 
