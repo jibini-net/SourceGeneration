@@ -17,7 +17,7 @@
         case "_!close":
             var parens = hyphen[1].split('(', 2);
             return {
-                type: hyphen[0].substring(1),
+                type: hyphen[0].substring(2),
                 tag: parens[0],
                 indexByTag: +parens[1].substring(0, parens[1].length - 1),
                 dependent: true
@@ -138,13 +138,17 @@ function dispatch(el, action, args) {
             .map(parseData)
             .map((it) => ({
                 Tag: it.tag,
-                IndexByTag: it.indexByTag
+                IndexByTag: it.indexByTag,
+                Dependent: it.dependent ? true : undefined
             })),
         Pars: args
     };
 
     var self = path[path.length - 1];
     var selfData = parseData(self);
+
+    var replaceNode = path.filter((it) => !parseData(it).dependent);
+    replaceNode = replaceNode[replaceNode.length - 1];
 
     return new Promise((res, rej) => {
         $.ajax({
@@ -154,7 +158,7 @@ function dispatch(el, action, args) {
             data: JSON.stringify(tagRenderRequest),
             dataType: "html",
             success: (it) => {
-                replace(self, it);
+                replace(replaceNode, it);
                 res();
             },
             error: function (xhr, error) {

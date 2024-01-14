@@ -34,6 +34,7 @@ public class TagIndex
 {
 	public string Tag { get; set; }
 	public int IndexByTag { get; set; }
+	public bool Dependent { get; set; }
 }
 
 public class TagRenderRequest
@@ -117,19 +118,32 @@ public static class Extensions
 		return html + stateComment;
 	}
 	
-	public static async Task<string> RenderComponentAsync<T>(this T view, StateDump state, List<TagIndex> target, Func<T, Task> config)
+	public static async Task<string> RenderComponentAsync<T>(this T view, IServiceProvider sp, StateDump state, List<TagIndex> target, Func<T, Task> config)
 		where T : IRenderView
 	{
 		state ??= new();
 		
 		var subState = state;
+		IRenderView drawWith = null;
+		StateDump drawState = null;
 		foreach (var step in target)
 		{
+			if (step.Dependent && drawWith is null)
+			{
+				drawState = subState;
+				var parentType = typeof(Extensions)
+					.Assembly
+					.GetType($"Generated.{drawState.Tag}Base")
+					.GetNestedType("IView");
+				drawWith = sp.GetService(parentType) as IRenderView;
+                drawWith.LoadState(drawState.State);
+			}
 			subState = subState.GetOrAddChild(step.Tag, step.IndexByTag);
 		}
 		view.LoadState(subState.State);
 		await config(view);
-		var html = await view.RenderAsync(subState);
+        subState.State = view.GetState();
+		var html = await (drawWith ?? view).RenderAsync(drawState ?? subState);
 		
 		var stateJson = JsonSerializer.Serialize(state);
 		var stateComment = $"<!--{HttpUtility.HtmlEncode(stateJson).Replace("&quot;", "\"")}-->";
