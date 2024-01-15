@@ -4,24 +4,23 @@ state {
 interface {
 }
 
-div(| class = {"px-4 py-2"} |
-	div(
-		|
-		class = {"d-flex flex-row mb-4"},
-		style = {"width: 100%;"}
-		|
-		div(| class = {"my-auto"} |
-			a(| href = {""} |
-				{"Home"}
+parent({CascadingState} {cascade}
+
+	div(| class = {"px-4 py-2"} |
+		div(
+			|
+			class = {"d-flex flex-row mb-4"},
+			style = {"width: 100%;"}
+			|
+			div(| class = {"my-auto"} |
+				a(| href = {""} |
+					{"Home"}
+				)
+			)
+			div(| class = {"ms-auto"} |
+				UserCard()
 			)
 		)
-		div(| class = {"ms-auto"} |
-			UserCard()
-		)
-	)
-	parent(
-		{CascadingState}
-		{cascade}
 		if(
 			{cascade.Get<SiteUser>("loggedIn").suID == 0}
 
@@ -42,4 +41,5 @@ div(| class = {"px-4 py-2"} |
 			)
 		)
 	)
+
 )

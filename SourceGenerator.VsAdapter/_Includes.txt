@@ -118,32 +118,39 @@ public static class Extensions
 		return html + stateComment;
 	}
 	
-	public static async Task<string> RenderComponentAsync<T>(this T view, IServiceProvider sp, StateDump state, List<TagIndex> target, Func<T, Task> config)
+	public static async Task<string> RenderComponentAsync<T>(this T _view, IServiceProvider sp, StateDump state, List<TagIndex> target, Func<T, Task> config)
 		where T : IRenderView
 	{
 		state ??= new();
+		IRenderView view = _view;
 		
 		var subState = state;
-		IRenderView drawWith = null;
-		StateDump drawState = null;
+		Type parentType = null;
+		StateDump parentState = null;
+
 		foreach (var step in target)
 		{
-			if (step.Dependent && drawWith is null)
+			if (step.Dependent)
 			{
-				drawState = subState;
-				var parentType = typeof(Extensions)
+				parentState = subState;
+				parentType = typeof(Extensions)
 					.Assembly
-					.GetType($"Generated.{drawState.Tag}Base")
+					.GetType($"Generated.{parentState.Tag}Base")
 					.GetNestedType("IView");
-				drawWith = sp.GetService(parentType) as IRenderView;
-                drawWith.LoadState(drawState.State);
 			}
 			subState = subState.GetOrAddChild(step.Tag, step.IndexByTag);
 		}
-		view.LoadState(subState.State);
-		await config(view);
-        subState.State = view.GetState();
-		var html = await (drawWith ?? view).RenderAsync(drawState ?? subState);
+
+		_view.LoadState(subState.State);
+		await config(_view);
+        subState.State = _view.GetState();
+
+		if (parentType is not null)
+		{
+			view = sp.GetService(parentType) as IRenderView;
+			subState = parentState;
+		}
+		var html = await view.RenderAsync(subState);
 		
 		var stateJson = JsonSerializer.Serialize(state);
 		var stateComment = $"<!--{HttpUtility.HtmlEncode(stateJson).Replace("&quot;", "\"")}-->";

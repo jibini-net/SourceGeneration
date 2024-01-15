@@ -146,9 +146,7 @@ function dispatch(el, action, args) {
 
     var self = path[path.length - 1];
     var selfData = parseData(self);
-
-    var replaceNode = path.filter((it) => !parseData(it).dependent);
-    replaceNode = replaceNode[replaceNode.length - 1];
+    var replaceNode = path.reverse().find((it) => !parseData(it).dependent);
 
     return new Promise((res, rej) => {
         $.ajax({

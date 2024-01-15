@@ -4,10 +4,9 @@ state {
 interface {
 }
 
-div(| class = {"d-flex"} |
-	parent(
-		{CascadingState}
-		{cascade}
+parent({CascadingState} {cascade}
+
+	div(| class = {"d-flex"} |
 		if(
 			{cascade.Get<SiteUser>("loggedIn").suID == 0}
 
@@ -44,4 +43,5 @@ div(| class = {"d-flex"} |
 			</>
 		)
 	)
+
 )
