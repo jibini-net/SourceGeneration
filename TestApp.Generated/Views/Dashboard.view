@@ -1,43 +1,45 @@
 state {
-	SiteUser loggedIn = {new()}
 }
 
 interface {
-	SetLoggedIn(SiteUser loggedIn)
 }
 
-div(| class = {"_Dashboard px-4 py-2"} |
-	div(
-		|
-		class = {"d-flex flex-row mb-4"},
-		style = {"width: 100%;"}
-		|
-		div(| class = {"my-auto"} |
-			a(| href = {""} |
-				{"Home"}
+parent({CascadingState} {cascade}
+
+	div(| class = {"px-4 py-2"} |
+		div(
+			|
+			class = {"d-flex flex-row mb-4"},
+			style = {"width: 100%;"}
+			|
+			div(| class = {"my-auto"} |
+				a(| href = {""} |
+					{"Home"}
+				)
+			)
+			div(| class = {"ms-auto"} |
+				UserCard()
 			)
 		)
-		div(| class = {"ms-auto"} |
-			UserCard(| loggedIn = {loggedIn} |)
-		)
-	)
-	if(
-		{loggedIn.suID == 0}
+		if(
+			{cascade.Get<SiteUser>("loggedIn").suID == 0}
 
-		div(| class = {"alert alert-secondary"} |
-			{"Please "}
-			a(
-				|
-				href = {"javascript:void(0);"},
-				onclick = {"dispatch(this, 'SetLoggedIn', { loggedIn: { suID: 1, suFirstName: 'John' }});"}
-				|
-				{"log in"}
+			div(| class = {"alert alert-secondary"} |
+				{"Please "}
+				a(
+					|
+					href = {"javascript:void(0);"},
+					onclick = {"onLogIn(this);"}
+					|
+					{"log in"}
+				)
+				{" to continue"}
 			)
-			{" to continue"}
-		)
 
-		div(| class = {"alert alert-success"} |
-			{"Welcome, " + loggedIn.suFirstName + "!"}
+			div(| class = {"alert alert-success"} |
+				{"Welcome, " + cascade.Get<SiteUser>("loggedIn").suFirstName + "!"}
+			)
 		)
 	)
+
 )

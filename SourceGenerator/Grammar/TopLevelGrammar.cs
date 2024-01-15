@@ -68,7 +68,7 @@ public partial class TopLevelGrammar
         Program.AppendLine("    // Extend and fully implement all actions in a subclass");
         
         Program.AppendLine("    private readonly IServiceProvider sp;");
-        Program.AppendLine("    public readonly List<Func<StateDump, StringWriter, Task>> Children = new();");
+        Program.AppendLine("    public readonly List<Func<StateDump, Dictionary<string, int>, StringWriter, Task>> Children = new();");
         Program.AppendLine("    public {0}Base(IServiceProvider sp)\n    {{",
             modelName);
         Program.AppendLine("        this.sp = sp;");
@@ -84,7 +84,7 @@ public partial class TopLevelGrammar
             renderBuilder.AppendLine($"        {stmt}");
         }
 
-        buildDom($"$\"<!--_open-{modelName}({{indexByTag}})-->\"");
+        buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}open-{modelName}({{indexByTag}})-->\"");
 
         ServiceGrammar.Dto actions = new()
         {
@@ -119,7 +119,7 @@ public partial class TopLevelGrammar
             }
         }
 
-        buildDom($"$\"<!--_close-{modelName}({{indexByTag}})-->\"");
+        buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}close-{modelName}({{indexByTag}})-->\"");
 
         Program.AppendLine("    public async Task<string> RenderAsync(StateDump state, int indexByTag = 0)\n    {{");
         Program.AppendLine("        var build = new System.Text.StringBuilder();");
@@ -151,9 +151,11 @@ public partial class TopLevelGrammar
 
         Program.AppendLine("    private readonly {0}Base.IView component;",
             modelName);
-        Program.AppendLine("    public {0}ViewController({0}Base.IView component)\n    {{",
+        Program.AppendLine("    private readonly IServiceProvider sp;");
+        Program.AppendLine("    public {0}ViewController({0}Base.IView component, IServiceProvider sp)\n    {{",
             modelName);
         Program.AppendLine("        this.component = component;");
+        Program.AppendLine("        this.sp = sp;");
         Program.AppendLine("    }}");
 
         Program.AppendLine("    [HttpPost(\"\")]");
@@ -188,7 +190,7 @@ public partial class TopLevelGrammar
             Program.AppendLine("        var render = JsonSerializer.Deserialize<TagRenderRequest>(renderJson ?? \"null\");");
             Program.AppendLine("        var pars = JsonSerializer.Deserialize<_{0}_Params>(render.Pars);",
                 action.Name);
-            Program.AppendLine("        var html = await component.RenderComponentAsync(render.State, render.Path, async (it) =>");
+            Program.AppendLine("        var html = await component.RenderComponentAsync(sp, render.State, render.Path, async (it) =>");
             Program.AppendLine("        {{");
 
             Program.AppendLine("            {0}it.{1}({2});",
