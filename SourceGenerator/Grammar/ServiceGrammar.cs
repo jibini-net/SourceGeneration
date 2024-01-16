@@ -10,7 +10,7 @@ public class ServiceGrammar
 {
     public struct Dto
     {
-        public string ApiRoute { get; set; }
+        public string ModelName { get; set; }
         public List<ActionGrammar.Dto> Actions { get; set; }
     }
 
@@ -18,7 +18,7 @@ public class ServiceGrammar
     {
         var result = new Dto()
         {
-            ApiRoute = modelName,
+            ModelName = modelName,
             Actions = new()
         };
 
@@ -138,13 +138,13 @@ public class ServiceGrammar
             if (action.ReturnType == "void")
             {
                 Program.AppendLine("            await api.ExecuteAsync(\"{0}/{1}\", new\n            {{",
-                    dto.ApiRoute,
+                    dto.ModelName,
                     action.Name);
             } else
             {
                 Program.AppendLine("            return await api.ExecuteAsync<{0}>(\"{1}/{2}\", new\n            {{",
                     action.ReturnType,
-                    dto.ApiRoute,
+                    dto.ModelName,
                     action.Name);
             }
             foreach (var par in action.Params.Select((it) => it.name))
@@ -188,7 +188,7 @@ public class ServiceGrammar
         if (dto.Actions.Count == 0)
         {
             Program.AppendLine("    public class Default : {0}Base\n    {{",
-                dto.ApiRoute);
+                dto.ModelName);
             Program.AppendLine("        public Default(IServiceProvider sp) : base(sp)\n        {{\n        }}");
             Program.AppendLine("    }}");
         }
@@ -221,16 +221,16 @@ public class ServiceGrammar
     public static void WriteViewController(Dto dto)
     {
         Program.AppendLine("[Controller]\n[Route(\"/view/{0}\")]",
-            dto.ApiRoute);
+            dto.ModelName);
         Program.AppendLine("public class {0}ViewController : ControllerBase",
-            dto.ApiRoute);
+            dto.ModelName);
         Program.AppendLine("{{");
 
         Program.AppendLine("    private readonly {0}Base.IView component;",
-            dto.ApiRoute);
+            dto.ModelName);
         Program.AppendLine("    private readonly IServiceProvider sp;");
         Program.AppendLine("    public {0}ViewController({0}Base.IView component, IServiceProvider sp)\n    {{",
-            dto.ApiRoute);
+            dto.ModelName);
         Program.AppendLine("        this.component = component;");
         Program.AppendLine("        this.sp = sp;");
         Program.AppendLine("    }}");
