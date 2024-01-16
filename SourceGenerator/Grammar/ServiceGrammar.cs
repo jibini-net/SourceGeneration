@@ -235,10 +235,7 @@ public class ServiceGrammar
 
         Program.AppendLine("    [HttpPost(\"\")]");
         Program.AppendLine("    public async Task<IActionResult> Index()\n    {{");
-        Program.AppendLine("        using var requestBody = new MemoryStream();");
-        Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
-        Program.AppendLine("        var stateJson = Encoding.UTF8.GetString(requestBody.ToArray());");
-        Program.AppendLine("        var state = JsonSerializer.Deserialize<StateDump>(stateJson ?? \"null\");");
+        Program.AppendLine("        var state = await JsonSerializer.DeserializeAsync<StateDump>(Request.Body);");
         Program.AppendLine("        var html = await component.RenderPageAsync(state);");
         Program.AppendLine("        return Content(html, \"text/html\");");
         Program.AppendLine("    }}");
@@ -259,10 +256,7 @@ public class ServiceGrammar
                 action.Name);
             Program.AppendLine("    public async Task<IActionResult> {0}()\n    {{",
                 action.Name);
-            Program.AppendLine("        using var requestBody = new MemoryStream();");
-            Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
-            Program.AppendLine("        var renderJson = Encoding.UTF8.GetString(requestBody.ToArray());");
-            Program.AppendLine("        var render = JsonSerializer.Deserialize<TagRenderRequest>(renderJson ?? \"null\");");
+            Program.AppendLine("        var render = await JsonSerializer.DeserializeAsync<TagRenderRequest>(Request.Body);");
             Program.AppendLine("        var pars = JsonSerializer.Deserialize<_{0}_Params>(render.Pars);",
                 action.Name);
             Program.AppendLine("        var html = await component.RenderComponentAsync(sp, render.State, render.Path, async (it) =>");
