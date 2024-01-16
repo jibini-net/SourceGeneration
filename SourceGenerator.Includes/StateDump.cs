@@ -48,6 +48,13 @@ public class StateDump
     {
         return (T)(State[name] = State[name].ParseIfNot<T>());
     }
+
+    public void Trim(Dictionary<string, int> tagCounts)
+    {
+        Children = tagCounts
+            .SelectMany((kv) => Children.Where((it) => it.Tag == kv.Key).Take(kv.Value + 1))
+            .ToList();
+    }
 }
 
 public static class StateDumpExtensions

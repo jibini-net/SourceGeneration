@@ -1,4 +1,6 @@
-﻿namespace SourceGenerator;
+﻿using System.Text.Json.Serialization;
+
+namespace SourceGenerator;
 
 /*
  * Implements a naive Finite State Automaton which supports nondeterminism
@@ -26,10 +28,22 @@ public class Fsa
         Letter = letter;
     }
 
+    public Dictionary<string, Fsa> n
+    {
+        get => Next.ToDictionary((it) => it.Key + "", (it) => it.Value);
+        set
+        {
+            Next = value
+                .Where((it) => it.Key.Length == 1)
+                .ToDictionary((it) => it.Key.First(), (it) => it.Value);
+        }
+    }
+
     /*
      * Set of transitions for particular letters; if all transitions are put
      * here, the FSA will be deterministic.
      */
+    [JsonIgnore]
     public Dictionary<char, Fsa> Next { get; private set; } = new();
 
     /*

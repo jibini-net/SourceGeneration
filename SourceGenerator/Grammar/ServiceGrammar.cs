@@ -208,9 +208,7 @@ public class ServiceGrammar
             .Replace("{", "{{")
             .Replace("}", "}}"));
 
-        Program.AppendLine("        state.Children = tagCounts\n" +
-                           "            .SelectMany((kv) => state.Children.Where((it) => it.Tag == kv.Key).Take(kv.Value + 1))\n" +
-                           "            .ToList();");
+        Program.AppendLine("        state.Trim(tagCounts);");
 
         Program.AppendLine("        return build.ToString();");
         Program.AppendLine("    }}");

@@ -21,7 +21,7 @@ namespace SourceGenerator.VsAdapter
 #else
         public static readonly string BuildMode = "Release";
 #endif
-        public static readonly string DotNetVersion = "net7.0";
+        public static readonly string DotNetVersion = "net8.0";
         public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
         public static string CallingPath = "";
 
