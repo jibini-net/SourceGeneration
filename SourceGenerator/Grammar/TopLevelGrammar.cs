@@ -61,6 +61,7 @@ public partial class TopLevelGrammar
         Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
         Program.AppendLine("using System.Text;");
         Program.AppendLine("using System.Text.Json;");
+        Program.AppendLine("using System.Web;");
 
         Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
             modelName);
@@ -122,7 +123,7 @@ public partial class TopLevelGrammar
         buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}close-{modelName}({{indexByTag}})-->\"");
 
         Program.AppendLine("    public async Task<string> RenderAsync(StateDump state, int indexByTag = 0)\n    {{");
-        Program.AppendLine("        var build = new System.Text.StringBuilder();");
+        Program.AppendLine("        var build = new StringBuilder();");
         Program.AppendLine("        var tagCounts = new Dictionary<string, int>();");
         Program.AppendLine("        state.Tag = \"{0}\";",
             modelName);

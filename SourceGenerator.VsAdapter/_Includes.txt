@@ -84,6 +84,11 @@ public class StateDump
 		}
 		return null;
 	}
+
+	public T Get<T>(string name)
+	{
+		return (T)(State[name] = State[name].ParseIfNot<T>());
+	}
 }
 
 public static class Extensions
@@ -101,9 +106,9 @@ public static class Extensions
 		return (T)o;
 	}
 
-	public static T Get<T>(this StateDump state, string name)
+	public static int GetNextIndexByTag(this Dictionary<string, int> tagCounts, string tag)
 	{
-		return (T)(state.State[name] = state.State[name].ParseIfNot<T>());
+		return tagCounts[tag] = (tagCounts.GetValueOrDefault(tag, -1) + 1);
 	}
 
 	public static async Task<string> RenderPageAsync(this IRenderView view, StateDump state = null)
