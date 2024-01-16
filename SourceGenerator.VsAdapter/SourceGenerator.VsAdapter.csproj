@@ -8,15 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="_Includes.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="_Includes.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.6.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

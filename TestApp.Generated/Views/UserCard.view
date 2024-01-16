@@ -7,8 +7,7 @@ interface {
 parent({CascadingState} {cascade}
 
 	div(| class = {"d-flex"} |
-		if(
-			{cascade.Get<SiteUser>("loggedIn").suID == 0}
+		if({cascade.Get<SiteUser>("loggedIn").suID == 0}
 
 			<>
 				span(| class = {"my-auto"} |

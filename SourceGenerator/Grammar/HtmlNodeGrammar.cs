@@ -298,12 +298,12 @@ public class HtmlNodeGrammar
         var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
         var creationAction = $@"
             await ((Func<Task<string>>)(async () => {{
-                var indexByTag = (tagCounts[""{dto.Tag}""] = (tagCounts.GetValueOrDefault(""{dto.Tag}"", -1) + 1));
+                var indexByTag = tagCounts.GetNextIndexByTag(""{dto.Tag}"");
                 var subState = state.GetOrAddChild(""{dto.Tag}"", indexByTag);
                 var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
                 component.LoadState(subState.State);
                 {string.Join("\n                ", assignActions)}
-                component.Children.AddRange(new Func<StateDump, Dictionary<string, int>, StringWriter, Task>[] {{
+                component.Children.AddRange(new RenderDelegate[] {{
                     {string.Join(", ", dto.Children.Select((_, i) => $"_child_{i}"))}
                 }});
                 return await component.RenderAsync(subState, indexByTag);
@@ -345,7 +345,7 @@ public class HtmlNodeGrammar
     {
         var htmlEnc = unsafeHtml
             ? ""
-            : "System.Web.HttpUtility.HtmlEncode";
+            : "HttpUtility.HtmlEncode";
 
         buildDom($"{htmlEnc}(({dto.InnerContent})?.ToString() ?? \"\")");
     }
