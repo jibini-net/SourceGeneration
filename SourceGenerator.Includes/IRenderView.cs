@@ -3,6 +3,8 @@ using System.Web;
 
 namespace Generated;
 
+public delegate Task RenderDelegate(StateDump state, Dictionary<string, int> tagCounts, StringWriter writer);
+
 public interface IRenderView
 {
     Task<string> RenderAsync(StateDump state, int indexByTag = 0);

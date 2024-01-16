@@ -303,7 +303,7 @@ public class HtmlNodeGrammar
                 var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
                 component.LoadState(subState.State);
                 {string.Join("\n                ", assignActions)}
-                component.Children.AddRange(new Func<StateDump, Dictionary<string, int>, StringWriter, Task>[] {{
+                component.Children.AddRange(new RenderDelegate[] {{
                     {string.Join(", ", dto.Children.Select((_, i) => $"_child_{i}"))}
                 }});
                 return await component.RenderAsync(subState, indexByTag);
