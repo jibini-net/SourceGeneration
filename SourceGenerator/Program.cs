@@ -35,7 +35,7 @@ internal class Program
 
         var initTime = DateTime.Now;
         Fsa dfa;
-        /*if (File.Exists("GrammarDfaCache.json"))
+        if (File.Exists("GrammarDfaCache.json"))
         {
             using var inStream = File.OpenRead("GrammarDfaCache.json");
             var jsonSettings = new JsonSerializerOptions()
@@ -45,7 +45,7 @@ internal class Program
             dfa = JsonSerializer.Deserialize<Fsa>(inStream, jsonSettings);
 
             AppendLine($"// DFA RESTORED IN {(DateTime.Now - initTime).TotalMilliseconds}ms");
-        } else*/
+        } else
         {
             var letters = "a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z";
             var capLetters = letters.ToUpperInvariant();

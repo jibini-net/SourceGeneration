@@ -17,6 +17,7 @@ public class Fsa
     /*
      * Debug value indicating the character used to arrive in this state.
      */
+    [JsonIgnore]
     public char Letter { get; private set; } = '\0';
 
     public Fsa()
@@ -46,15 +47,26 @@ public class Fsa
     [JsonIgnore]
     public Dictionary<char, Fsa> Next { get; private set; } = new();
 
+    public List<string> a
+    {
+        get => Accepts.Select((it) => it.ToString()).ToList();
+        set
+        {
+            Accepts = value.Select(int.Parse).ToList();
+        }
+    }
+
     /*
      * IDs of tokens which are accepted if this state is reached during a match.
      */
+    [JsonIgnore]
     public List<int> Accepts { get; private set; } = new();
 
     /*
      * States which can be reached by taking no action, and are reached if the
      * parent state ("this") is reached.
      */
+    [JsonIgnore]
     public List<Fsa> Epsilon { get; private set; } = new();
 
     /*
