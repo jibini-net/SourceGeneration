@@ -163,7 +163,7 @@ public class ServiceGrammar
         Program.AppendLine("    }}");
     }
 
-    public static void WriteViewInterface(Dto dto, string modelName)
+    public static void WriteViewInterface(Dto dto)
     {
         Program.AppendLine("    public interface IView : IRenderView\n    {{");
 
@@ -188,9 +188,101 @@ public class ServiceGrammar
         if (dto.Actions.Count == 0)
         {
             Program.AppendLine("    public class Default : {0}Base\n    {{",
-                modelName);
+                dto.ApiRoute);
             Program.AppendLine("        public Default(IServiceProvider sp) : base(sp)\n        {{\n        }}");
             Program.AppendLine("    }}");
         }
+    }
+
+    public static void WriteViewRenderer(string renderContent, string modelName)
+    {
+        Program.AppendLine("    public async Task<string> RenderAsync(StateDump state, int indexByTag = 0)\n    {{");
+        Program.AppendLine("        var build = new StringBuilder();");
+        Program.AppendLine("        var tagCounts = new Dictionary<string, int>();");
+        Program.AppendLine("        state.Tag = \"{0}\";",
+            modelName);
+        Program.AppendLine("        state.State = GetState();");
+        Program.AppendLine("        using var writer = new StringWriter(build);");
+
+        Program.Append(renderContent
+            .Replace("{", "{{")
+            .Replace("}", "}}"));
+
+        Program.AppendLine("        state.Children = tagCounts\n" +
+                           "            .SelectMany((kv) => state.Children.Where((it) => it.Tag == kv.Key).Take(kv.Value + 1))\n" +
+                           "            .ToList();");
+
+        Program.AppendLine("        return build.ToString();");
+        Program.AppendLine("    }}");
+
+        Program.AppendLine("}}");
+    }
+
+    public static void WriteViewController(Dto dto)
+    {
+        Program.AppendLine("[Controller]\n[Route(\"/view/{0}\")]",
+            dto.ApiRoute);
+        Program.AppendLine("public class {0}ViewController : ControllerBase",
+            dto.ApiRoute);
+        Program.AppendLine("{{");
+
+        Program.AppendLine("    private readonly {0}Base.IView component;",
+            dto.ApiRoute);
+        Program.AppendLine("    private readonly IServiceProvider sp;");
+        Program.AppendLine("    public {0}ViewController({0}Base.IView component, IServiceProvider sp)\n    {{",
+            dto.ApiRoute);
+        Program.AppendLine("        this.component = component;");
+        Program.AppendLine("        this.sp = sp;");
+        Program.AppendLine("    }}");
+
+        Program.AppendLine("    [HttpPost(\"\")]");
+        Program.AppendLine("    public async Task<IActionResult> Index()\n    {{");
+        Program.AppendLine("        using var requestBody = new MemoryStream();");
+        Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
+        Program.AppendLine("        var stateJson = Encoding.UTF8.GetString(requestBody.ToArray());");
+        Program.AppendLine("        var state = JsonSerializer.Deserialize<StateDump>(stateJson ?? \"null\");");
+        Program.AppendLine("        var html = await component.RenderPageAsync(state);");
+        Program.AppendLine("        return Content(html, \"text/html\");");
+        Program.AppendLine("    }}");
+
+        foreach (var action in dto.Actions)
+        {
+            string attr((string type, string name) it) => $"public {it.type} {it.name} {{ get; set; }}";
+            var attrs = action.Params.Select(attr);
+            var attributes = string.Join("\n        ", attrs);
+
+            Program.AppendLine("    public class _{0}_Params\n    {{",
+                action.Name);
+            Program.AppendLine("        {0}",
+                attributes);
+            Program.AppendLine("    }}");
+
+            Program.AppendLine("    [HttpPost(\"{0}\")]",
+                action.Name);
+            Program.AppendLine("    public async Task<IActionResult> {0}()\n    {{",
+                action.Name);
+            Program.AppendLine("        using var requestBody = new MemoryStream();");
+            Program.AppendLine("        await Request.BodyReader.CopyToAsync(requestBody);");
+            Program.AppendLine("        var renderJson = Encoding.UTF8.GetString(requestBody.ToArray());");
+            Program.AppendLine("        var render = JsonSerializer.Deserialize<TagRenderRequest>(renderJson ?? \"null\");");
+            Program.AppendLine("        var pars = JsonSerializer.Deserialize<_{0}_Params>(render.Pars);",
+                action.Name);
+            Program.AppendLine("        var html = await component.RenderComponentAsync(sp, render.State, render.Path, async (it) =>");
+            Program.AppendLine("        {{");
+
+            Program.AppendLine("            {0}it.{1}({2});",
+                (action.ReturnType == "Task" || action.ReturnType.StartsWith("Task<"))
+                    ? "await "
+                    : "",
+                action.Name,
+                string.Join(", ", action.Params.Select((it) => $"pars.{it.name}")));
+
+            Program.AppendLine("            await Task.CompletedTask;");
+            Program.AppendLine("        }});");
+            Program.AppendLine("        return Content(html, \"text/html\");");
+            Program.AppendLine("    }}");
+        }
+
+        Program.AppendLine("}}");
     }
 }
