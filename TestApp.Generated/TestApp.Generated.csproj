@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SourceGenerator.Includes\SourceGenerator.Includes.csproj" />
     <ProjectReference Include="..\SourceGenerator.VsAdapter\SourceGenerator.VsAdapter.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 

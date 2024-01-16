@@ -25,6 +25,7 @@ namespace SourceGenerator.VsAdapter
         public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
         public static string CallingPath = "";
 
+        /*
         internal string ReadEmbeddedResource(string fileName)
         {
             var assy = GetType().Assembly;
@@ -41,6 +42,7 @@ namespace SourceGenerator.VsAdapter
         public string INCLUDES => _INCLUDES is null
             ? _INCLUDES = ReadEmbeddedResource("_Includes.txt")
             : _INCLUDES;
+        */
 
         public static async Task<MemoryStream> ExecuteProcess(AdditionalText file)
         {
@@ -127,7 +129,7 @@ namespace SourceGenerator.VsAdapter
             }
 
             // Add all sources from main thread for safety
-            context.AddSource("_Includes.g.cs", INCLUDES);
+            //context.AddSource("_Includes.g.cs", INCLUDES);
             context.AddSource("_ServiceCollection.g.cs", GenerateServiceCollection(files));
             context.AddSource("_ViewCollection.g.cs", GenerateViewCollection(files));
             foreach (var source in sources)
