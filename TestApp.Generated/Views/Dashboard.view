@@ -5,6 +5,11 @@ interface {
 }
 
 parent({CascadingState} {cascade}
+	<>
+
+	for({var i = 0; i < 10; i++}
+		{"Item " + i}
+	)
 
 	div(| class = {"px-4 py-2"} |
 		div(
@@ -41,4 +46,5 @@ parent({CascadingState} {cascade}
 		)
 	)
 
+	</>
 )

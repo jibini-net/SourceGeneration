@@ -10,35 +10,35 @@ parent({CascadingState} {cascade}
 		if({cascade.Get<SiteUser>("loggedIn").suID == 0}
 
 			<>
-				span(| class = {"my-auto"} |
-					{"Guest"}
-				)
-				button(
-					|
-					class = {"btn btn-success my-auto ms-2"},
-					onclick = {"onLogIn(this);"}
-					|
-					{"Log in"}
-				)
+			span(| class = {"my-auto"} |
+				{"Guest"}
+			)
+			button(
+				|
+				class = {"btn btn-success my-auto ms-2"},
+				onclick = {"onLogIn(this);"}
+				|
+				{"Log in"}
+			)
 			</>
 
 			<>
-				span(
-					|
-					class = {"iconify my-auto"},
-					{data-icon} = {"material-symbols:person"}
-					|
-				)
-				strong(| class = {"my-auto"} |
-					{cascade.Get<SiteUser>("loggedIn").suFirstName}
-				)
-				button(
-					|
-					class = {"btn btn-outline-secondary my-auto ms-2"},
-					onclick = {"onLogOut(this);"}
-					|
-					{"Log out"}
-				)
+			span(
+				|
+				class = {"iconify my-auto"},
+				{data-icon} = {"material-symbols:person"}
+				|
+			)
+			strong(| class = {"my-auto"} |
+				{cascade.Get<SiteUser>("loggedIn").suFirstName}
+			)
+			button(
+				|
+				class = {"btn btn-outline-secondary my-auto ms-2"},
+				onclick = {"onLogOut(this);"}
+				|
+				{"Log out"}
+			)
 			</>
 		)
 	)

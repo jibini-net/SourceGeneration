@@ -192,6 +192,32 @@ public class HtmlNodeGrammar
     public delegate void SpecialValidator(Dto dto);
     public delegate void SpecialRenderBuilder(Dto dto, Action<string> buildDom, Action<string> buildLogic);
 
+    public static SpecialValidator LoopValidator(string opName, string argName)
+    {
+        return (dto) =>
+        {
+            if (dto.Attribs.Count > 0)
+            {
+                throw new Exception($"'{opName}' has no available attributes");
+            }
+            if (dto.Children.Count != 2
+                || dto.Children.First().Children is not null)
+            {
+                throw new Exception($"Usage: '{opName}({{{argName}}} {{content}})'");
+            }
+        };
+    }
+
+    public static SpecialRenderBuilder LoopRenderBuilder(string opName)
+    {
+        return (dto, buildDom, buildLogic) =>
+        {
+            buildLogic($"{opName} ({dto.Children.First().InnerContent}) {{");
+            Write(dto.Children[1], buildDom, buildLogic);
+            buildLogic("}");
+        };
+    }
+
     public static Dictionary<string, (SpecialValidator, SpecialRenderBuilder)> SpecialTags = new()
     {
         ["unsafe"] = (
@@ -238,6 +264,18 @@ public class HtmlNodeGrammar
                     buildLogic("}");
                 }
             }),
+
+        ["while"] = (
+            LoopValidator("while", "predicate"),
+            LoopRenderBuilder("while")),
+
+        ["for"] = (
+            LoopValidator("for", "header"),
+            LoopRenderBuilder("for")),
+
+        ["foreach"] = (
+            LoopValidator("foreach", "header"),
+            LoopRenderBuilder("foreach")),
 
         ["child"] = (
             (dto) =>
