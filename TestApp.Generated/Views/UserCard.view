@@ -1,21 +1,23 @@
 state {
+	bool isSet
 }
 
 interface {
+	Toggle()
 }
 
 parent({CascadingState} {cascade}
 
-	div(| class = {"d-flex"} |
+	div(| class = {"d-flex _UserCard"} |
 		if({cascade.Get<SiteUser>("loggedIn").suID == 0}
 
 			<>
-			span(| class = {"my-auto"} |
+			span(| class = {"my-auto me-2"} |
 				{"Guest"}
 			)
 			button(
 				|
-				class = {"btn btn-success my-auto ms-2"},
+				class = {"btn btn-success my-auto ms-auto"},
 				onclick = {"onLogIn(this);"}
 				|
 				{"Log in"}
@@ -29,12 +31,17 @@ parent({CascadingState} {cascade}
 				{data-icon} = {"material-symbols:person"}
 				|
 			)
-			strong(| class = {"my-auto"} |
+			strong(
+				|
+				class = {"my-auto me-2"},
+				style = {$"color: {(isSet ? "red" : "black")};"},
+				onclick = {"dispatch(this, 'Toggle');"}
+				|
 				{cascade.Get<SiteUser>("loggedIn").suFirstName}
 			)
 			button(
 				|
-				class = {"btn btn-outline-secondary my-auto ms-2"},
+				class = {"btn btn-outline-secondary my-auto ms-auto"},
 				onclick = {"onLogOut(this);"}
 				|
 				{"Log out"}

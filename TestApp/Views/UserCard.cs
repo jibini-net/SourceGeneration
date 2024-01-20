@@ -7,4 +7,9 @@ public class UserCard : UserCardBase
     public UserCard(IServiceProvider sp) : base(sp)
     {
     }
+
+    override public void Toggle()
+    {
+        isSet = !isSet;
+    }
 }

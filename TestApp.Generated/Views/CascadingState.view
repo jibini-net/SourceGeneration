@@ -7,7 +7,8 @@ interface {
 }
 
 script(
-	unsafe(<">
+	unsafe(
+		<">
 	
 		async function onLogIn(el) {
 			var cascade = el.closest("._CascadingState");
@@ -19,7 +20,8 @@ script(
 			await dispatch(cascade, "SetLoggedIn", { loggedIn: {}});
 		}
 
-	</">)
+		</">
+	)
 )
 
 div(| class = {"_CascadingState"} |

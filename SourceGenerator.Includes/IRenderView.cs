@@ -47,19 +47,18 @@ public static class RenderViewExtensions
         IRenderView view = _view;
 
         var subState = state;
-        Type parentType = null;
         StateDump parentState = null;
 
         foreach (var step in target)
         {
             if (step.Dependent)
             {
-                parentState = subState;
-                parentType = _view
-                    .GetType()
-                    .Assembly
-                    .GetType($"Generated.{parentState.Tag}Base")
-                    .GetNestedType("IView");
+                // Do not replace an existing dependent node with
+                // this one; have to go all the way up the chain
+                parentState = parentState ?? subState;
+            } else
+            {
+                parentState = null;
             }
             subState = subState.GetOrAddChild(step.Tag, step.IndexByTag);
         }
@@ -68,8 +67,13 @@ public static class RenderViewExtensions
         await config(_view);
         subState.State = _view.GetState();
 
-        if (parentType is not null)
+        if (parentState is not null)
         {
+            var parentType = _view
+                .GetType()
+                .Assembly
+                .GetType($"Generated.{parentState.Tag}Base")
+                .GetNestedType("IView");
             view = sp.GetService(parentType) as IRenderView;
             subState = parentState;
         }
