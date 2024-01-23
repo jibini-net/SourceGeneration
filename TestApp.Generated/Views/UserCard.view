@@ -9,7 +9,7 @@ interface {
 parent({CascadingState} {cascade}
 
 	div(| class = {"d-flex _UserCard"} |
-		if({cascade.Get<SiteUser>("loggedIn").suID == 0}
+		if({cascade.Get<Account>("loggedIn").Id == 0}
 
 			<>
 			span(| class = {"my-auto me-2"} |
@@ -37,7 +37,7 @@ parent({CascadingState} {cascade}
 				style = {$"color: {(isSet ? "red" : "black")};"},
 				onclick = {"dispatch(this, 'Toggle');"}
 				|
-				{cascade.Get<SiteUser>("loggedIn").suFirstName}
+				{cascade.Get<Account>("loggedIn").FirstName}
 			)
 			button(
 				|

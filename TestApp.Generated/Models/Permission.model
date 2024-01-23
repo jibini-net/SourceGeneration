@@ -1,31 +1,10 @@
 schema {
-    int perID,
-    int perTypeID,
-    string perName = {""},
-    string perConstant = {""},
-    bool perActive = {true}
-}
-
-partial Test {
-    string calculated_field = {""}
+	int Id,
+	string Name = {""},
+	string Constant = {""}
 }
 
 repo {
-    dbo.Permission_GetByID(int perID)
-        => Permission,
-
-    dbo.Permission_Set(
-        int perID,
-        int perTypeID,
-        string perName,
-        string perConstant,
-        bool perActive)
-        => Permission,
-
-    dbo.Permission_Delete(int perID),
-
-    dbo.Permission_DoTest()
-        => Permission.Test
 }
 
 service {

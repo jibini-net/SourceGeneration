@@ -1,5 +1,4 @@
 ﻿using Generated;
-using TestApp.Services;
 using TestApp.Views;
 
 namespace TestApp;
@@ -8,20 +7,12 @@ public static class ServiceCollectionExtensions
 {
     public static void AddBackendServices(this IServiceCollection services)
     {
-        services.AddBlogPostBackend<BlogPostService>();
-        /*
-        services.AddLogEntryBackend<LogEntryService>();
-        services.AddPermissionBackend<PermissionService>();
-        services.AddSiteUserBackend<SiteUserService>();
-        */
     }
 
     public static void AddFrontendServices(this IServiceCollection services)
     {
-        services.AddBlogPostFrontend();
-        services.AddLogEntryFrontend();
+        services.AddAccountFrontend();
         services.AddPermissionFrontend();
-        services.AddSiteUserFrontend();
     }
 
     public static void AddViewServices(this IServiceCollection services)

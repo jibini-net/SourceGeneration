@@ -55,7 +55,7 @@ parent({CascadingState} {cascade}
 				UserCard()
 			)
 		)
-		if({cascade.Get<SiteUser>("loggedIn").suID == 0}
+		if({cascade.Get<Account>("loggedIn").Id == 0}
 
 			div(| class = {"alert alert-secondary"} |
 				{"Please "}
@@ -70,7 +70,7 @@ parent({CascadingState} {cascade}
 			)
 
 			div(| class = {"alert alert-success"} |
-				{"Welcome, " + cascade.Get<SiteUser>("loggedIn").suFirstName + "!"}
+				{"Welcome, " + cascade.Get<Account>("loggedIn").FirstName + "!"}
 			)
 		)
 	)
