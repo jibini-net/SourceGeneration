@@ -1,9 +1,7 @@
 state {
-	bool isSet
 }
 
 interface {
-	Toggle()
 }
 
 parent({CascadingState} {cascade}
@@ -31,12 +29,7 @@ parent({CascadingState} {cascade}
 				{data-icon} = {"material-symbols:person"}
 				|
 			)
-			strong(
-				|
-				class = {"my-auto me-2"},
-				style = {$"color: {(isSet ? "red" : "black")};"},
-				onclick = {"dispatch(this, 'Toggle');"}
-				|
+			strong(| class = {"my-auto me-2"} |
 				{cascade.Get<Account>("loggedIn").FirstName}
 			)
 			button(

@@ -69,10 +69,11 @@ public static class RenderViewExtensions
 
         if (parentState is not null)
         {
-            var parentType = _view
-                .GetType()
-                .Assembly
-                .GetType($"Generated.{parentState.Tag}Base")
+            //TODO Improve
+            var parentType = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Select((it) => it.GetType($"Generated.{parentState.Tag}Base"))
+                .Single((it) => it is not null)
                 .GetNestedType("IView");
             view = sp.GetService(parentType) as IRenderView;
             subState = parentState;

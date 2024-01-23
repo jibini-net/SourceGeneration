@@ -15,11 +15,9 @@ html(| class = {"m-0 p-0"} |
 		)
 		base(
 			|
-			href = {sp
-					.GetRequiredService<IHttpContextAccessor>()
-					.HttpContext
-					.Request
-					.PathBase
+			href = {(sp
+					.GetService(typeof(TestApp.Services.ILinkPathGenerator)) as TestApp.Services.ILinkPathGenerator)
+					.GenerateActionPath()
 				+ "/"}
 			|
 		)
