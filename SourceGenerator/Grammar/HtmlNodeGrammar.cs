@@ -11,6 +11,7 @@ public class HtmlNodeGrammar
     public class Dto
     {
         public string Tag { get; set; }
+        public string Alias { get; set; }
         public Dictionary<string, string> Attribs { get; set; }
         public List<Dto> Children { get; set; }
         public string InnerContent { get; set; }
@@ -128,7 +129,7 @@ public class HtmlNodeGrammar
                 return MatchStringSegment(stream);
         }
 
-        // {tag} "("
+        // {tag} [{alias}]
         if (stream.Poll() != (int)Ident)
         {
             throw new Exception("Expected HTML tag identifier");
@@ -139,6 +140,19 @@ public class HtmlNodeGrammar
             Attribs = new(),
             Children = new()
         };
+        if (stream.Next == (int)Ident)
+        {
+            // "{alias name}"
+            stream.Poll();
+
+            if (result.Tag[0] < 'A' || result.Tag[0] > 'Z')
+            {
+                throw new Exception("Aliases can only be applied to components");
+            }
+            result.Alias = stream.Text;
+        }
+
+        // "{"
         if (stream.Poll() != (int)LParen)
         {
             throw new Exception("Expected left parens");
@@ -323,6 +337,12 @@ public class HtmlNodeGrammar
     {
         buildLogic("{\n");
 
+        var aliased = !string.IsNullOrEmpty(dto.Alias);
+        if (aliased)
+        {
+            buildLogic($"StateDump {dto.Alias};");
+        }
+
         foreach (var (child, i) in dto.Children.Select((it, i) => (it, i)))
         {
             buildLogic($"async Task _child_{i}(StateDump state, Dictionary<string, int> tagCounts, StringWriter writer) {{");
@@ -338,6 +358,7 @@ public class HtmlNodeGrammar
             await ((Func<Task<string>>)(async () => {{
                 var indexByTag = tagCounts.GetNextIndexByTag(""{dto.Tag}"");
                 var subState = state.GetOrAddChild(""{dto.Tag}"", indexByTag);
+                {(aliased ? $"{dto.Alias} = subState;" : "")}
                 var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
                 component.LoadState(subState.State);
                 {string.Join("\n                ", assignActions)}

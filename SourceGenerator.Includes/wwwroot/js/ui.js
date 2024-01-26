@@ -110,7 +110,10 @@ function replace(startEl, html) {
 
 function getState() {
     var htmlElement = $("html")[0];
-    var stateComment = htmlElement.nextSibling.nextSibling;
+    var stateComment = htmlElement.nextSibling;
+    while (stateComment.nextSibling) {
+        stateComment = stateComment.nextSibling;
+    }
 
     var txt = document.createElement("textarea");
     txt.innerHTML = stateComment.textContent;
@@ -119,7 +122,10 @@ function getState() {
 
 function setState(newComment) {
     var htmlElement = $("html")[0];
-    var stateComment = htmlElement.nextSibling.nextSibling;
+    var stateComment = htmlElement.nextSibling;
+    while (stateComment.nextSibling) {
+        stateComment = stateComment.nextSibling;
+    }
 
     stateComment.replaceWith(newComment.cloneNode(true));
 }

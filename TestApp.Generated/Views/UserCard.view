@@ -16,7 +16,7 @@ parent({CascadingState} {cascade}
 			button(
 				|
 				class = {"btn btn-success my-auto ms-auto"},
-				onclick = {"onLogIn(this);"}
+				onclick = {"CascadingState.logIn(this);"}
 				|
 				{"Log in"}
 			)
@@ -35,7 +35,7 @@ parent({CascadingState} {cascade}
 			button(
 				|
 				class = {"btn btn-outline-secondary my-auto ms-auto"},
-				onclick = {"onLogOut(this);"}
+				onclick = {"CascadingState.logOut(this);"}
 				|
 				{"Log out"}
 			)

@@ -20,8 +20,8 @@ public static class ServiceCollectionExtensions
     public static void AddViewServices(this IServiceCollection services)
     {
         services.AddHostView<HostBase.Default>();
-        services.AddAppView<AppBase.Default>();
         services.AddCascadingStateView<CascadingState>();
+        services.AddDashboardPageView<DashboardPageBase.Default>();
         services.AddDashboardView<DashboardBase.Default>();
         services.AddUserCardView<UserCardBase.Default>();
     }

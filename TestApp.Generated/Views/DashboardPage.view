@@ -1,0 +1,21 @@
+state {
+}
+
+interface {
+}
+
+Host(
+	Dashboard()
+	<>
+	title({"Dashboard"})
+	link(
+		|
+		rel = {"stylesheet"},
+		href = {"styles/Dashboard.css"}
+		|
+	)
+	</>
+	<>
+	script(| src = {"js/CascadingState.js"} |)
+	</>
+)
