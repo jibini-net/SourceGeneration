@@ -1,9 +1,0 @@
-state {
-}
-
-interface {
-}
-
-CascadingState(
-	Dashboard()
-)

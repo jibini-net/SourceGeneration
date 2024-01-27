@@ -8,12 +8,12 @@ public class CascadingState : CascadingStateBase
     {
         loggedIn = new()
         {
-            suID = 1,
-            suFirstName = "John"
+            Id = 1,
+            FirstName = "John"
         };
     }
 
-    override public void SetLoggedIn(SiteUser loggedIn)
+    override public void SetLoggedIn(Account loggedIn)
     {
         this.loggedIn = loggedIn;
     }

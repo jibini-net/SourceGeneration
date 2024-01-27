@@ -104,7 +104,8 @@ public partial class TopLevelGrammar
 
                 case (int)State:
                     var schema = SchemaGrammar.Match(stream);
-                    SchemaGrammar.Write(schema, accessLevel: "internal");
+                    //TODO Make protected
+                    SchemaGrammar.Write(schema, accessLevel: "public");
                     SchemaGrammar.WriteStateDump(schema, modelName);
                     break;
 

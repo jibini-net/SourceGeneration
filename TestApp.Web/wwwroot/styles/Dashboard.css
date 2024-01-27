@@ -1,0 +1,19 @@
+﻿.user-card-container {
+    position: relative;
+}
+
+    .user-card-container ._UserCard {
+        display: none !important;
+        position: absolute;
+        right: 0;
+        z-index: 10;
+        background: white;
+        width: 300px;
+        box-shadow: 0 0 2px 2px grey;
+        padding: 1rem;
+        border-radius: 4px;
+    }
+
+    .user-card-container:hover ._UserCard {
+        display: flex !important;
+    }

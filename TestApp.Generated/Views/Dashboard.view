@@ -4,11 +4,15 @@ state {
 interface {
 }
 
-parent({CascadingState} {cascade}
+CascadingState cascade(
+	<>
+
+	for({var i = 0; i < 10; i++}
+		{"Item " + i}
+	)
 
 	div(| class = {"px-4 py-2"} |
-		div(
-			|
+		div(|
 			class = {"d-flex flex-row mb-4"},
 			style = {"width: 100%;"}
 			|
@@ -17,28 +21,26 @@ parent({CascadingState} {cascade}
 					{"Home"}
 				)
 			)
-			div(| class = {"ms-auto"} |
+			div(| class = {"ms-auto user-card-container"} |
+				h1({"Hover"})
 				UserCard()
 			)
 		)
-		if({cascade.Get<SiteUser>("loggedIn").suID == 0}
+		if({cascade.Get<Account>("loggedIn").Id == 0}
 
 			div(| class = {"alert alert-secondary"} |
 				{"Please "}
-				a(
-					|
-					href = {"javascript:void(0);"},
-					onclick = {"onLogIn(this);"}
-					|
+				a(| onclick = {"CascadingState.logIn(this);"} |
 					{"log in"}
 				)
 				{" to continue"}
 			)
 
 			div(| class = {"alert alert-success"} |
-				{"Welcome, " + cascade.Get<SiteUser>("loggedIn").suFirstName + "!"}
+				{"Welcome, " + cascade.Get<Account>("loggedIn").FirstName + "!"}
 			)
 		)
 	)
 
+	</>
 )

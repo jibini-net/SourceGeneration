@@ -34,7 +34,7 @@ bld/
 [Ll]ogs/
 
 # Generated sources and related toolchain
-*.g.cs
+#*.g.cs
 TestApp/Tools/*
 
 # Visual Studio 2015/2017 cache/options directory
@@ -365,3 +365,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+appsettings.*.json

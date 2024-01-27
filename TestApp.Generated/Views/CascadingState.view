@@ -1,26 +1,10 @@
 state {
-	SiteUser loggedIn = {new()}
+	Account loggedIn = {new()}
 }
 
 interface {
-	SetLoggedIn(SiteUser loggedIn)
+	SetLoggedIn(Account loggedIn)
 }
-
-script(
-	unsafe(<">
-	
-		async function onLogIn(el) {
-			var cascade = el.closest("._CascadingState");
-			await dispatch(cascade, "SetLoggedIn", { loggedIn: { suID: 1, suFirstName: "John" }});
-		}
-
-		async function onLogOut(el) {
-			var cascade = el.closest("._CascadingState");
-			await dispatch(cascade, "SetLoggedIn", { loggedIn: {}});
-		}
-
-	</">)
-)
 
 div(| class = {"_CascadingState"} |
 	child({0})
