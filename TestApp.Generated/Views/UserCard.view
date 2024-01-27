@@ -13,8 +13,7 @@ parent({CascadingState} {cascade}
 			span(| class = {"my-auto me-2"} |
 				{"Guest"}
 			)
-			button(
-				|
+			button(|
 				class = {"btn btn-success my-auto ms-auto"},
 				onclick = {"CascadingState.logIn(this);"}
 				|
@@ -23,17 +22,14 @@ parent({CascadingState} {cascade}
 			</>
 
 			<>
-			span(
-				|
+			span(|
 				class = {"iconify my-auto"},
 				{data-icon} = {"material-symbols:person"}
-				|
-			)
+				|)
 			strong(| class = {"my-auto me-2"} |
 				{cascade.Get<Account>("loggedIn").FirstName}
 			)
-			button(
-				|
+			button(|
 				class = {"btn btn-outline-secondary my-auto ms-auto"},
 				onclick = {"CascadingState.logOut(this);"}
 				|

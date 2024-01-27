@@ -12,8 +12,7 @@ CascadingState cascade(
 	)
 
 	div(| class = {"px-4 py-2"} |
-		div(
-			|
+		div(|
 			class = {"d-flex flex-row mb-4"},
 			style = {"width: 100%;"}
 			|
@@ -31,11 +30,7 @@ CascadingState cascade(
 
 			div(| class = {"alert alert-secondary"} |
 				{"Please "}
-				a(
-					|
-					href = {"javascript:void(0);"},
-					onclick = {"CascadingState.logIn(this);"}
-					|
+				a(| onclick = {"CascadingState.logIn(this);"} |
 					{"log in"}
 				)
 				{" to continue"}

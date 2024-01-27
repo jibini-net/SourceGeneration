@@ -152,7 +152,7 @@ public class HtmlNodeGrammar
             result.Alias = stream.Text;
         }
 
-        // "{"
+        // "("
         if (stream.Poll() != (int)LParen)
         {
             throw new Exception("Expected left parens");

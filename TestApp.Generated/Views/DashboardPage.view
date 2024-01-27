@@ -8,12 +8,10 @@ Host(
 	Dashboard()
 	<>
 	title({"Dashboard"})
-	link(
-		|
+	link(|
 		rel = {"stylesheet"},
 		href = {"styles/Dashboard.css"}
-		|
-	)
+		|)
 	</>
 	<>
 	script(| src = {"js/CascadingState.js"} |)
