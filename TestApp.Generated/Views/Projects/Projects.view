@@ -8,7 +8,7 @@ CascadingState cascade(
 	<>
 
 	div(|
-		class = {"banner orange-banner d-flex flex-column"},
+		class = {"banner orange-banner d-flex flex-column mb-5"},
 		style = {"text-align: center;"}
 		|
 		h4(| class = {"mx-auto"} |
@@ -21,6 +21,7 @@ CascadingState cascade(
 			{"A variety of open source software projects I've been working on."}
 		)
 	)
+	SourceGenShowcase()
 
 	</>
 )

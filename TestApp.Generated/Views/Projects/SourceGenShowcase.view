@@ -1,0 +1,75 @@
+state {
+}
+
+interface {
+}
+
+div(| class = {"d-flex flex-row flex-wrap"} |
+	div(| class = {"col-12 col-md-8 bg-dark border border-light p-3"} |
+		h4({"Source Generation"})
+		hr()
+	)
+	div(| class = {"col-12 col-md-4 bg-light p-3 text-dark"} |
+		h4({"This Site"})
+		p(
+			<">
+			My portfolio site is written in my own reactive declarative markup
+			language, and also serves as a testbed for new source generation
+			features.
+			</">
+		)
+		p({"Some demos:"})
+		DemoTabs(|
+			title = {"Up/Down"},
+			prefix = {"up-down"}
+			|
+			UpDownDemo()
+			<">state {
+	int count
+}
+
+interface {
+	Increment(),
+	Decrement()
+}
+
+div(| class = {"d-flex flex-row"} |
+	div(| class = {"my-auto"} |
+		{"Count: " + count}
+	)
+	button(|
+		class = {"btn btn-danger ms-2"},
+		onclick = {"dispatch(this, 'Decrement');"}
+		|
+		{"-"}
+	)
+	button(|
+		class = {"btn btn-success ms-2"},
+		onclick = {"dispatch(this, 'Increment');"}
+		|
+		{"+"}
+	)
+)</">
+<">using Generated;
+
+namespace TestApp.Views;
+
+public class UpDownDemo : UpDownDemoBase
+{
+    public UpDownDemo(IServiceProvider sp) : base(sp)
+    {
+    }
+
+    public override void Decrement()
+    {
+        count--;
+    }
+
+    public override void Increment()
+    {
+        count++;
+    }
+}</">
+		)
+	)
+)

@@ -24,6 +24,7 @@
   <ItemGroup>
     <Folder Include="Tools\SourceGenerator\" />
     <Folder Include="Tools\SourceGenerator.VsAdapter\" />
+    <Folder Include="Views\Projects\Showcase\" />
   </ItemGroup>
 
   <ItemGroup>

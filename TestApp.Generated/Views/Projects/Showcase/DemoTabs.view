@@ -1,0 +1,71 @@
+state {
+	string title = {""},
+	string prefix = {"demo"}
+}
+
+interface {
+}
+
+nav(|
+	class = {"nav nav-tabs"},
+	role = {"tablist"}
+	|
+	button(|
+		class = {"nav-link active"},
+		{data-bs-toggle} = {"tab"},
+		{data-bs-target} = {$"#{prefix}-preview"},
+		type = {"button"},
+		role = {"tab"}
+		|
+		{title}
+	)
+	button(|
+		class = {"nav-link"},
+		{data-bs-toggle} = {"tab"},
+		{data-bs-target} = {$"#{prefix}-view"},
+		type = {"button"},
+		role = {"tab"}
+		|
+		{".view"}
+	)
+	button(|
+		class = {"nav-link"},
+		{data-bs-toggle} = {"tab"},
+		{data-bs-target} = {$"#{prefix}-cs"},
+		type = {"button"},
+		role = {"tab"}
+		|
+		{".cs"}
+	)
+)
+div(| class = {"tab-content"} |
+	div(|
+		class = {"tab-pane fade show active bg-white p-2"},
+		id = {$"{prefix}-preview"},
+		role = {"tabpanel"}
+		|
+		child({0})
+	)
+	div(|
+		class = {"tab-pane fade bg-white p-2"},
+		id = {$"{prefix}-view"},
+		role = {"tabpanel"}
+		|
+		c(
+			pre(| class = {"code-preview"} |
+				child({1})
+			)
+		)
+	)
+	div(|
+		class = {"tab-pane fade bg-white p-2"},
+		id = {$"{prefix}-cs"},
+		role = {"tabpanel"}
+		|
+		c(
+			pre(| class = {"code-preview"} |
+				child({2})
+			)
+		)
+	)
+)

@@ -30,5 +30,8 @@ public static class ServiceCollectionExtensions
         services.AddUserCardView<UserCardBase.Default>();
         services.AddProjectsPageView<ProjectsPageBase.Default>();
         services.AddProjectsView<ProjectsBase.Default>();
+        services.AddSourceGenShowcaseView<SourceGenShowcaseBase.Default>();
+        services.AddDemoTabsView<DemoTabsBase.Default>();
+        services.AddUpDownDemoView<UpDownDemo>();
     }
 }

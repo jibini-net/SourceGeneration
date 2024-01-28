@@ -218,7 +218,7 @@ public class ServiceGrammar
 
     public static void WriteViewController(Dto dto)
     {
-        Program.AppendLine("[Controller]\n[Route(\"/view/{0}\")]",
+        Program.AppendLine("[Controller]\n[Route(\"/view/{0}\")]\n[ApiExplorerSettings(IgnoreApi = true)]",
             dto.ModelName);
         Program.AppendLine("public class {0}ViewController : ControllerBase",
             dto.ModelName);
