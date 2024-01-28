@@ -8,6 +8,38 @@ div(| class = {"d-flex flex-row flex-wrap"} |
 	div(| class = {"col-12 col-md-8 bg-dark border border-light p-3"} |
 		h4({"Source Generation"})
 		hr()
+		p(| class = {"mb-4"} |
+			{""}
+		)
+		h4({"Finite State Machines"})
+		hr()
+		p(| class = {"mb-4"} |
+			div(|
+				id = {"fsa-preview"},
+				class = {"ms-3 mb-3"}
+				|
+				iframe(| src = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("Fsa")} |)
+				div(| id = {"fsa-caption"} |
+					{"(above: construction and minimization of a finite state automaton)"}
+				)
+				a(|
+					href = {sp
+						.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+						.GetNamed("Fsa")},
+					target = {"_blank"},
+					id = {"fsa-link"},
+					title = {"Open in new tab"}
+					|
+					h3(| class = {"fas fa-external-link-alt"} |)
+				)
+			)
+			<">
+			My source generator employs recursive descent parsing using a custom
+			implementation of regular expression.
+			</">
+		)
 	)
 	div(| class = {"col-12 col-md-4 bg-light p-3 text-dark"} |
 		h4({"This Site"})
