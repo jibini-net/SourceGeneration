@@ -28,5 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddEmploymentListView<EmploymentListBase.Default>();
         services.AddTechnologyListView<TechnologyList>();
         services.AddUserCardView<UserCardBase.Default>();
+        services.AddProjectsPageView<ProjectsPageBase.Default>();
+        services.AddProjectsView<ProjectsBase.Default>();
     }
 }

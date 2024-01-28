@@ -1,0 +1,26 @@
+state {
+}
+
+interface {
+}
+
+CascadingState cascade(
+	<>
+
+	div(|
+		class = {"banner orange-banner d-flex flex-column"},
+		style = {"text-align: center;"}
+		|
+		h4(| class = {"mx-auto"} |
+			{"Project Portfolio"}
+		)
+		h5(|
+			class = {"mb-0 mx-auto"},
+			style = {"max-width: 30rem;font-weight: normal;"}
+			|
+			{"A variety of open source software projects I've been working on."}
+		)
+	)
+
+	</>
+)
