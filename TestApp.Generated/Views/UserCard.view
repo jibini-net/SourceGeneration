@@ -22,10 +22,6 @@ parent({CascadingState} {cascade}
 			</>
 
 			<>
-			span(|
-				class = {"iconify my-auto"},
-				{data-icon} = {"material-symbols:person"}
-				|)
 			strong(| class = {"my-auto me-2"} |
 				{cascade.Get<Account>("loggedIn").FirstName}
 			)

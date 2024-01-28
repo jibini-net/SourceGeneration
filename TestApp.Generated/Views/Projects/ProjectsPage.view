@@ -1,0 +1,20 @@
+state {
+}
+
+interface {
+}
+
+Host(
+	Projects()
+	<>
+	title({"Projects"})
+	link(|
+		rel = {"stylesheet"},
+		href = {"styles/Projects.css"}
+		|)
+	</>
+	<>
+	script(| src = {"js/CascadingState.js"} |)
+	script(| src = {"js/Projects.js"} |)
+	</>
+)

@@ -1,0 +1,38 @@
+state {
+}
+
+interface {
+}
+
+div(| class = {"banner green-banner d-flex flex-row"} |
+	div(| class = {"mx-md-auto"} |
+		div(| class = {"banner-brace"} |
+			{"\{"}
+		)
+		div(|
+			class = {"ps-5"},
+			id = {"shout"}
+			|
+			h4(| class = {"mb-2"} |
+				{"I like writing code."}
+			)
+			p(| class = {"mb-3"} |
+				<">
+				If I'm not writing code, odds are I'm talking about code. Every project
+				is an opportunity to push my limits and learn something new
+				</">
+				i({"(about code)"})
+				{"."}
+			)
+			a(|
+				href = {"projects"},
+				class = {"btn btn-outline-light"}
+				|
+				{"Project Portfolio"}
+			)
+		)
+		div(| class = {"banner-brace"} |
+			{"\}"}
+		)
+	)
+)

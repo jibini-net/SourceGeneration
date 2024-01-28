@@ -41,4 +41,9 @@ public class LinkPathGenerator : ILinkPathGenerator
 
         return path.ToString();
     }
+
+    public string GetNamed(string name)
+    {
+        return config.GetValue<string>($"Links:{name}");
+    }
 }

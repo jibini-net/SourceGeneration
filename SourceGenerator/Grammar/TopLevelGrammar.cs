@@ -62,6 +62,7 @@ public partial class TopLevelGrammar
         Program.AppendLine("using System.Text;");
         Program.AppendLine("using System.Text.Json;");
         Program.AppendLine("using System.Web;");
+        Program.AppendLine("using Microsoft.Extensions.DependencyInjection;");
 
         Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
             modelName);
