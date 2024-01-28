@@ -23,7 +23,9 @@ div(| class = {"content"} |
 				{"Projects"}
 			)
 			a(|
-				href = {"about:blank"},
+				href = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("GitHub")},
 				target = {"_blank"}
 				|
 				div(| class = {"page-icon"} |
@@ -32,7 +34,9 @@ div(| class = {"content"} |
 				{"GitHub"}
 			)
 			a(|
-				href = {"about:blank"},
+				href = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("LinkedIn")},
 				target = {"_blank"}
 				|
 				div(| class = {"page-icon"} |
@@ -50,7 +54,9 @@ div(| class = {"content"} |
 			i(
 				{"Created by "}
 				a(|
-					href = {"about:blank"},
+					href = {sp
+						.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+						.GetNamed("GitHub")},
 					target = {"_blank"}
 					|
 					{"Zach Goethel"}

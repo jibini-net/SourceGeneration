@@ -14,7 +14,9 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 	)
 	h4(
 		a(|
-			href = {"about:blank"},
+			href = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("Netkinetix")},
 			target = {"_blank"},
 			class = {"m-2"}
 			|
@@ -37,14 +39,18 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 		unique business challenges. The crew specializes in applications built on
 		</">
 		a(|
-			href = {"about:blank"},
+			href = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("AspNet")},
 			target = {"_blank"}
 			|
 			{"ASP.NET Core"}
 		)
 		{" and "}
 		a(|
-			href = {"about:blank"},
+			href = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("SqlServer")},
 			target = {"_blank"}
 			|
 			{"Microsoft SQL Server"}
@@ -65,7 +71,9 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 		I pushed to incorporate new tools, including adopting
 		</">
 		a(|
-			href = {"about:blank"},
+			href = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("Blazor")},
 			target = {"_blank"}
 			|
 			{"Blazor"}
@@ -86,7 +94,9 @@ div(|
 		)
 		h4(
 			a(|
-				href = {"about:blank"},
+				href = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("UwLaxCs")},
 				target = {"_blank"}
 				|
 				unsafe({"University of Wisconsin&mdash;La Crosse"})
@@ -116,7 +126,9 @@ div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 	)
 	h4(
 		a(|
-			href = {"about:blank"},
+			href = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("Multistack")},
 			target = {"_blank"},
 			class = {"me-2"}
 			|
@@ -136,7 +148,9 @@ div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 		reporting tools to access data in
 		</">
 		a(|
-			href = {"about:blank"},
+			href = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("Epicor")},
 			target = {"_blank"}
 			|
 			{"Epicor ERP"}
@@ -159,7 +173,9 @@ div(| class = {"bg-white text-dark p-3 mt-3 bg-opacity-75"} |
 	)
 	h4(
 		a(|
-			href = {"about:blank"},
+			href = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("Festival")},
 			target = {"_blank"},
 			class = {"me-2"}
 			|

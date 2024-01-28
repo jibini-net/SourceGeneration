@@ -11,8 +11,8 @@ html(
 			name = {"viewport"},
 			content = {"width=device-width, initial-scale=1.0"}
 			|)
-		base(| href = {(sp
-			.GetService(typeof(TestApp.Services.ILinkPathGenerator)) as TestApp.Services.ILinkPathGenerator)
+		base(| href = {sp
+			.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
 			.GenerateActionPath() + "/"} |)
 		link(|
 			rel = {"stylesheet"},
