@@ -1,0 +1,62 @@
+state {
+}
+
+interface {
+}
+
+div(| class = {"content"} |
+	div(| class = {"top-bar"} |
+		a(|
+			href = {""},
+			class = {"brand"}
+			|
+			h4(
+				{"Zach Goethel"}
+				span(| class = {"blink-cursor"} |)
+			)
+		)
+		div(| class = {"page-links"} |
+			a(| href = {"projects"} |
+				div(| class = {"page-icon"} |
+					i(| class = {"fa fa-folder"} |)
+				)
+				{"Projects"}
+			)
+			a(|
+				href = {"about:blank"},
+				target = {"_blank"}
+				|
+				div(| class = {"page-icon"} |
+					i(| class = {"fab fa-github"} |)
+				)
+				{"GitHub"}
+			)
+			a(|
+				href = {"about:blank"},
+				target = {"_blank"}
+				|
+				div(| class = {"page-icon"} |
+					i(| class = {"fab fa-linkedin"} |)
+				)
+				{"LinkedIn"}
+			)
+		)
+	)
+	div(| class = {"page-body"} |
+		child({0})
+	)
+	div(| class = {"bottom-bar bg-dark"} |
+		div(| class = {"credit"} |
+			i(
+				{"Created by "}
+				a(|
+					href = {"about:blank"},
+					target = {"_blank"}
+					|
+					{"Zach Goethel"}
+				)
+				{". Have a wonderful day!"}
+			)
+		)
+	)
+)

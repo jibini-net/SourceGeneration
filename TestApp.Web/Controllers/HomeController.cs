@@ -6,16 +6,16 @@ namespace TestApp.Controllers;
 [Controller]
 public class HomeController : Controller
 {
-    private readonly DashboardPageBase.IView dashboard;
-    public HomeController(DashboardPageBase.IView dashboard)
+    private readonly HomePageBase.IView Home;
+    public HomeController(HomePageBase.IView Home)
     {
-        this.dashboard = dashboard;
+        this.Home = Home;
     }
 
     [HttpGet("/")]
     public async Task<IActionResult> Index()
     {
-        var html = await dashboard.RenderPageAsync();
+        var html = await Home.RenderPageAsync();
         return Content(html, "text/html");
     }
 }

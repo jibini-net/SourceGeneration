@@ -1,0 +1,55 @@
+{
+	public class Item
+	{
+		public string Name { get; set; } = "";
+    public string NameClass => ShowDescription ? "m-0 mb-2" : "m-0";
+    public string IconClass { get; set; } = "";
+    public string Description { get; set; } = "";
+    public bool ShowDescription => !string.IsNullOrEmpty(Description);
+	}
+}
+
+interface {
+}
+
+state {
+	List<Item> technologyList = {new()}
+}
+
+div(| class = {"text-white-50"} |
+	h4(|
+		id = {"fixed-clone"},
+		class = {"bg-dark pb-4 pt-5"}
+		|
+		{"Technologies"}
+	)
+	h4(|
+		id = {"scroll-clone"},
+		class = {"pt-5"}
+		|
+		{"Technologies"}
+	)
+	div(| class = {"techs-container bg-dark"} |
+		foreach({var tech in technologyList}
+		
+			div(| class = {"techs-item d-flex flex-row mt-4 pt-4"} |
+				div(| class = {"p-4 h-auto my-auto"} |
+					h2(| class = {"m-auto text-light"} |
+						span(| class = {tech.IconClass} |)
+					)
+				)
+				div(| class = {"flex-grow-1"} |
+					h5(| class = {"text-light " + tech.NameClass} |
+						{tech.Name}
+					)
+					if({tech.ShowDescription}
+
+						p(| class = {"m-0"} |
+							unsafe({tech.Description})
+						)
+					)
+				)
+			)
+		)
+	)
+)

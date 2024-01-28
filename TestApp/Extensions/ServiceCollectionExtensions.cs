@@ -20,9 +20,13 @@ public static class ServiceCollectionExtensions
     public static void AddViewServices(this IServiceCollection services)
     {
         services.AddHostView<HostBase.Default>();
+        services.AddLayoutView<LayoutBase.Default>();
         services.AddCascadingStateView<CascadingState>();
-        services.AddDashboardPageView<DashboardPageBase.Default>();
-        services.AddDashboardView<DashboardBase.Default>();
+        services.AddHomePageView<HomePageBase.Default>();
+        services.AddHomeView<HomeBase.Default>();
+        services.AddShoutBannerView<ShoutBannerBase.Default>();
+        services.AddEmploymentListView<EmploymentListBase.Default>();
+        services.AddTechnologyListView<TechnologyList>();
         services.AddUserCardView<UserCardBase.Default>();
     }
 }

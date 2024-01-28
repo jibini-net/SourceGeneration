@@ -329,6 +329,19 @@ public class HtmlNodeGrammar
                 buildLogic($"var {dto.Children[1].InnerContent} = state.FindParent(\"{dto.Children[0].InnerContent}\");");
                 Write(dto.Children[2], buildDom, buildLogic);
                 buildLogic("}");
+            }),
+
+        ["br"] = (
+            (dto) =>
+            {
+                if (dto.Children.Any() || dto.Attribs.Any())
+                {
+                    throw new Exception("Breaks do not have parameters nor accept children");
+                }
+            },
+            (dto, buildDom, buildLogic) =>
+            {
+                buildDom("\"<br>\"");
             })
     };
 

@@ -1,0 +1,21 @@
+state {
+}
+
+interface {
+}
+
+CascadingState cascade(
+	<>
+
+	ShoutBanner()
+	div(| class = {"row"} |
+		div(| class = {"col col-12 col-md-7"} |
+			EmploymentList()
+		)
+		div(| class = {"col col-12 col-md-5"} |
+			TechnologyList()
+		)
+	)
+
+	</>
+)
