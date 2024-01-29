@@ -44,8 +44,7 @@ service {
 	ResetPassword(string resetToken, string password),
 
 	...
-}
-</">
+}</">
 			)
 		)
 	)
@@ -70,7 +69,7 @@ dto = new Account.WithPassword();</">
 		)
 		c(
 			pre(| class = {"code-preview"} |
-<">public class AccountService : Generated.Account.IBackendService
+<">public class AccountService : Account.IBackendService
 { ... }</">
 			)
 		)

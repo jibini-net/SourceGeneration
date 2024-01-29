@@ -398,7 +398,7 @@ public class HtmlNodeGrammar
         if (drawTags)
         {
             var attribs = dto.Attribs.Select((kv) => attrib(kv.Key, kv.Value));
-            buildDom($"\"<{dto.Tag}{string.Join("", attribs)}>\"");
+            buildDom($"(\"<{dto.Tag}{string.Join("", attribs)}>\").Replace(\"disabled=\\\"False\\\"\", \"\")");
         }
 
         foreach (var child in dto.Children)

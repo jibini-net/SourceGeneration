@@ -36,5 +36,6 @@ public static class ServiceCollectionExtensions
         services.AddComponentColumnsView<ComponentColumnsBase.Default>();
         services.AddDemoTabsView<DemoTabsBase.Default>();
         services.AddUpDownDemoView<UpDownDemo>();
+        services.AddTableRowDemoView<TableRowDemo>();
     }
 }
