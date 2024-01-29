@@ -8,36 +8,70 @@ div(| class = {"d-flex flex-row flex-wrap"} |
 	div(| class = {"col-12 col-md-8 bg-dark border border-light p-3"} |
 		h4({"Source Generation"})
 		hr()
+		p(
+			<">
+			Generated code allows developers to skip over tedium and keep focused
+			on important design details. Datalayer access, API client
+			code, and DOM-building logic are time sinks if implemented manually.
+			</">
+		)
+		p(
+			<">
+			My source generation platform aims to establish a definitive project
+			architecture of declarative descriptor languages. Several backend and
+			frontend tasks follow patterns which can be boilerplated from a source
+			descriptor document.
+			</">
+		)
 		p(| class = {"mb-4"} |
-			{""}
+			<">
+			The developer can build large portions of the application codebase from
+			fewer succinct lines leveraging structured generation patterns.
+			</">
 		)
 		h4({"Finite State Machines"})
 		hr()
-		p(| class = {"mb-4"} |
-			div(|
-				id = {"fsa-preview"},
-				class = {"ms-3 mb-3"}
-				|
-				iframe(| src = {sp
-					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-					.GetNamed("Fsa")} |)
-				div(| id = {"fsa-caption"} |
-					{"(above: construction and minimization of a finite state automaton)"}
-				)
-				a(|
-					href = {sp
-						.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-						.GetNamed("Fsa")},
-					target = {"_blank"},
-					id = {"fsa-link"},
-					title = {"Open in new tab"}
-					|
-					h3(| class = {"fas fa-external-link-alt"} |)
-				)
+		div(|
+			id = {"fsa-preview"},
+			class = {"ms-3 mb-3"}
+			|
+			iframe(| src = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("Fsa")} |)
+			div(| id = {"fsa-caption"} |
+				{"(above: construction and minimization of a finite state automaton)"}
 			)
+			a(|
+				href = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("Fsa")},
+				target = {"_blank"},
+				id = {"fsa-link"},
+				title = {"Open in new tab"}
+				|
+				h3(| class = {"fas fa-external-link-alt"} |)
+			)
+		)
+		p(
 			<">
-			My source generator employs recursive descent parsing using a custom
+			My descriptor language parser applies recursive descent parsing using a custom
 			implementation of regular expression.
+			</">
+		)
+		p(
+			<">
+			Patterns can be specified with a subset of the Basic Regular Expression
+			language (BRE) and are adapted to a node representation. Furthermore,
+			several Nondeterministic Finite Automata (NFAs) can be formed from several
+			regex expressions to match a corresponding set of tokens in a language.
+			</">
+		)
+		p(| class = {"mb-4"} |
+			<">
+			All possible tokens which can be matched by the state machine are knit
+			into one NFA, which can be used to match tokens as-is (using non-deterministic
+			breadth-first evaluation of the NFA) or further optimized using DFA conversion
+			and equivalence partioning.
 			</">
 		)
 	)
@@ -46,8 +80,7 @@ div(| class = {"d-flex flex-row flex-wrap"} |
 		p(
 			<">
 			My portfolio site is written in my own reactive declarative markup
-			language, and also serves as a testbed for new source generation
-			features.
+			language, serving as a testbed for new source generation features.
 			</">
 		)
 		p({"Some demos:"})
@@ -102,6 +135,19 @@ public class UpDownDemo : UpDownDemoBase
         count++;
     }
 }</">
+		)
+		p(| class = {"mt-3"} |
+			<">
+			Serverside code is automatically generated to render HTML for
+			the defined component. Controller endpoints are also generated
+			corresponding to any actions within the component interface.
+			</">
+		)
+		p(
+			<">
+			Some minimal JS swaps out DOM elements to reactively update the
+			page to reflect its latest state.
+			</">
 		)
 	)
 )
