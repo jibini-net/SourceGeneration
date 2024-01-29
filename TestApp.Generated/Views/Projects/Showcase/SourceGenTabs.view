@@ -1,0 +1,45 @@
+state {
+}
+
+interface {
+}
+
+nav(|
+	class = {"nav nav-tabs"},
+	role = {"tablist"}
+	|
+	button(|
+		class = {"nav-link active"},
+		{data-bs-toggle} = {"tab"},
+		{data-bs-target} = {"#data-access"},
+		type = {"button"},
+		role = {"tab"}
+		|
+		{"Data Access"}
+	)
+	button(|
+		class = {"nav-link"},
+		{data-bs-toggle} = {"tab"},
+		{data-bs-target} = {"#reactive-component"},
+		type = {"button"},
+		role = {"tab"}
+		|
+		{"Reactive Component"}
+	)
+)
+div(| class = {"tab-content"} |
+	div(|
+		class = {"tab-pane fade show active bg-white p-2"},
+		id = {"data-access"},
+		role = {"tabpanel"}
+		|
+		DatalayerColumns()
+	)
+	div(|
+		class = {"tab-pane fade bg-white p-2"},
+		id = {"reactive-component"},
+		role = {"tabpanel"}
+		|
+		ComponentColumns()
+	)
+)
