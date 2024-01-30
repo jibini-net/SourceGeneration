@@ -130,7 +130,7 @@ body {
 
 .code-preview {
     tab-size: 2;
-    max-height: 408px;
+    max-height: 386px;
     overflow-y: auto;
     border-radius: 3px;
     background: #3d494f;

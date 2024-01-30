@@ -1,5 +1,5 @@
 state {
-	List<string> rows = {new() { "Row" }}
+	List<string> rows = {new() { "Row 1", "Row 2" }}
 }
 
 interface {

@@ -29,7 +29,9 @@ div(| class = {"d-flex flex-row flex-wrap"} |
 			fewer succinct lines leveraging structured generation patterns.
 			</">
 		)
-		h4({"Finite State Machines"})
+		h4(| class = {"mt-5"} |
+			{"Finite State Machines"}
+		)
 		hr()
 		div(|
 			id = {"fsa-preview"},
@@ -79,7 +81,7 @@ nfa.Build("{|}",        (int)Token3);
 			several regex expressions to match a corresponding set of tokens in a language.
 			</">
 		)
-		p(| class = {"mb-4"} |
+		p(| class = {"my-4"} |
 			<">
 			All possible tokens which can be matched by the state machine are knit
 			into one NFA, which can be used to match tokens as-is (using non-deterministic
@@ -105,7 +107,7 @@ var (token, match) = dfa.Search(source, offset);</">
 		)
 	)
 	div(| class = {"col-12 col-md-4"} |
-		div(| class = {"bg-light p-3 text-dark"} |
+		div(| class = {"bg-light p-3 text-dark pb-5"} |
 			h4({"This Site"})
 			p(
 				<">
@@ -185,7 +187,7 @@ public class UpDownDemo : UpDownDemoBase
 				|
 				TableRowDemo()
 <">state {
-	List<string> rows = {new() { "Row" }}
+	List<string> rows = {new() { "Row 1", "Row 2" }}
 }
 
 interface {

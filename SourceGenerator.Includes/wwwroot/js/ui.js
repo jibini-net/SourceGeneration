@@ -130,15 +130,16 @@ function setState(newComment) {
     stateComment.replaceWith(newComment.cloneNode(true));
 }
 
+var dispatchTail = null;
+
 function dispatch(el, action, args) {
     if (!args) {
         args = { };
     }
     var path = findPath(el);
-    var state = getState();
 
     var tagRenderRequest = {
-        State: state,
+        State: undefined,
         Path: path
             .slice(1)
             .map(parseData)
@@ -154,7 +155,8 @@ function dispatch(el, action, args) {
     var selfData = parseData(self);
     var replaceNode = path.reverse().find((it) => !parseData(it).dependent);
 
-    return new Promise((res, rej) => {
+    var nextDispatch = async () => await new Promise((res, rej) => {
+        tagRenderRequest.State = getState();
         $.ajax({
             url: `view/${selfData.tag}/${action}`,
             type: "POST",
@@ -171,4 +173,8 @@ function dispatch(el, action, args) {
             }
         });
     });
+
+    return dispatchTail = (dispatchTail
+        ? dispatchTail.then(nextDispatch)
+        : nextDispatch());
 }
