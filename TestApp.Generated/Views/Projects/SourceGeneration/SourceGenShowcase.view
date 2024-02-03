@@ -6,7 +6,26 @@ interface {
 
 div(| class = {"d-flex flex-row flex-wrap"} |
 	div(| class = {"col-12 col-md-8 bg-dark border border-light p-3"} |
-		h4({"Source Generation"})
+		div(|
+			class = {"d-flex flex-row"},
+			style = {"width: 100%;"}
+			|
+			h4(| class = {"my-auto"} |
+				{"Source Generation"}
+			)
+			a(|
+				href = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("SourceGenerationRepo")},
+				target = {"_blank"},
+				class = {"btn btn-outline-light ms-auto"}
+				|
+				h5(| class = {"mb-0"} |
+					i(| class = {"fab fa-github me-2"} |)
+					{"Repo"}
+				)
+			)
+		)
 		hr()
 		p(
 			<">
@@ -267,7 +286,10 @@ public class TableRowDemo : TableRowDemoBase
 
 		public override void Add(string row)
 		{
-				rows.Add(row);
+				if (rows.Count < 5)
+				{
+						rows.Add(row);
+				}
 		}
 
 		public override void MoveDown(int index)

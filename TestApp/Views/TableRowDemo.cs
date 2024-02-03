@@ -10,7 +10,10 @@ public class TableRowDemo : TableRowDemoBase
 
     public override void Add(string row)
     {
-        rows.Add(row);
+        if (rows.Count < 5)
+        {
+            rows.Add(row);
+        }
     }
 
     public override void MoveDown(int index)
