@@ -16,11 +16,14 @@ public class LinkPathGenerator : ILinkPathGenerator
     {
         var path = new StringBuilder();
         var preferredPath = config.GetValue<string>("LinkPath:PathBase");
+        var preferredScheme = config.GetValue<string>("LinkPath:Scheme");
 
         if (string.IsNullOrEmpty(preferredPath))
         {
             var req = httpContext.HttpContext.Request;
-            path.Append(req.Scheme);
+            path.Append(string.IsNullOrEmpty(preferredScheme)
+                ? req.Scheme
+                : preferredScheme);
             path.Append("://");
             path.Append(req.Host);
             if (!string.IsNullOrEmpty(req.PathBase.ToString().Trim('/')))

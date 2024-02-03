@@ -128,6 +128,31 @@ body {
     width: 100%;
 }
 
+.code-preview {
+    tab-size: 2;
+    max-height: 386px;
+    overflow-y: auto;
+    border-radius: 3px;
+    background: #3d494f;
+    color: #e2edff;
+    font-weight: 700;
+    padding: 2px;
+    max-width: 540px;
+    overflow-x: auto;
+    border: 0.5px solid #ffffff52;
+}
+
+.tab-content {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    color: black;
+}
+
+.nav-tabs {
+    margin-bottom: 0;
+}
+
 @media only screen and (max-width: 960px) {
     .content .top-bar {
         flex-direction: column;

@@ -1,3 +1,6 @@
+TestApp.Web/wwwroot/fontawesome-5.15.4/** linguist-vendored
+TestApp.Web/wwwroot/styles/open-iconic/** linguist-vendored
+
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################

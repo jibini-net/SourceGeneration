@@ -1,0 +1,91 @@
+state {
+}
+
+interface {
+}
+
+div(| class = {"d-flex flex-row flex-wrap"} |
+	div(| class = {"col-12 col-md-6 p-2"} |
+		h5(| class = {"bg-white border border-dark p-2 mb-0"} |
+			{"Account.model"}
+		)
+		c(
+			pre(| class = {"code-preview"} |
+<">schema {
+	int Id,
+	string Email = {""},
+	string FirstName = {""},
+	string LastName = {""}
+}
+
+partial WithPassword {
+	string PasswordScheme = {""},
+	string PasswordHash = {""},
+	string PasswordSalt = {""},
+	DateTime? PasswordSet
+}
+
+repo {
+	dbo.Account_GetById(int id)
+		=> Account,
+
+	dbo.Account_GetWithPassword(string email)
+		=> Account.WithPassword,
+
+	...
+}
+
+service {
+	AttemptLogin(string email, string password)
+		=> Account.WithSession,
+
+	LogOut(),
+
+	ResetPassword(string resetToken, string password),
+
+	...
+}</">
+			)
+		)
+	)
+	div(| class = {"col-12 col-md-6 p-2"} |
+		p(
+			<">
+			DTO classes are generated for the table schema and derived
+			partials.
+			</">
+		)
+		c(
+			pre(| class = {"code-preview"} |
+<">var dto = new Account();
+dto = new Account.WithPassword();</">
+			)
+		)
+		p(
+			<">
+			A service interface is generated which must be implemented
+			fully in the application backend.
+			</">
+		)
+		c(
+			pre(| class = {"code-preview"} |
+<">public class AccountService : Account.IBackendService
+{ ... }</">
+			)
+		)
+		p(
+			<">
+			Also accompanying functions to call SQL stored procedures
+			and API endpoints.
+			</">
+		)
+		c(
+			pre(| class = {"code-preview"} |
+<">Account.Repository repo;
+repo.Account_GetWithPassword(...);
+Account.IService service;
+service.AttemptLogin(...);</">
+			)
+		)
+	)
+)

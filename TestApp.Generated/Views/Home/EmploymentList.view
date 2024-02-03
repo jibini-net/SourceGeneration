@@ -97,7 +97,8 @@ div(|
 				href = {sp
 					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
 					.GetNamed("UwLaxCs")},
-				target = {"_blank"}
+				target = {"_blank"},
+				style = {"color: white;"}
 				|
 				unsafe({"University of Wisconsin&mdash;La Crosse"})
 			)
