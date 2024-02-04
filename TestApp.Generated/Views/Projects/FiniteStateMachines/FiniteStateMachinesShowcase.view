@@ -8,6 +8,10 @@ Drawer drawer(
 	<>
 	h4(| class = {"mt-5"} |
 		{"Finite State Machines"}
+		i(| style = {"font-size: 0.9rem;"} |
+			unsafe({"&nbsp;"})
+			{"& lexing-parsing"}
+		)
 	)
 	hr()
 	div(|
@@ -71,7 +75,7 @@ nfa.Build("{|}",        (int)Token3);
 		)
 		c(
 			pre(| class = {"code-preview"} |
-		<">var (token, match) = nfa.Search(source, offset);</">
+<">var (token, match) = nfa.Search(source, offset);</">
 			)
 		)
 		p(
@@ -82,9 +86,83 @@ nfa.Build("{|}",        (int)Token3);
 		)
 		c(
 			pre(| class = {"code-preview"} |
-		<">var dfa = nfa.ConvertToDfa().MinimizeDfa();
-		var (token, match) = dfa.Search(source, offset);</">
+<">var dfa = nfa.ConvertToDfa().MinimizeDfa();
+var (token, match) = dfa.Search(source, offset);</">
 			)
+		)
+		p(| class = {"mt-4"} |
+			<">
+			Usage of the machine will resemble that of tools such as (F)lex. Matched
+			tokens can be passed off to a parsing algorithm (e.g., LALR(1)), or a developer
+			may opt to implement recursive descent parsing by manually analyzing tokens.
+			</">
+		)
+		p(| class = {"mb-4"} |
+			<">
+			Perhaps the token "if" is found, so the following code is invoked to match a
+			function in source:
+			</">
+		)
+		div(| class = {"alert alert-info mb-2"} |
+			i(| class = {"fa fa-file me-2"} |)
+			a(|
+				href = {"https://github.com/jibini-net/SourceGeneration/blob/master/SourceGenerator/Fsa.cs"},
+				target = {"_blank"}
+				|
+				{"Fsa.cs"}
+			)
+			unsafe({"&mdash;"})
+			{"Implementation of regular expression and lexing"}
+		)
+		div(| class = {"alert alert-info mb-2"} |
+			i(| class = {"fa fa-file me-2"} |)
+			a(|
+				href = {"https://github.com/jibini-net/SourceGeneration/blob/master/SourceGenerator/TokenStream.cs"},
+				target = {"_blank"}
+				|
+				{"TokenStream.cs"}
+			)
+			unsafe({"&mdash;"})
+			{"Wrapper for searching an input source text token-by-token"}
+		)
+		hr()
+		c(
+			pre(| class = {"code-preview"} |
+<">var stream = new TokenStream()
+{
+	Grammar = dfa,
+	Source = inputSource
+};
+stream.Seek(startOffset);
+var ifDto = new IfDto();
+
+// "if" "(" {predicate expression} ")"
+if (stream.Poll() != (int)Token.If)
+{
+	throw new Exception("Expected 'if'");
+}
+if (stream.Poll() != (int)Token.LParens)
+{
+	throw new Exception("Expected '('");
+}
+ifDto.Predicate = ExpressionGrammar.Match(stream);
+if (stream.Poll() != (int)RParens)
+{
+	throw new Exception("Expected ')'");
+}
+
+// "{" {statement} [, ...] "}" | {statement}
+ifDto.Body = StatementGrammar.MatchBody(stream);
+
+// ... [ "else" {failure body} ]
+</">
+			)
+		)
+		p(| class = {"mt-4"} |
+			<">
+			More grammar can follow at any level of complexity supported by the
+			chosen parsing methodology.
+			</">
 		)
 		</>
 	)

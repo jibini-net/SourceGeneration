@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
         services.AddSourceGenShowcaseView<SourceGenShowcaseBase.Default>();
         services.AddFiniteStateMachinesShowcaseView<FiniteStateMachinesShowcaseBase.Default>();
         services.AddThisSiteShowcaseView<ThisSiteShowcaseBase.Default>();
+        services.AddCheckEngineShowcaseView<CheckEngineShowcaseBase.Default>();
         services.AddSourceGenTabsView<SourceGenTabsBase.Default>();
         services.AddDatalayerColumnsView<DatalayerColumnsBase.Default>();
         services.AddComponentColumnsView<ComponentColumnsBase.Default>();

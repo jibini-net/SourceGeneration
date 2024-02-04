@@ -22,12 +22,15 @@ CascadingState cascade(
 		)
 	)
 	div(| class = {"d-flex flex-row flex-wrap"} |
-		div(| class = {"col-12 col-md-8 bg-dark border border-light p-3"} |
-			SourceGenShowcase()
-			FiniteStateMachinesShowcase()
+		div(| class = {"col-12 col-md-8"} |
+			div(| class = {"bg-dark border border-light p-3 mb-4"} |
+				SourceGenShowcase()
+				FiniteStateMachinesShowcase()
+			)
+			CheckEngineShowcase()
 		)
 		div(| class = {"col-12 col-md-4"} |
-			div(| class = {"bg-light p-3 text-dark pb-5"} |
+			div(| class = {"bg-light p-3 text-dark pb-5 ms-0 ms-md-2"} |
 				ThisSiteShowcase()
 			)
 		)

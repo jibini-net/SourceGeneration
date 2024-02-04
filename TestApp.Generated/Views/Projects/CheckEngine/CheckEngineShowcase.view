@@ -1,0 +1,97 @@
+state {
+}
+
+interface {
+}
+
+div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
+	div(|
+		class = {"d-flex flex-column flex-grow-1 flex-shrink-1 pe-3"},
+		style = {"text-align: center;"}
+		|
+		h5(| class = {"mx-auto"} |
+			img(|
+				src = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("CheckEngineIcon")},
+				width = {24},
+				height = {24},
+				style = {"transform: translateY(-3px);"}
+				|)
+			unsafe({"&nbsp;"})
+			{"Check Engine"}
+		)
+		h6(|
+			class = {"mb-0 mx-auto"},
+			style = {"max-width: 30rem;font-weight: normal;"}
+			|
+			{"2D tile-based platformer and top-down game engine"}
+		)
+	)
+	a(|
+		href = {sp
+			.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+			.GetNamed("CheckEngineRepo")},
+		target = {"_blank"},
+		class = {"btn btn-outline-light ms-auto my-auto"},
+		style = {"height: fit-content;"}
+		|
+		h5(|
+			class = {"mb-0"},
+			style = {"white-space: nowrap;"}
+			|
+			i(| class = {"fab fa-github me-2"} |)
+			{"Repo"}
+		)
+	)
+)
+div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4 d-flex flex-row flex-wrap"} |
+	div(| class = {"col-12 col-md-5 pe-3 mb-4"} |
+		img(|
+			src = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("CheckEngineTopPhoto")},
+			style = {"max-width: 100%;height: auto;"}
+			|)
+		i({"(above: top-down and platformer game world stages)"})
+	)
+	div(| class = {"col-12 col-md-7 mb-4"} |
+		table(|
+			class = {"table table-striped table-dark"},
+			style = {"float: right;width: 100%;"}
+			|
+			colgroup(
+				col(| style = {"width: 30%;"} |)
+				col(| style = {"width: 70%;"} |)
+			)
+			tbody(
+				tr(
+					td(
+						strong({"Platform Support"})
+					)
+					td(
+						ul(
+							li({"Windows on x86/x86_64"})
+							li(
+								{"Linux on armhf/aarch64"}
+								br()
+								{"(Raspberry Pi 4 w/ VideoCore 6)"})
+						)
+					)
+				)
+				tr(
+					td(
+						strong({"OpenGL"})
+					)
+					td({"Core 4.3 or ES 3.0"})
+				)
+				tr(
+					td(
+						strong({"Runtime"})
+					)
+					td({"OpenJDK 8 or similar"})
+				)
+			)
+		)
+	)
+)
