@@ -1,0 +1,92 @@
+state {
+}
+
+interface {
+}
+
+Drawer drawer(
+	<>
+	h4(| class = {"mt-5"} |
+		{"Finite State Machines"}
+	)
+	hr()
+	div(|
+		id = {"fsa-preview"},
+		class = {"ms-3 mb-3"}
+		|
+		iframe(| src = {sp
+			.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+			.GetNamed("Fsa")} |)
+		i(| id = {"fsa-caption"} |
+			{"(above: construction and minimization of a finite state automaton)"}
+		)
+		a(|
+			href = {sp
+				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+				.GetNamed("Fsa")},
+			target = {"_blank"},
+			id = {"fsa-link"},
+			title = {"Open in new tab"}
+			|
+			h3(| class = {"fas fa-external-link-alt"} |)
+		)
+	)
+	p(
+		<">
+		My descriptor language parser applies recursive descent parsing using a custom
+		implementation of regular expression.
+		</">
+	)
+	p(
+		<">
+		Patterns can be specified with a subset of the Basic Regular Expression
+		language (BRE) and are adapted to a node representation.
+		</">
+	)
+	c(
+		pre(| class = {"code-preview"} |
+<">var nfa = new Fsa();
+nfa.Build("(a|b|c)+",   (int)Token1);
+nfa.Build("int|long",   (int)Token2);
+nfa.Build("{|}",        (int)Token3);
+...</">
+		)
+	)
+
+	if({drawer.Get<bool>("open")}
+
+		<>
+		p(
+			<">
+			Furthermore, several Nondeterministic Finite Automata (NFAs) can be formed from
+			several regex expressions to match a corresponding set of tokens in a language.
+			</">
+		)
+		p(| class = {"my-4"} |
+			<">
+			All possible tokens which can be matched by the state machine are knit
+			into one NFA, which can be used to match tokens as-is (using non-deterministic
+			breadth-first evaluation of the NFA)
+			</">
+		)
+		c(
+			pre(| class = {"code-preview"} |
+		<">var (token, match) = nfa.Search(source, offset);</">
+			)
+		)
+		p(
+			<">
+			or further optimized using DFA conversion
+			and equivalence partioning.
+			</">
+		)
+		c(
+			pre(| class = {"code-preview"} |
+		<">var dfa = nfa.ConvertToDfa().MinimizeDfa();
+		var (token, match) = dfa.Search(source, offset);</">
+			)
+		)
+		</>
+	)
+	</>
+)

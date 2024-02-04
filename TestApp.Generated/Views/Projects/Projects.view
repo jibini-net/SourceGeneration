@@ -21,7 +21,17 @@ CascadingState cascade(
 			{"A variety of open source software projects I've been working on."}
 		)
 	)
-	SourceGenShowcase()
+	div(| class = {"d-flex flex-row flex-wrap"} |
+		div(| class = {"col-12 col-md-8 bg-dark border border-light p-3"} |
+			SourceGenShowcase()
+			FiniteStateMachinesShowcase()
+		)
+		div(| class = {"col-12 col-md-4"} |
+			div(| class = {"bg-light p-3 text-dark pb-5"} |
+				ThisSiteShowcase()
+			)
+		)
+	)
 
 	</>
 )

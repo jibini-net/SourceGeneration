@@ -1,0 +1,20 @@
+state {
+	bool open
+}
+
+interface {
+	Toggle()
+}
+
+child({0})
+
+div(|
+	class = {"d-flex flex-row"},
+	style = {"width: 100%;cursor: pointer;"},
+	onclick = {"dispatch(this, 'Toggle');"}
+	|
+	h3(| class = {"mx-auto"} |
+		i(| class = {
+			$"fa fa-chevron-{(open ? "up" : "down")}"} |)
+	)
+)
