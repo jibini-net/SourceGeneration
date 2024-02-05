@@ -1,0 +1,254 @@
+state {
+}
+
+interface {
+}
+
+div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
+	div(|
+		class = {"d-flex flex-column flex-grow-1 flex-shrink-1 pe-3"},
+		style = {"text-align: center;"}
+		|
+		h5(| class = {"mx-auto"} |
+			img(|
+				src = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("CheckEngineIcon")},
+				width = {24},
+				height = {24},
+				style = {"transform: translateY(-3px);"}
+				|)
+			unsafe({"&nbsp;"})
+			{"Check Engine"}
+		)
+		h6(|
+			class = {"mb-0 mx-auto"},
+			style = {"max-width: 30rem;font-weight: normal;"}
+			|
+			{"2D tile-based platformer and top-down game engine"}
+		)
+	)
+	a(|
+		href = {sp
+			.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+			.GetNamed("CheckEngineRepo")},
+		target = {"_blank"},
+		class = {"btn btn-outline-light ms-auto my-auto"},
+		style = {"height: fit-content;"}
+		|
+		h5(|
+			class = {"mb-0"},
+			style = {"white-space: nowrap;"}
+			|
+			i(| class = {"fab fa-github me-2"} |)
+			{"Repo"}
+		)
+	)
+)
+div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
+	div(| class = {"d-flex flex-row flex-wrap"} |
+		div(| class = {"col-12 col-md-5 pe-3 mb-1"} |
+			a(|
+				href = {sp
+					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+					.GetNamed("CheckEngineTopPhoto")},
+				target = {"_blank"}
+				|
+				img(|
+					src = {sp
+						.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+						.GetNamed("CheckEngineTopPhoto")},
+					style = {"max-width: 100%;height: auto;"}
+					|)
+			)
+			i({"(above: top-down and platformer game world stages)"})
+		)
+		div(| class = {"col-12 col-md-7 mb-1"} |
+			table(|
+				class = {"table table-striped table-dark"},
+				style = {"float: right;width: 100%;"}
+				|
+				colgroup(
+					col(| style = {"width: 30%;"} |)
+					col(| style = {"width: 70%;"} |)
+				)
+				tbody(
+					tr(
+						td(
+							strong({"Platform Support"})
+						)
+						td(
+							ul(
+								li({"Windows on x86/x86_64"})
+								li(
+									{"Linux on armhf/aarch64"}
+									br()
+									{"(Raspberry Pi 4 w/ VideoCore 6)"})
+							)
+						)
+					)
+					tr(
+						td(
+							strong({"OpenGL"})
+						)
+						td({"Core 4.3 or ES 3.0"})
+					)
+					tr(
+						td(
+							strong({"Runtime"})
+						)
+						td({"OpenJDK 8 or similar"})
+					)
+					tr(
+						td(
+							strong({"Downloads"})
+						)
+						td(
+							a(|
+								href = {sp
+									.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+									.GetNamed("CheckEngineDownload")},
+								target = {"_blank"},
+								class = {"btn btn-sm btn-primary"}
+								|
+								i(| class = {"fa fa-file me-2"} |)
+								{"Runnable Test Game"}
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+	hr()
+	Drawer drawer(
+		<>
+		div(| style = {"clear: both;margin-top: 32px;"
+				+ (drawer.Get<bool>("open") ? "" : "max-height: 11rem;overflow-y: hidden;")} |
+			img(|
+				src = {"images/checkengine/pathtracing.png"},
+				style = {"float: left;width: 400px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"}
+				|)
+			h6({"Pathtraced Lighting"})
+			p(
+				<">
+				Lighting is performed by generating a vector of distance measurements
+				organized in a radial pattern. A path can be drawn along each vector
+				to determine which areas of the screen are in light, and which are cast
+				in shadow.
+				</">
+			)
+			p(
+				<">
+				The result is a hard-edged shadow effect, several of which can be
+				blended to account for multiply-lit scenes.
+				</">
+			)
+		)
+		if({drawer.Get<bool>("open")}
+
+			<>
+			div(| style = {"clear: both;margin-top: 38px;"} |
+				img(|
+					src = {"images/checkengine/pathfinding.png"},
+					style = {"float: right;width: 360px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"}
+					|)
+				h6({"Behavior System"})
+				p(
+					<">
+					Non-player characters can be assigned behaviors which update each frame
+					and re-calculate what the entity's goal within the game.
+					</">
+				)
+				p(
+					<">
+					Complex behaviors, such as player-following and random wandering algorithms,
+					are implemented in the provided test game.
+					</">
+				)
+				ul(
+					li(
+						a(|
+							href = {sp
+								.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+								.GetNamed("WanderingBehavior")},
+							target = {"_blank"}
+							|
+							{"WanderingBehavior.kt"}
+						)
+					)
+					li(
+						a(|
+							href = {sp
+								.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+								.GetNamed("PlayerTargetingBehavior")},
+							target = {"_blank"}
+							|
+							{"PlayerTargetingBehavior.kt"}
+						)
+					)
+				)
+			)
+			div(| style = {"clear: both;margin-top: 38px;"} |
+				img(|
+					src = {"images/checkengine/injection.png"},
+					style = {"float: left;width: 440px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"}
+					|)
+				h6({"Dependency Injection"})
+				p(
+					<">
+					The engine provides automatic injection of singleton types called "engine objects." Types are
+					scanned from the classpath based on annotations.
+					</">
+				)
+				p(
+					<">
+					Engine objects can rely on other singletons to access and affect game state.
+					</">
+				)
+			)
+			div(| style = {"clear: both;margin-top: 38px;"} |
+				img(|
+					src = {"images/checkengine/aabbfriction.png"},
+					style = {"float: right;width: 385px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"}
+					|)
+				h6({"AABB Collision, Friction, and Platforming"})
+				p(
+					<">
+					Limited physics calculations are supported by the engine, including resolving
+					collisions between dynamic and static entities. 
+					</">
+				)
+				p(
+					<">
+					Entities which are not affected by gravity (such as platforms) are able to support
+					and carry players, and also give them momentum if they jump off.
+					</">
+				)
+			)
+			div(| style = {"clear: both;margin-top: 38px;"} |
+				img(|
+					src = {"images/checkengine/imgui.png"},
+					style = {"float: left;width: 380px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"}
+					|)
+				h6({"Custom Imgui bindings"})
+				p(
+					<">
+					In order to guarantee compatibility with LWJGL 3, the Java bindings for
+					Imgui were ported to support the newer GLFW windowing system and core rendering
+					profiles.
+					</">
+				)
+				p(
+					<">
+					The game engine includes special native libraries and Java bindings which
+					have been verified to work on the Raspberry Pi 4 with OpenGL ES 3.0.
+					</">
+				)
+			)
+			div(| style = {"clear: both;"} |)
+			</>
+		)
+		</>
+	)
+)

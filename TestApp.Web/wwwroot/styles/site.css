@@ -14,6 +14,10 @@
         background: url("../images/banner_orange.svg") no-repeat;
     }
 
+    .banner.blue-banner {
+        background: url("../images/banner_blue.svg") no-repeat;
+    }
+
 /********/
 
 :root {
