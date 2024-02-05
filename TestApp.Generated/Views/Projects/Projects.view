@@ -27,7 +27,9 @@ CascadingState cascade(
 				SourceGenShowcase()
 				FiniteStateMachinesShowcase()
 			)
-			CheckEngineShowcase()
+			div(| class = {"check-engine"} |
+				CheckEngineShowcase()
+			)
 		)
 		div(| class = {"col-12 col-md-4"} |
 			div(| class = {"bg-light p-3 text-dark pb-5 ms-0 ms-md-2"} |

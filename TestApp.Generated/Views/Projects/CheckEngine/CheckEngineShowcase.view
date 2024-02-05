@@ -16,7 +16,7 @@ div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 					.GetNamed("CheckEngineIcon")},
 				width = {24},
 				height = {24},
-				style = {"transform: translateY(-3px);"}
+				style = {"transform: translateY(-3px);border: none !important;"}
 				|)
 			unsafe({"&nbsp;"})
 			{"Check Engine"}
@@ -97,7 +97,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 						td(
 							strong({"Runtime"})
 						)
-						td({"OpenJDK 8 or similar"})
+						td({"OpenJDK 11 or similar"})
 					)
 					tr(
 						td(
@@ -243,6 +243,23 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					<">
 					The game engine includes special native libraries and Java bindings which
 					have been verified to work on the Raspberry Pi 4 with OpenGL ES 3.0.
+					</">
+				)
+			)
+			div(| style = {"clear: both;margin-top: 38px;"} |
+				h6({"Animation and Resource Loading"})
+				p(
+					<">
+					The engine supports loading several common image formats, and also supports
+					loading animations as GIFs. GIF images are automatically converted into
+					a knit spritesheet; animation frames are automatically swapped in and out by
+					the engine according to the GIF's animation speed.
+					</">
+				)
+				p(
+					<">
+					Programmers are able to load GIFs just like any other texture due to
+					abstraction layers in the process of creating and binding textures.
 					</">
 				)
 			)
