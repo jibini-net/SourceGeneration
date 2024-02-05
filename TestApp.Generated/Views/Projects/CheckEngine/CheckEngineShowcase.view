@@ -174,6 +174,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 								.GetNamed("WanderingBehavior")},
 							target = {"_blank"}
 							|
+							i(| class = {"fa fa-file me-2"} |)
 							{"WanderingBehavior.kt"}
 						)
 					)
@@ -184,6 +185,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 								.GetNamed("PlayerTargetingBehavior")},
 							target = {"_blank"}
 							|
+							i(| class = {"fa fa-file me-2"} |)
 							{"PlayerTargetingBehavior.kt"}
 						)
 					)
@@ -231,19 +233,29 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					src = {"images/checkengine/imgui.png"},
 					style = {"float: left;width: 380px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"}
 					|)
-				h6({"Custom Imgui bindings"})
+				h6({"Included Imgui bindings"})
 				p(
 					<">
-					In order to guarantee compatibility with LWJGL 3, the Java bindings for
-					Imgui were ported to support the newer GLFW windowing system and core rendering
-					profiles.
+					In order to guarantee compatibility with Raspberry Pi and the engine's own rendering,
+					the Java bindings for Imgui were adapted to support OpenGL ES and ARM platforms.
 					</">
 				)
 				p(
 					<">
 					The game engine includes special native libraries and Java bindings which
-					have been verified to work on the Raspberry Pi 4 with OpenGL ES 3.0.
+					have been specifically verified to work on the Raspberry Pi 4 with OpenGL ES 3.0.
 					</">
+				)
+				p(
+					a(|
+						href = {sp
+							.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
+							.GetNamed("ImguiFork")},
+						target = {"_blank"}
+						|
+						i(| class = {"fab fa-github me-2"} |)
+						{"My Fork"}
+					)
 				)
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
@@ -261,6 +273,28 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					Programmers are able to load GIFs just like any other texture due to
 					abstraction layers in the process of creating and binding textures.
 					</">
+				)
+				center(
+					img(|
+						src = {"images/checkengine/loadgif.png"},
+						style = {"max-width: 100%;"}
+						|)
+				)
+				div(| class = {"row my-4"} |
+					div(| class = {"col-6"} |
+						center(
+							img(|
+								src = {"images/checkengine/gendreau_yell_right.gif"},
+								style = {"max-width: 100%;"}
+								|)
+						)
+					)
+					div(| class = {"col-6"} |
+						img(|
+							src = {"images/checkengine/gendreau_yell_right.gif"},
+							style = {"max-width: 100%;transform: scaleX(-1);"}
+							|)
+					)
 				)
 			)
 			div(| style = {"clear: both;"} |)
