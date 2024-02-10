@@ -4,28 +4,30 @@ state {
 interface {
 }
 
+inject({TestApp.Services.ILinkPathGenerator} {links})
+inject({TestApp.Services.IResourceInliner} {inliner})
+
 unsafe({"<!DOCTYPE html>"})
-html(
+html(| lang = {"en"} |
 	head(
+		meta(| charset = {"utf-8"} |)
 		meta(|
 			name = {"viewport"},
 			content = {"width=device-width, initial-scale=1.0"}
 			|)
-		base(| href = {sp
-			.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-			.GenerateActionPath() + "/"} |)
-		link(|
-			rel = {"stylesheet"},
-			href = {"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"}
-			|)
-		link(|
-			rel = {"stylesheet"},
-			href = {"styles/site.css"}
-			|)
+		base(| href = {links.GenerateActionPath() + "/"} |)
+		style(
+			unsafe({await inliner.PreLoad("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css", true)})
+		)
+		style(
+			unsafe({await inliner.PreLoad("styles/site.css")})
+		)
 		child({1})
 	)
 	body(| class = {"bg-dark"} |
-		script(| src = {"https://code.jquery.com/jquery-3.7.1.min.js"} |)
+		script(
+			unsafe({await inliner.PreLoad("https://code.jquery.com/jquery-3.7.1.min.js", true)})
+		)
 		Layout(
 			child({0})
 		)

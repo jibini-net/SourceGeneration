@@ -23,6 +23,7 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 			img(|
 				src = {"images/netkinetix.png"},
 				width = {160},
+				height = {73},
 				alt = {"Netkinetix"}
 				|)
 		)
@@ -185,5 +186,6 @@ div(| class = {"bg-white text-dark p-3 mt-3 bg-opacity-75"} |
 img(|
 	id = {"swirlies"},
 	class = {"d-none d-md-block"},
-	src = {"images/swirlies.svg"}
+	src = {"images/swirlies.svg"},
+	alt = {"Background Image"}
 	|)
