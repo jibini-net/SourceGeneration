@@ -73,7 +73,7 @@ public class SchemaGrammar
         Program.AppendLine("    }}");
 
         string typeOf(string name) => dto.Fields.FirstOrDefault((it) => it.Name == name).TypeName;
-        string assign(string name) => $"        {name} = state.GetValueOrDefault(\"{name}\", {name})?.ParseIfNot<{typeOf(name)}>() ?? default;";
+        string assign(string name) => $"        {{{{ {name} = state.TryGetValue(\"{name}\", out var _v) ? (_v is null ? default({typeOf(name)}) : _v.ParseIfNot<{typeOf(name)}>()) : {name}; }}}}";
         var assignments = dto.Fields.Select((it) => assign(it.Name));
 
         Program.AppendLine("    public void LoadState(Dictionary<string, object> state)\n    {{");

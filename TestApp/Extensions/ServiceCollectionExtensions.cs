@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddHostView<HostBase.Default>();
         services.AddLayoutView<LayoutBase.Default>();
+        services.AddSeoExcludeView<SeoExcludeBase.Default>();
         services.AddCascadingStateView<CascadingState>();
         services.AddHomePageView<HomePageBase.Default>();
         services.AddHomeView<HomeBase.Default>();

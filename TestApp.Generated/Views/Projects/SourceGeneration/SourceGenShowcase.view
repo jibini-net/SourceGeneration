@@ -4,7 +4,33 @@ state {
 interface {
 }
 
-Drawer drawer(
+inject({TestApp.Services.ILinkPathGenerator} {links})
+parent({ProjectsPage} {page})
+
+if({page?.Get<string>("openDrawer") == "Source Generation"}
+
+	<>
+	h1(|
+		style = {"opacity: 0;position: absolute;display: block;height: 0;"},
+		id = {"source-gen"}
+		|
+		{"Source Generation"}
+	)
+	script(
+		unsafe(<">
+			$(() =>
+			{
+				if (document.headerFocused != (document.headerFocused = true))
+				{
+					document.getElementById("source-gen").scrollIntoView();
+				}
+			});
+			</">)
+	)
+	</>
+)
+
+Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generation"} |
 	<>
 	div(|
 		class = {"d-flex flex-row"},
@@ -14,9 +40,7 @@ Drawer drawer(
 			{"Source Generation"}
 		)
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("SourceGenerationRepo")},
+			href = {links.GetNamed("SourceGenerationRepo")},
 			target = {"_blank"},
 			class = {"btn btn-outline-light ms-auto"}
 			|
@@ -41,7 +65,7 @@ Drawer drawer(
 		descriptor document.
 		</">
 	)
-	if ({drawer.Get<bool>("open")}
+	if ({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
 
 		<>
 		SourceGenTabs()

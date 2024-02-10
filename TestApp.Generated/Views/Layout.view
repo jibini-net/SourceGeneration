@@ -4,6 +4,8 @@ state {
 interface {
 }
 
+inject({TestApp.Services.ILinkPathGenerator} {links})
+
 div(| class = {"content"} |
 	div(| class = {"top-bar"} |
 		a(|
@@ -23,9 +25,7 @@ div(| class = {"content"} |
 				{"Projects"}
 			)
 			a(|
-				href = {sp
-					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-					.GetNamed("GitHub")},
+				href = {links.GetNamed("GitHub")},
 				target = {"_blank"}
 				|
 				div(| class = {"page-icon"} |
@@ -34,9 +34,7 @@ div(| class = {"content"} |
 				{"GitHub"}
 			)
 			a(|
-				href = {sp
-					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-					.GetNamed("LinkedIn")},
+				href = {links.GetNamed("LinkedIn")},
 				target = {"_blank"}
 				|
 				div(| class = {"page-icon"} |
@@ -54,9 +52,7 @@ div(| class = {"content"} |
 			i(
 				{"Created by "}
 				a(|
-					href = {sp
-						.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-						.GetNamed("GitHub")},
+					href = {links.GetNamed("GitHub")},
 					target = {"_blank"}
 					|
 					{"Zach Goethel"}

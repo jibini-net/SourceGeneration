@@ -46,7 +46,17 @@ public class StateDump
 
     public T Get<T>(string name)
     {
-        return (T)(State[name] = State[name].ParseIfNot<T>());
+        return (T)(State.TryGetValue(name, out var _v)
+            ? (State[name] = _v is null ? default : _v.ParseIfNot<T>())
+            : default);
+    }
+
+    public T? GetNullable<T>(string name) where T : struct
+    {
+        return (State.TryGetValue(name, out var _v)
+                ? (State[name] = (_v is null ? null : _v.ParseIfNot<T>()))
+                : null)
+            as T?;
     }
 
     public void Trim(Dictionary<string, int> tagCounts)

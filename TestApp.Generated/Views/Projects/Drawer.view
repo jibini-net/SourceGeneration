@@ -1,5 +1,6 @@
 state {
-	bool open
+	bool? open,
+	bool startOpen
 }
 
 interface {
@@ -15,6 +16,6 @@ div(|
 	|
 	h3(| class = {"mx-auto"} |
 		i(| class = {
-			$"fa fa-chevron-{(open ? "up" : "down")}"} |)
+			$"fa fa-chevron-{((open ?? startOpen) ? "up" : "down")}"} |)
 	)
 )

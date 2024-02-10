@@ -10,6 +10,6 @@ public class Drawer : DrawerBase
 
     public override void Toggle()
     {
-        open = !open;
+        open = !(open ?? startOpen);
     }
 }

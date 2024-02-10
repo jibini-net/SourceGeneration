@@ -1,4 +1,5 @@
 state {
+	string openDrawer
 }
 
 interface {
@@ -7,7 +8,9 @@ interface {
 Host(
 	Projects()
 	<>
-	title({"Projects"})
+	title({string.IsNullOrEmpty(openDrawer)
+		? "Projects"
+		: $"Projects - {openDrawer}"})
 	link(|
 		rel = {"stylesheet"},
 		href = {"styles/Projects.css"}

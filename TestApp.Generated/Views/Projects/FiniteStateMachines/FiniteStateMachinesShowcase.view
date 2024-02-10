@@ -4,7 +4,33 @@ state {
 interface {
 }
 
-Drawer drawer(
+inject({TestApp.Services.ILinkPathGenerator} {links})
+parent({ProjectsPage} {page})
+
+if({page?.Get<string>("openDrawer") == "Finite State Automata"}
+
+	<>
+	h1(|
+		style = {"opacity: 0;position: absolute;display: block;height: 0;"},
+		id = {"fsas"}
+		|
+		{"Finite State Automata and Lexing-Parsing"}
+	)
+	script(
+		unsafe(<">
+			$(() =>
+			{
+				if (document.headerFocused != (document.headerFocused = true))
+				{
+					document.getElementById("fsas").scrollIntoView();
+				}
+			});
+			</">)
+	)
+	</>
+)
+
+Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Automata"} |
 	<>
 	h4(| class = {"mt-5"} |
 		{"Finite State Machines"}
@@ -18,16 +44,14 @@ Drawer drawer(
 		id = {"fsa-preview"},
 		class = {"ms-3 mb-3"}
 		|
-		iframe(| src = {sp
-			.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-			.GetNamed("Fsa")} |)
+		SeoExclude(
+			iframe(| src = {links.GetNamed("Fsa")} |)
+		)
 		i(| id = {"fsa-caption"} |
 			{"(above: construction and minimization of a finite state automaton)"}
 		)
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("Fsa")},
+			href = {links.GetNamed("Fsa")},
 			target = {"_blank"},
 			id = {"fsa-link"},
 			title = {"Open in new tab"}
@@ -57,7 +81,7 @@ nfa.Build("{|}",        (int)Token3);
 		)
 	)
 
-	if({drawer.Get<bool>("open")}
+	if({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
 
 		<>
 		p(
@@ -100,7 +124,7 @@ var (token, match) = dfa.Search(source, offset);</">
 		p(| class = {"mb-4"} |
 			<">
 			Perhaps the token "if" is found, so the following code is invoked to match a
-			function in source:
+			statement in source:
 			</">
 		)
 		div(| class = {"alert alert-info mb-2"} |
