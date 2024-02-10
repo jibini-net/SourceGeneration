@@ -14,15 +14,19 @@ p(
 	language, serving as a testbed for new source generation features.
 	</">
 )
+
 p({"Some demos:"})
 DemoTabs(|
 	title = {"Up/Down"},
 	prefix = {"up-down"}
 	|
 	UpDownDemo()
+
 	{await inliner.PreLoad(links.GetNamed("UpDownDemo.view"), true)}
+
 	{await inliner.PreLoad(links.GetNamed("UpDownDemo.cs"), true)}
 )
+
 p(| class = {"mt-3"} |
 	<">
 	Serverside code is generated to render HTML for the component.
@@ -36,11 +40,14 @@ p(
 	page to reflect its latest state.
 	</">
 )
+
 DemoTabs(|
 	title = {"Table Rows"},
 	prefix = {"table-rows"}
 	|
 	TableRowDemo()
+
 	{await inliner.PreLoad(links.GetNamed("TableRowDemo.view"), true)}
+
 	{await inliner.PreLoad(links.GetNamed("TableRowDemo.cs"), true)}
 )

@@ -14,8 +14,10 @@ div(|
 	style = {"width: 100%;cursor: pointer;"},
 	onclick = {"dispatch(this, 'Toggle');"}
 	|
+
 	h3(| class = {"mx-auto"} |
 		i(| class = {
 			$"fa fa-chevron-{((open ?? startOpen) ? "up" : "down")}"} |)
 	)
+
 )

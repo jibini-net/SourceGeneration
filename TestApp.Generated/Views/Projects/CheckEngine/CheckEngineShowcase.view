@@ -11,11 +11,13 @@ AnchorHeading(|
 	name = {"Check Engine"},
 	id = {"check-engine"}
 	|)
+
 div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 	div(|
 		class = {"d-flex flex-column flex-grow-1 flex-shrink-1 pe-3"},
 		style = {"text-align: center;"}
 		|
+
 		h5(| class = {"mx-auto"} |
 			img(|
 				src = {links.GetNamed("CheckEngineIcon")},
@@ -33,6 +35,7 @@ div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 			|
 			{"2D tile-based platformer and top-down game engine"}
 		)
+
 	)
 	a(|
 		href = {links.GetNamed("CheckEngineRepo")},
@@ -49,9 +52,12 @@ div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 		)
 	)
 )
+
 div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
+
 	div(| class = {"d-flex flex-row flex-wrap"} |
 		div(| class = {"col-12 col-md-5 pe-3 mb-1"} |
+
 			a(|
 				href = {links.GetNamed("CheckEngineTopPhoto")},
 				target = {"_blank"}
@@ -64,16 +70,21 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 			)
 			i({"(above: top-down and platformer game world stages)"})
 		)
+
 		div(| class = {"col-12 col-md-7 mb-1"} |
+
 			table(|
 				class = {"table table-striped table-dark"},
 				style = {"float: right;width: 100%;"}
 				|
 				colgroup(
+
 					col(| style = {"width: 30%;"} |)
 					col(| style = {"width: 70%;"} |)
+
 				)
 				tbody(
+
 					tr(
 						td(
 							strong({"Platform Support"})
@@ -88,18 +99,21 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 							)
 						)
 					)
+
 					tr(
 						td(
 							strong({"OpenGL"})
 						)
 						td({"Core 4.3 or ES 3.0"})
 					)
+
 					tr(
 						td(
 							strong({"Runtime"})
 						)
 						td({"OpenJDK 11 or similar"})
 					)
+
 					tr(
 						td(
 							strong({"Downloads"})
@@ -115,20 +129,26 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 							)
 						)
 					)
+
 				)
 			)
+
 		)
 	)
+
 	hr()
+
 	Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Check Engine"} |
 		<>
 		div(| style = {"clear: both;margin-top: 32px;"
-				+ (drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen") ? "" : "max-height: 11rem;overflow-y: hidden;")} |
+				+ ((drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")) ? "" : "max-height: 11rem;overflow-y: hidden;")} |
+
 			img(|
 				src = {"images/checkengine/pathtracing.png"},
 				style = {"float: left;width: 400px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
 				alt = {"Pathtraced 2D Lighting"}
 				|)
+
 			h6({"Pathtraced Lighting"})
 			p(
 				<">
@@ -144,16 +164,20 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 				blended to account for multiply-lit scenes.
 				</">
 			)
+
 		)
+
 		if({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
 
 			<>
 			div(| style = {"clear: both;margin-top: 38px;"} |
+
 				img(|
 					src = {"images/checkengine/pathfinding.png"},
 					style = {"float: right;width: 360px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"},
 					alt = {"Non-player Character With Behavior"}
 					|)
+
 				h6({"Behavior System"})
 				p(
 					<">
@@ -167,7 +191,9 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					are implemented in the provided test game.
 					</">
 				)
+
 				ul(
+
 					li(
 						a(|
 							href = {links.GetNamed("WanderingBehavior")},
@@ -177,6 +203,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 							{"WanderingBehavior.kt"}
 						)
 					)
+
 					li(
 						a(|
 							href = {links.GetNamed("PlayerTargetingBehavior")},
@@ -186,14 +213,18 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 							{"PlayerTargetingBehavior.kt"}
 						)
 					)
+
 				)
+
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
+
 				img(|
 					src = {"images/checkengine/injection.png"},
 					style = {"float: left;width: 440px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
 					alt = {"Dependency Injection Code Example"}
 					|)
+
 				h6({"Dependency Injection"})
 				p(
 					<">
@@ -206,13 +237,16 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					Engine objects can rely on other singletons to access and affect game state.
 					</">
 				)
+
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
+
 				img(|
 					src = {"images/checkengine/aabbfriction.png"},
 					style = {"float: right;width: 385px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"},
 					alt = {"AABB Physics, Friction, and Momentum"}
 					|)
+
 				h6({"AABB Collision, Friction, and Platforming"})
 				p(
 					<">
@@ -226,13 +260,16 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					and carry players, and also give them momentum if they jump off.
 					</">
 				)
+
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
+
 				img(|
 					src = {"images/checkengine/imgui.png"},
 					style = {"float: left;width: 380px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
 					alt = {"Imgui Integration Example"}
 					|)
+
 				h6({"Included Imgui bindings"})
 				p(
 					<">
@@ -255,8 +292,10 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 						{"My Fork"}
 					)
 				)
+
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
+
 				h6({"Animation and Resource Loading"})
 				p(
 					<">
@@ -272,6 +311,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					abstraction layers in the process of creating and binding textures.
 					</">
 				)
+
 				center(
 					img(|
 						src = {"images/checkengine/loadgif.png"},
@@ -279,8 +319,10 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 						alt = {"Code to Load a GIF in the Engine"}
 						|)
 				)
+
 				div(| class = {"row my-4"} |
 					div(| class = {"col-6"} |
+
 						center(
 							img(|
 								src = {"images/checkengine/gendreau_yell_right.gif"},
@@ -288,19 +330,25 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 								alt = {"Character Yelling Right Animation"}
 								|)
 						)
+
 					)
 					div(| class = {"col-6"} |
+
 						img(|
 							src = {"images/checkengine/gendreau_yell_right.gif"},
 							style = {"max-width: 100%;transform: scaleX(-1);"},
 								alt = {"Character Yelling Left Animation"}
 							|)
+
 					)
 				)
+
 			)
+
 			div(| style = {"clear: both;"} |)
 			</>
 		)
 		</>
 	)
+
 )

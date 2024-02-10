@@ -11,6 +11,7 @@ AnchorHeading(|
 	name = {"Source Generation"},
 	id = {"source-gen"}
 	|)
+
 Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generation"} |
 	<>
 	div(|
@@ -31,7 +32,9 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 			)
 		)
 	)
+
 	hr()
+
 	p(
 		<">
 		Generated code allows developers to skip over tedium and keep focused
@@ -46,6 +49,7 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 		descriptor document.
 		</">
 	)
+
 	if ({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
 
 		<>

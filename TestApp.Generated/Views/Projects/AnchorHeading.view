@@ -18,6 +18,7 @@ if({page?.Get<string>("openDrawer") == name}
 		|
 		{string.IsNullOrEmpty(headerText) ? name : headerText}
 	)
+
 	script(
 		unsafe(<">
 			$(() =>

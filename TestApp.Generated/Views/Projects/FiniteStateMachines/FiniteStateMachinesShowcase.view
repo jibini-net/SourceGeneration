@@ -13,6 +13,7 @@ AnchorHeading(|
 	id = {"fsas"},
 	headerText = {"Finite State Automata and Lexing-Parsing"}
 	|)
+
 Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Automata"} |
 	<>
 	h4(| class = {"mt-5"} |
@@ -22,11 +23,14 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Au
 			{"& lexing-parsing"}
 		)
 	)
+
 	hr()
+
 	div(|
 		id = {"fsa-preview"},
 		class = {"ms-3 mb-3"}
 		|
+
 		SeoExclude(
 			iframe(| src = {links.GetNamed("Fsa")} |)
 		)
@@ -41,7 +45,9 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Au
 			|
 			h3(| class = {"fas fa-external-link-alt"} |)
 		)
+
 	)
+
 	p(
 		<">
 		My descriptor language parser applies top-down recursive descent using a custom
@@ -85,6 +91,7 @@ nfa.Build("{|}",        (int)Token3);
 <">var (token, match) = nfa.Search(source, offset);</">
 			)
 		)
+
 		p(
 			<">
 			or further optimized using DFA conversion
@@ -97,6 +104,7 @@ nfa.Build("{|}",        (int)Token3);
 var (token, match) = dfa.Search(source, offset);</">
 			)
 		)
+
 		p(| class = {"mt-4"} |
 			<">
 			Usage of the machine will resemble that of tools such as (F)lex. Matched
@@ -110,6 +118,7 @@ var (token, match) = dfa.Search(source, offset);</">
 			statement in source:
 			</">
 		)
+
 		div(| class = {"alert alert-info mb-2"} |
 			i(| class = {"fa fa-file me-2"} |)
 			a(|
@@ -121,6 +130,7 @@ var (token, match) = dfa.Search(source, offset);</">
 			unsafe({"&mdash;"})
 			{"Implementation of regular expression and lexing"}
 		)
+
 		div(| class = {"alert alert-info mb-2"} |
 			i(| class = {"fa fa-file me-2"} |)
 			a(|
@@ -132,12 +142,15 @@ var (token, match) = dfa.Search(source, offset);</">
 			unsafe({"&mdash;"})
 			{"Wrapper for searching an input source text token-by-token"}
 		)
+
 		hr()
+
 		c(
 			pre(| class = {"code-preview"} |
 				{await inliner.PreLoad(links.GetNamed("RecursiveDescentDemo.cs"))}
 			)
 		)
+
 		p(| class = {"mt-4"} |
 			<">
 			More grammar can follow at any level of complexity supported by the
