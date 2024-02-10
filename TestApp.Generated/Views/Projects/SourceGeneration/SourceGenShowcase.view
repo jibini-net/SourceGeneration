@@ -4,7 +4,14 @@ state {
 interface {
 }
 
-Drawer drawer(
+inject({TestApp.Services.ILinkPathGenerator} {links})
+parent({ProjectsPage} {page})
+
+AnchorHeading(|
+	name = {"Source Generation"},
+	id = {"source-gen"}
+	|)
+Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generation"} |
 	<>
 	div(|
 		class = {"d-flex flex-row"},
@@ -14,9 +21,7 @@ Drawer drawer(
 			{"Source Generation"}
 		)
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("SourceGenerationRepo")},
+			href = {links.GetNamed("SourceGenerationRepo")},
 			target = {"_blank"},
 			class = {"btn btn-outline-light ms-auto"}
 			|
@@ -41,7 +46,7 @@ Drawer drawer(
 		descriptor document.
 		</">
 	)
-	if ({drawer.Get<bool>("open")}
+	if ({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
 
 		<>
 		SourceGenTabs()

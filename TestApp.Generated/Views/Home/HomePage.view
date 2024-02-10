@@ -4,17 +4,26 @@ state {
 interface {
 }
 
+inject({TestApp.Services.IResourceInliner} {inliner})
+
 Host(
 	Home()
 	<>
-	title({"Home"})
-	link(|
-		rel = {"stylesheet"},
-		href = {"styles/Home.css"}
+	title({"Home - Zach Goethel"})
+	meta(|
+		name = {"description"},
+		content = {".NET and C developer specializing in business software; obsessed with language compilers and graphics"}
 		|)
+	style(
+		unsafe({await inliner.PreLoad("styles/Home.css")})
+	)
 	</>
 	<>
-	script(| src = {"js/CascadingState.js"} |)
-	script(| src = {"js/Home.js"} |)
+	script(
+		unsafe({await inliner.PreLoad("js/CascadingState.js")})
+	)
+	script(
+		unsafe({await inliner.PreLoad("js/Home.js")})
+	)
 	</>
 )

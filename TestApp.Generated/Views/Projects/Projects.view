@@ -4,6 +4,8 @@ state {
 interface {
 }
 
+parent({ProjectsPage} {page})
+
 CascadingState cascade(
 	<>
 
@@ -24,10 +26,30 @@ CascadingState cascade(
 	div(| class = {"d-flex flex-row flex-wrap"} |
 		div(| class = {"col-12 col-md-8"} |
 			div(| class = {"bg-dark border border-light p-3 mb-4"} |
-				SourceGenShowcase()
-				FiniteStateMachinesShowcase()
+				if({page.Get<string>("openDrawer") == "Source Generation"}
+
+					SourceGenShowcase()
+					SeoExclude(
+						SourceGenShowcase()
+					)
+				)
+				if({page.Get<string>("openDrawer") == "Finite State Automata"}
+
+					FiniteStateMachinesShowcase()
+					SeoExclude(
+						FiniteStateMachinesShowcase()
+					)
+				)
 			)
-			CheckEngineShowcase()
+			div(| class = {"check-engine"} |
+				if({page.Get<string>("openDrawer") == "Check Engine"}
+
+					CheckEngineShowcase()
+					SeoExclude(
+						CheckEngineShowcase()
+					)
+				)
+			)
 		)
 		div(| class = {"col-12 col-md-4"} |
 			div(| class = {"bg-light p-3 text-dark pb-5 ms-0 ms-md-2"} |

@@ -4,6 +4,8 @@ state {
 interface {
 }
 
+inject({TestApp.Services.ILinkPathGenerator} {links})
+
 div(|
 	class = {"bg-dark"},
 	id = {"top-bg-blocker"}
@@ -14,15 +16,14 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 	)
 	h4(
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("Netkinetix")},
+			href = {links.GetNamed("Netkinetix")},
 			target = {"_blank"},
 			class = {"m-2"}
 			|
 			img(|
 				src = {"images/netkinetix.png"},
 				width = {160},
+				height = {73},
 				alt = {"Netkinetix"}
 				|)
 		)
@@ -39,18 +40,14 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 		unique business challenges. The crew specializes in applications built on
 		</">
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("AspNet")},
+			href = {links.GetNamed("AspNet")},
 			target = {"_blank"}
 			|
 			{"ASP.NET Core"}
 		)
 		{" and "}
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("SqlServer")},
+			href = {links.GetNamed("SqlServer")},
 			target = {"_blank"}
 			|
 			{"Microsoft SQL Server"}
@@ -71,9 +68,7 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 		I pushed to incorporate new tools, including adopting
 		</">
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("Blazor")},
+			href = {links.GetNamed("Blazor")},
 			target = {"_blank"}
 			|
 			{"Blazor"}
@@ -94,9 +89,7 @@ div(|
 		)
 		h4(
 			a(|
-				href = {sp
-					.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-					.GetNamed("UwLaxCs")},
+				href = {links.GetNamed("UwLaxCs")},
 				target = {"_blank"},
 				style = {"color: white;"}
 				|
@@ -127,9 +120,7 @@ div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 	)
 	h4(
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("Multistack")},
+			href = {links.GetNamed("Multistack")},
 			target = {"_blank"},
 			class = {"me-2"}
 			|
@@ -149,9 +140,7 @@ div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 		reporting tools to access data in
 		</">
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("Epicor")},
+			href = {links.GetNamed("Epicor")},
 			target = {"_blank"}
 			|
 			{"Epicor ERP"}
@@ -174,9 +163,7 @@ div(| class = {"bg-white text-dark p-3 mt-3 bg-opacity-75"} |
 	)
 	h4(
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("Festival")},
+			href = {links.GetNamed("Festival")},
 			target = {"_blank"},
 			class = {"me-2"}
 			|
@@ -199,5 +186,6 @@ div(| class = {"bg-white text-dark p-3 mt-3 bg-opacity-75"} |
 img(|
 	id = {"swirlies"},
 	class = {"d-none d-md-block"},
-	src = {"images/swirlies.svg"}
+	src = {"images/swirlies.svg"},
+	alt = {"Background Image"}
 	|)

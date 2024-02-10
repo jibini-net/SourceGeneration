@@ -1,20 +1,32 @@
 state {
+	string openDrawer
 }
 
 interface {
 }
 
+inject({TestApp.Services.IResourceInliner} {inliner})
+
 Host(
 	Projects()
 	<>
-	title({"Projects"})
-	link(|
-		rel = {"stylesheet"},
-		href = {"styles/Projects.css"}
-		|)
+	title({string.IsNullOrEmpty(openDrawer)
+		? "Projects - Zach Goethel"
+		: $"Projects - {openDrawer} - Zach Goethel"})
+	if({string.IsNullOrEmpty(openDrawer)}
+
+		meta(|
+			name = {"description"},
+			content = {"My open source project portfolio; custom languages, frameworks, webapps, OpenGL graphics, and more"}
+			|)
+	)
+	style(
+		unsafe({await inliner.PreLoad("styles/Projects.css")})
+	)
 	</>
 	<>
-	script(| src = {"js/CascadingState.js"} |)
-	script(| src = {"js/Projects.js"} |)
+	script(
+		unsafe({await inliner.PreLoad("js/CascadingState.js")})
+	)
 	</>
 )

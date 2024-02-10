@@ -316,19 +316,16 @@ public class HtmlNodeGrammar
                 {
                     throw new Exception("'parent' has no available attributes");
                 }
-                if (dto.Children.Count != 3
+                if (dto.Children.Count != 2
                     || dto.Children[0].Children is not null
                     || dto.Children[1].Children is not null)
                 {
-                    throw new Exception("Usage: 'parent({tag} {name} {content})'");
+                    throw new Exception("Usage: 'parent({tag} {name})'");
                 }
             },
             (dto, buildDom, buildLogic) =>
             {
-                buildLogic("{");
                 buildLogic($"var {dto.Children[1].InnerContent} = state.FindParent(\"{dto.Children[0].InnerContent}\");");
-                Write(dto.Children[2], buildDom, buildLogic);
-                buildLogic("}");
             }),
 
         ["br"] = (
@@ -342,19 +339,59 @@ public class HtmlNodeGrammar
             (dto, buildDom, buildLogic) =>
             {
                 buildDom("\"<br>\"");
-            })
+            }
+        ),
+
+        ["using"] = (
+            (dto) =>
+            {
+                if (dto.Attribs.Count > 0)
+                {
+                    throw new Exception("'using' has no available attributes");
+                }
+                if (dto.Children.Count != 1
+                    || dto.Children.First().Children is not null)
+                {
+                    throw new Exception("Usage: 'using({namespace})'");
+                }
+            },
+            (dto, buildDom, buildLogic) =>
+            {
+                throw new NotImplementedException("TODO Namespaces are not implemented");
+            }
+        ),
+
+        ["inject"] = (
+            (dto) =>
+            {
+                if (dto.Attribs.Count > 0)
+                {
+                    throw new Exception("'inject' has no available attributes");
+                }
+                if (dto.Children.Count != 2
+                    || dto.Children[0].Children is not null
+                    || dto.Children[1].Children is not null)
+                {
+                    throw new Exception("Usage: 'inject({type} {name})'");
+                }
+            },
+            (dto, buildDom, buildLogic) =>
+            {
+                buildLogic($"var {dto.Children[1].InnerContent} = sp.GetRequiredService<{dto.Children[0].InnerContent}>();");
+            }
+        ),
     };
 
     //TODO Improve
     public static void WriteSubComponent(Dto dto, Action<string> buildDom, Action<string> buildLogic)
     {
-        buildLogic("{\n");
-
         var aliased = !string.IsNullOrEmpty(dto.Alias);
         if (aliased)
         {
             buildLogic($"StateDump {dto.Alias};");
         }
+
+        buildLogic("{\n");
 
         foreach (var (child, i) in dto.Children.Select((it, i) => (it, i)))
         {

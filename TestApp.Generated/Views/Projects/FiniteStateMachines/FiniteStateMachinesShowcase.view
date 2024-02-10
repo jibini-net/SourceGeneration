@@ -4,7 +4,16 @@ state {
 interface {
 }
 
-Drawer drawer(
+inject({TestApp.Services.ILinkPathGenerator} {links})
+inject({TestApp.Services.IResourceInliner} {inliner})
+parent({ProjectsPage} {page})
+
+AnchorHeading(|
+	name = {"Finite State Automata"},
+	id = {"fsas"},
+	headerText = {"Finite State Automata and Lexing-Parsing"}
+	|)
+Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Automata"} |
 	<>
 	h4(| class = {"mt-5"} |
 		{"Finite State Machines"}
@@ -18,16 +27,14 @@ Drawer drawer(
 		id = {"fsa-preview"},
 		class = {"ms-3 mb-3"}
 		|
-		iframe(| src = {sp
-			.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-			.GetNamed("Fsa")} |)
+		SeoExclude(
+			iframe(| src = {links.GetNamed("Fsa")} |)
+		)
 		i(| id = {"fsa-caption"} |
 			{"(above: construction and minimization of a finite state automaton)"}
 		)
 		a(|
-			href = {sp
-				.GetRequiredService<TestApp.Services.ILinkPathGenerator>()
-				.GetNamed("Fsa")},
+			href = {links.GetNamed("Fsa")},
 			target = {"_blank"},
 			id = {"fsa-link"},
 			title = {"Open in new tab"}
@@ -37,7 +44,7 @@ Drawer drawer(
 	)
 	p(
 		<">
-		My descriptor language parser applies recursive descent parsing using a custom
+		My descriptor language parser applies top-down recursive descent using a custom
 		implementation of regular expression.
 		</">
 	)
@@ -57,7 +64,7 @@ nfa.Build("{|}",        (int)Token3);
 		)
 	)
 
-	if({drawer.Get<bool>("open")}
+	if({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
 
 		<>
 		p(
@@ -100,13 +107,13 @@ var (token, match) = dfa.Search(source, offset);</">
 		p(| class = {"mb-4"} |
 			<">
 			Perhaps the token "if" is found, so the following code is invoked to match a
-			function in source:
+			statement in source:
 			</">
 		)
 		div(| class = {"alert alert-info mb-2"} |
 			i(| class = {"fa fa-file me-2"} |)
 			a(|
-				href = {"https://github.com/jibini-net/SourceGeneration/blob/master/SourceGenerator/Fsa.cs"},
+				href = {links.GetNamed("Fsa.cs")},
 				target = {"_blank"}
 				|
 				{"Fsa.cs"}
@@ -117,7 +124,7 @@ var (token, match) = dfa.Search(source, offset);</">
 		div(| class = {"alert alert-info mb-2"} |
 			i(| class = {"fa fa-file me-2"} |)
 			a(|
-				href = {"https://github.com/jibini-net/SourceGeneration/blob/master/SourceGenerator/TokenStream.cs"},
+				href = {links.GetNamed("TokenStream.cs")},
 				target = {"_blank"}
 				|
 				{"TokenStream.cs"}
@@ -128,34 +135,7 @@ var (token, match) = dfa.Search(source, offset);</">
 		hr()
 		c(
 			pre(| class = {"code-preview"} |
-<">var stream = new TokenStream()
-{
-	Grammar = dfa,
-	Source = inputSource
-};
-stream.Seek(startOffset);
-var ifDto = new IfDto();
-
-// "if" "(" {predicate expression} ")"
-if (stream.Poll() != (int)Token.If)
-{
-	throw new Exception("Expected 'if'");
-}
-if (stream.Poll() != (int)Token.LParens)
-{
-	throw new Exception("Expected '('");
-}
-ifDto.Predicate = ExpressionGrammar.Match(stream);
-if (stream.Poll() != (int)RParens)
-{
-	throw new Exception("Expected ')'");
-}
-
-// "{" {statement} [, ...] "}" | {statement}
-ifDto.Body = StatementGrammar.MatchBody(stream);
-
-// ... [ "else" {failure body} ]
-</">
+				{await inliner.PreLoad(links.GetNamed("RecursiveDescentDemo.cs"))}
 			)
 		)
 		p(| class = {"mt-4"} |

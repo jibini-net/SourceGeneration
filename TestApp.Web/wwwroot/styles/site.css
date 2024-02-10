@@ -1,6 +1,4 @@
-﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
-
-.banner {
+﻿.banner {
     padding: 2rem;
     background-size: cover !important;
     background-attachment: fixed !important;
