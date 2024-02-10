@@ -7,29 +7,10 @@ interface {
 inject({TestApp.Services.ILinkPathGenerator} {links})
 parent({ProjectsPage} {page})
 
-if({page?.Get<string>("openDrawer") == "Source Generation"}
-
-	<>
-	h1(|
-		style = {"opacity: 0;position: absolute;display: block;height: 0;"},
-		id = {"source-gen"}
-		|
-		{"Source Generation"}
-	)
-	script(
-		unsafe(<">
-			$(() =>
-			{
-				if (document.headerFocused != (document.headerFocused = true))
-				{
-					document.getElementById("source-gen").scrollIntoView();
-				}
-			});
-			</">)
-	)
-	</>
-)
-
+AnchorHeading(|
+	name = {"Source Generation"},
+	id = {"source-gen"}
+	|)
 Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generation"} |
 	<>
 	div(|

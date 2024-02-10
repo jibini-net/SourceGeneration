@@ -7,29 +7,10 @@ interface {
 inject({TestApp.Services.ILinkPathGenerator} {links})
 parent({ProjectsPage} {page})
 
-if({page?.Get<string>("openDrawer") == "Check Engine"}
-
-	<>
-	h1(|
-		style = {"opacity: 0;position: absolute;display: block;height: 0;"},
-		id = {"check-engine"}
-		|
-		{"Check Engine"}
-	)
-	script(
-		unsafe(<">
-			$(() =>
-			{
-				if (document.headerFocused != (document.headerFocused = true))
-				{
-					document.getElementById("check-engine").scrollIntoView();
-				}
-			});
-			</">)
-	)
-	</>
-)
-
+AnchorHeading(|
+	name = {"Check Engine"},
+	id = {"check-engine"}
+	|)
 div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 	div(|
 		class = {"d-flex flex-column flex-grow-1 flex-shrink-1 pe-3"},

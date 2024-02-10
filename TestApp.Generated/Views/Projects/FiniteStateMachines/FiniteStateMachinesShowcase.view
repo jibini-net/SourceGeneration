@@ -7,29 +7,11 @@ interface {
 inject({TestApp.Services.ILinkPathGenerator} {links})
 parent({ProjectsPage} {page})
 
-if({page?.Get<string>("openDrawer") == "Finite State Automata"}
-
-	<>
-	h1(|
-		style = {"opacity: 0;position: absolute;display: block;height: 0;"},
-		id = {"fsas"}
-		|
-		{"Finite State Automata and Lexing-Parsing"}
-	)
-	script(
-		unsafe(<">
-			$(() =>
-			{
-				if (document.headerFocused != (document.headerFocused = true))
-				{
-					document.getElementById("fsas").scrollIntoView();
-				}
-			});
-			</">)
-	)
-	</>
-)
-
+AnchorHeading(|
+	name = {"Finite State Automata"},
+	id = {"fsas"},
+	headerText = {"Finite State Automata and Lexing-Parsing"}
+	|)
 Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Automata"} |
 	<>
 	h4(| class = {"mt-5"} |
