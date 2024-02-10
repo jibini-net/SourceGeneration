@@ -19,7 +19,11 @@ Host(
 	)
 	</>
 	<>
-	script(| src = {"js/CascadingState.js"} |)
-	script(| src = {"js/Home.js"} |)
+	script(
+		unsafe({await inliner.PreLoad("js/CascadingState.js")})
+	)
+	script(
+		unsafe({await inliner.PreLoad("js/Home.js")})
+	)
 	</>
 )
