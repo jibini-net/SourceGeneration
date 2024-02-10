@@ -11,8 +11,15 @@ Host(
 	Projects()
 	<>
 	title({string.IsNullOrEmpty(openDrawer)
-		? "Projects"
-		: $"Projects - {openDrawer}"})
+		? "Projects - Zach Goethel"
+		: $"Projects - {openDrawer} - Zach Goethel"})
+	if({string.IsNullOrEmpty(openDrawer)}
+
+		meta(|
+			name = {"description"},
+			content = {"My open source project portfolio; custom languages, frameworks, webapps, OpenGL graphics, and more"}
+			|)
+	)
 	style(
 		unsafe({await inliner.PreLoad("styles/Projects.css")})
 	)

@@ -9,10 +9,10 @@ inject({TestApp.Services.IResourceInliner} {inliner})
 Host(
 	Home()
 	<>
-	title({"Home"})
+	title({"Home - Zach Goethel"})
 	meta(|
 		name = {"description"},
-		content = {".NET Developer specializing in business software and obsessed with language compilers"}
+		content = {".NET and C developer specializing in business software; obsessed with language compilers and graphics"}
 		|)
 	style(
 		unsafe({await inliner.PreLoad("styles/Home.css")})
