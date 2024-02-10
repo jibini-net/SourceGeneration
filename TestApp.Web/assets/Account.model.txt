@@ -1,0 +1,34 @@
+﻿schema {
+	int Id,
+	string Email = {""},
+	string FirstName = {""},
+	string LastName = {""}
+}
+
+partial WithPassword {
+	string PasswordScheme = {""},
+	string PasswordHash = {""},
+	string PasswordSalt = {""},
+	DateTime? PasswordSet
+}
+
+repo {
+	dbo.Account_GetById(int id)
+		=> Account,
+
+	dbo.Account_GetWithPassword(string email)
+		=> Account.WithPassword,
+
+	...
+}
+
+service {
+	AttemptLogin(string email, string password)
+		=> Account.WithSession,
+
+	LogOut(),
+
+	ResetPassword(string resetToken, string password),
+
+	...
+}
