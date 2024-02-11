@@ -2,29 +2,21 @@
 using Microsoft.VisualStudio.Text.Classification;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
+using static SourceGenerator.VsEditor.SourceGeneratorClassificationDefinition;
 
 namespace SourceGenerator.VsEditor
 {
-    /// <summary>
-    /// Classifier that classifies all text as an instance of the "SourceGeneratorClassifier" classification type.
-    /// </summary>
     internal class SourceGeneratorClassifier : IClassifier
     {
-        /// <summary>
-        /// Classification type.
-        /// </summary>
-        private readonly IClassificationType classificationType;
+        private readonly Dictionary<string, IClassificationType> types = new Dictionary<string, IClassificationType>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SourceGeneratorClassifier"/> class.
-        /// </summary>
-        /// <param name="registry">Classification registry.</param>
         internal SourceGeneratorClassifier(IClassificationTypeRegistryService registry)
         {
-            classificationType = registry.GetClassificationType(nameof(SourceGeneratorClassifier));
+            types[nameof(PlainText)] = registry.GetClassificationType(nameof(PlainText));
+            types[nameof(TopLevel)] = registry.GetClassificationType(nameof(TopLevel));
         }
-
-        #region IClassifier
 
 #pragma warning disable 67
 
@@ -40,25 +32,11 @@ namespace SourceGenerator.VsEditor
 
 #pragma warning restore 67
 
-        /// <summary>
-        /// Gets all the <see cref="ClassificationSpan"/> objects that intersect with the given range of text.
-        /// </summary>
-        /// <remarks>
-        /// This method scans the given SnapshotSpan for potential matches for this classification.
-        /// In this instance, it classifies everything and returns each span as a new ClassificationSpan.
-        /// </remarks>
-        /// <param name="span">The span currently being classified.</param>
-        /// <returns>A list of ClassificationSpans that represent spans identified to be of this classification.</returns>
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
-            var result = new List<ClassificationSpan>()
-            {
-                new ClassificationSpan(new SnapshotSpan(span.Snapshot, new Span(span.Start, span.Length)), classificationType)
-            };
-
-            return result;
+            return Enumerable.Range(span.Start.Position, span.Length)
+                .Select((i) => new ClassificationSpan(new SnapshotSpan(span.Snapshot, new Span(i, 1)), types[i % 2 == 0 ? nameof(TopLevel) : nameof(PlainText)]))
+                .ToList();
         }
-
-        #endregion
     }
 }

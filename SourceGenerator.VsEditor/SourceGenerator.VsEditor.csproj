@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="SourceGeneratorClassifier.cs" />
     <Compile Include="SourceGeneratorClassificationDefinition.cs" />
-    <Compile Include="SourceGeneratorFormat.cs" />
+    <Compile Include="TopLevelFormat.cs" />
     <Compile Include="SourceGeneratorClassifierProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -25,8 +25,6 @@ namespace SourceGenerator.VsEditor
 
 #pragma warning restore 649
 
-        #region IClassifierProvider
-
         /// <summary>
         /// Gets a classifier for the given text buffer.
         /// </summary>
@@ -36,7 +34,5 @@ namespace SourceGenerator.VsEditor
         {
             return buffer.Properties.GetOrCreateSingletonProperty(creator: () => new SourceGeneratorClassifier(this.classificationRegistry));
         }
-
-        #endregion
     }
 }

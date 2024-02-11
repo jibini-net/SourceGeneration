@@ -33,12 +33,13 @@ namespace SourceGenerator.VsEditor
         [ContentType("GeneratorView")]
         internal static FileExtensionToContentTypeDefinition GeneratorViewFileExtensionDefinition;
 
-        /// <summary>
-        /// Defines the "SourceGeneratorClassifier" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name(nameof(SourceGeneratorClassifier))]
-        private static ClassificationTypeDefinition typeDefinition;
+        [Name(nameof(PlainText))]
+        internal static ClassificationTypeDefinition PlainText;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(nameof(TopLevel))]
+        internal static ClassificationTypeDefinition TopLevel;
 
 #pragma warning restore 169
 #pragma warning restore 649
