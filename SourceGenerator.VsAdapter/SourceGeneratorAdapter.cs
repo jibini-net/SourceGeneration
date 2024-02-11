@@ -4,9 +4,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,77 +17,44 @@ namespace SourceGenerator.VsAdapter
     [Generator]
     public class SourceGeneratorAdapter : ISourceGenerator
     {
-#if DEBUG
-        public static readonly string BuildMode = "Debug";
-#else
-        public static readonly string BuildMode = "Release";
-#endif
-        public static readonly string DotNetVersion = "net8.0";
-        public static string ToolPath => $"Tools/SourceGenerator/{BuildMode}/{DotNetVersion}";
-        public static string CallingPath = "";
+        public const string SERVER_IP = "127.0.0.1";
+        public const int PORT = 58994;
 
-        /*
-        internal string ReadEmbeddedResource(string fileName)
+        public static MemoryStream GenerateSource(AdditionalText file)
         {
-            var assy = GetType().Assembly;
-            var streamName = $"{assy.GetName().Name}.{fileName}";
-
-            using (var file = assy.GetManifestResourceStream(streamName))
-            using (var reader = new StreamReader(file))
+            var ip = new IPEndPoint(IPAddress.Parse(SERVER_IP), PORT);
+            using (var socket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
             {
-                return reader.ReadToEnd();
-            }
-        }
+                socket.Connect(ip);
 
-        private string _INCLUDES;
-        public string INCLUDES => _INCLUDES is null
-            ? _INCLUDES = ReadEmbeddedResource("_Includes.txt")
-            : _INCLUDES;
-        */
+                var encodedName = Path.GetFileName(file.Path)
+                    .Replace("\\", "\\\\")
+                    .Replace("{", "\\{")
+                    .Replace("}", "\\}");
+                socket.Send(Encoding.UTF8.GetBytes($"{{{encodedName}}} "));
+                socket.Send(Encoding.UTF8.GetBytes(file.GetText().ToString()));
+                socket.Send(new byte[] { 0x00 });
 
-        public static async Task<MemoryStream> ExecuteProcess(AdditionalText file)
-        {
-            var processInfo = new ProcessStartInfo()
-            {
-                UseShellExecute = false,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-                FileName = Path.Combine(CallingPath, ToolPath, "SourceGenerator.exe"),
-                Arguments = $"{'"'}{file.Path}{'"'}",
-                WorkingDirectory = Path.Combine(CallingPath, ToolPath)
-            };
+                var recvBuffer = new byte[2048];
+                var sourceText = new MemoryStream();
 
-            using (var process = Process.Start(processInfo))
-            {
-                var source = new MemoryStream();
-                await process.StandardOutput.BaseStream.CopyToAsync(source);
-                source.Position = 0;
-
-                process.WaitForExit();
-                switch (process.ExitCode)
+                for (;;)
                 {
-                    case 0:
-                        return source;
-
-                    default:
-                        source.Dispose();
-                        var error = process.StandardError.ReadToEnd();
-                        throw new Exception(error);
+                    var readBytes = socket.Receive(recvBuffer);
+                    if (readBytes == 0)
+                    {
+                        break;
+                    }
+                    sourceText.Write(recvBuffer, 0, readBytes);
                 }
+
+                //TODO Propagate exceptions
+                return sourceText;
             }
         }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (string.IsNullOrEmpty(CallingPath))
-            {
-                CallingPath = context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var result)
-                    ? result
-                    : throw new Exception("Cannot determine calling path");
-            }
-
             var findExts = new[] { ".model", ".view" }.ToImmutableHashSet();
             var files = context.AdditionalFiles
                 .Where((it) => findExts.Contains(
@@ -97,12 +65,12 @@ namespace SourceGenerator.VsAdapter
 
             foreach (var file in files)
             {
-                async Task detachAsync()
+                _ = Task.Run(() =>
                 {
                     try
                     {
                         var name = Path.GetFileName(file.Path);
-                        var source = await ExecuteProcess(file);
+                        var source = GenerateSource(file);
 
                         sources.Add(($"{name}.g.cs", source));
                     } catch (Exception ex)
@@ -120,8 +88,7 @@ namespace SourceGenerator.VsAdapter
                     {
                         completed.Release();
                     }
-                }
-                _ = detachAsync();
+                });
             }
             for (var i = 0; i < files.Count; i ++)
             {
