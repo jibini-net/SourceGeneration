@@ -31,7 +31,7 @@ namespace SourceGenerator.VsAdapter
                     .Replace("\\", "\\\\")
                     .Replace("{", "\\{")
                     .Replace("}", "\\}");
-                socket.Send(Encoding.UTF8.GetBytes($"{{{encodedName}}} "));
+                socket.Send(Encoding.UTF8.GetBytes($"generate {{{encodedName}}} "));
                 socket.Send(Encoding.UTF8.GetBytes(file.GetText().ToString()));
                 socket.Send(new byte[] { 0x00 });
 

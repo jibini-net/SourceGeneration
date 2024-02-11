@@ -65,8 +65,17 @@ internal class Program
                 Grammar = Dfa,
                 Source = sourceText.ToString()
             };
+
+            source.Poll();
+            var command = source.Text;
             var fileName = TopLevelGrammar.MatchCSharp(source);
-            var output = Generate(fileName, source);
+
+            var output = command switch
+            {
+                "generate" => Generate(fileName, source),
+                "highlight" => throw new NotImplementedException(),
+                _ => throw new Exception("Invalid command")
+            };
 
             client.Send(Encoding.UTF8.GetBytes(output));
         }
@@ -84,6 +93,8 @@ internal class Program
 
     private static void InitializeFsa()
     {
+        var startTime = DateTime.Now;
+
         var letters = "a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z";
         var capLetters = letters.ToUpperInvariant();
         var numbers = "0|1|2|3|4|5|6|7|8|9";
@@ -114,9 +125,14 @@ internal class Program
         nfa.Build("\\|", (int)Bar);
         nfa.Build("( |\n|\r|\t)+", 9999);
 
+        Console.WriteLine($"CREATED NFA IN {(DateTime.Now - startTime).TotalMilliseconds}ms");
+        startTime = DateTime.Now;
+
         Dfa = nfa
             .ConvertToDfa()
             .MinimizeDfa();
+
+        Console.WriteLine($"CREATED DFA IN {(DateTime.Now - startTime).TotalMilliseconds}ms");
     }
 
     public static string Generate(string fileName, TokenStream source)
