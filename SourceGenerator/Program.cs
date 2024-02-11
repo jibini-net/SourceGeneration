@@ -66,18 +66,36 @@ internal class Program
                 Source = sourceText.ToString()
             };
 
-            source.Poll();
-            var command = source.Text;
-            var fileName = TopLevelGrammar.MatchCSharp(source);
-
-            var output = command switch
+            try
             {
-                "generate" => Generate(fileName, source),
-                "highlight" => throw new NotImplementedException(),
-                _ => throw new Exception("Invalid command")
-            };
+                if (source.Poll() != (int)Ident)
+                {
+                    throw new Exception("Provide compilation or action command");
+                }
+                var command = source.Text;
+                if (source.Next != (int)LCurly)
+                {
+                    throw new Exception("Provide encoded name of source file");
+                }
+                var fileName = TopLevelGrammar.MatchCSharp(source);
 
-            client.Send(Encoding.UTF8.GetBytes(output));
+                var output = command switch
+                {
+                    "generate" => Generate(fileName, source),
+                    "highlight" => throw new NotImplementedException(),
+                    _ => throw new Exception("Invalid command")
+                };
+
+                client.Send(Encoding.UTF8.GetBytes(output));
+            } catch (Exception ex)
+            {
+                var fullMessage = ex.InnerException is null
+                    ? ex.Message
+                    : $"{ex.Message} - {ex.InnerException.Message}";
+
+                client.Send(Encoding.UTF8.GetBytes(fullMessage));
+                Console.Error.WriteLine(fullMessage);
+            }
         }
     }
 
@@ -164,6 +182,8 @@ internal class Program
             }
         } catch (Exception ex)
         {
+            sourceBuilders.Remove(ThreadId, out var _);
+
             int lineNumber = 1, prevLine = 0;
             for (int i = 0; i <= source.Offset && i < source.Source.Length; i++)
             {
@@ -174,12 +194,8 @@ internal class Program
                 }
             }
 
-            Console.Error.WriteLine("{0}:{1}:{2} - {3}",
-                fileName,
-                lineNumber,
-                source.Offset - prevLine + 1,
-                ex.Message);
-            Process.GetCurrentProcess().Kill();
+            var lineChar = source.Offset - prevLine + 1;
+            throw new Exception($"{fileName}:{lineNumber}:{lineChar}", ex);
         }
 
         var millis = (DateTime.Now - startTime).TotalMilliseconds;
