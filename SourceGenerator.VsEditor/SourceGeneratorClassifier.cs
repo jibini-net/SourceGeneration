@@ -20,20 +20,22 @@ namespace SourceGenerator.VsEditor
         public const string SERVER_IP = "127.0.0.1";
         public const int PORT = 58994;
 
+        private ITextBuffer text;
+        private string filePath;
         private readonly Dictionary<string, IClassificationType> types = new Dictionary<string, IClassificationType>();
 
         private CancellationTokenSource cancel;
         private SemaphoreSlim cancelMutex = new SemaphoreSlim(1, 1);
 
-        private List<MatchSpan> spans = new List<MatchSpan>();
+        private List<MatchSpan> spans = null;
 
         internal SourceGeneratorClassifier(IClassificationTypeRegistryService registry, ITextBuffer text)
         {
+            this.text = text;
             types[nameof(PlainText)] = registry.GetClassificationType(nameof(PlainText));
             types[nameof(TopLevel)] = registry.GetClassificationType(nameof(TopLevel));
 
             ITextDocument textDocument;
-            string filePath = "";
             if (text.Properties.TryGetProperty(typeof(ITextDocument), out textDocument))
             {
                 filePath = textDocument.FilePath;
@@ -70,7 +72,7 @@ namespace SourceGenerator.VsEditor
                     {
                         if (!_cancel.IsCancellationRequested)
                         {
-                            await ReCalculateSpansAsync(filePath, ev.After.GetText());
+                            ReCalculateSpans(filePath, ev.After.GetText());
                             ClassificationChanged.Invoke(null, new ClassificationChangedEventArgs(new SnapshotSpan(ev.After, 0, ev.AfterVersion.Length)));
                         }
                     } finally
@@ -81,12 +83,12 @@ namespace SourceGenerator.VsEditor
             };
         }
 
-        private async Task ReCalculateSpansAsync(string filePath, string source)
+        private void ReCalculateSpans(string filePath, string source)
         {
             var ip = new IPEndPoint(IPAddress.Parse(SERVER_IP), PORT);
             using (var socket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp))
             {
-                await socket.ConnectAsync(ip);
+                socket.Connect(ip);
 
                 var fileName = Path.GetFileName(filePath);
                 socket.Send(Encoding.UTF8.GetBytes($"highlight {{{fileName}}} "));
@@ -103,7 +105,7 @@ namespace SourceGenerator.VsEditor
                         {
                             break;
                         }
-                        await sourceText.WriteAsync(recvBuffer, 0, readBytes);
+                        sourceText.Write(recvBuffer, 0, readBytes);
                     }
 
                     var result = Encoding.UTF8.GetString(sourceText.ToArray());
@@ -128,7 +130,14 @@ namespace SourceGenerator.VsEditor
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
+            if (spans is null)
+            {
+                ReCalculateSpans(filePath, text.CurrentSnapshot.GetText());
+            }
+
             return spans
+                .SkipWhile((it) => it.s + it.l <= span.Span.Start)
+                .TakeWhile((it) => it.s + it.l <= span.Span.End)
                 .Select((it) =>
                     new ClassificationSpan(new SnapshotSpan(
                         span.Snapshot,

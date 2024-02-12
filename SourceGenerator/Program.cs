@@ -325,7 +325,6 @@ internal class Program
             }
 
             var lineChar = source.Offset - prevLine + 1;
-            consoleLine.Write($" !! {fileName}:{lineNumber}:{lineChar} - {ex.Message}", true, ConsoleColor.Red);
             throw new Exception($"{fileName}:{lineNumber}:{lineChar}", ex);
         }
 
