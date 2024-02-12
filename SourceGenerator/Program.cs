@@ -1,6 +1,5 @@
 ﻿using SourceGenerator.Grammar;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,38 +12,6 @@ internal class Program
 {
     public const string BIND_INTERFACE = "127.0.0.1";
     public const int PORT = 58994;
-
-    public class TrackedConsoleLine
-    {
-        private int top = -1, left;
-        private static SemaphoreSlim consoleMutex = new(1, 1);
-
-        public void Write(string msg)
-        {
-            consoleMutex.Wait();
-            try
-            {
-                var returnTop = Console.CursorTop;
-                var returnLeft = Console.CursorLeft;
-
-                if (top == -1)
-                {
-                    Console.WriteLine();
-                    returnLeft = msg.Length;
-                    left = 0;
-                    top = ++returnTop;
-                }
-                Console.SetCursorPosition(left, top);
-                Console.Write(msg);
-                left = Console.CursorLeft;
-
-                Console.SetCursorPosition(returnLeft, returnTop);
-            } finally
-            {
-                consoleMutex.Release();
-            }
-        }
-    }
 
     public static Fsa Dfa { get; private set; }
 
@@ -63,10 +30,11 @@ internal class Program
         server.Listen(PORT);
 
         var consoleLine = new TrackedConsoleLine();
-        consoleLine.Write($"LISTING ON PORT {PORT}");
+        consoleLine.Write($"LISTING ON PORT {PORT}", color: ConsoleColor.Cyan);
         while (true)
         {
             var client = server.Accept();
+
             new Thread(() => HandleClient(client)).Start();
         }
     }
@@ -74,7 +42,7 @@ internal class Program
     private static void HandleClient(Socket client)
     {
         var consoleLine = new TrackedConsoleLine();
-        consoleLine.Write($"ACCEPTED FROM {(client.RemoteEndPoint as IPEndPoint).Address}");
+        consoleLine.Write((client.RemoteEndPoint as IPEndPoint).Address.ToString(), color: ConsoleColor.Cyan);
 
         var recvBuffer = new byte[2048];
         var sourceText = new StringBuilder();
@@ -114,7 +82,7 @@ internal class Program
                 }
                 var fileName = TopLevelGrammar.MatchCSharp(source);
 
-                consoleLine.Write($" [] RECEIVED {fileName} AT {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                consoleLine.Write($" [] RECEIVED {fileName} AT {DateTime.Now:yyyy-MM-dd HH:mm:ss}", color: ConsoleColor.White);
                 var output = command switch
                 {
                     "generate" => Generate(fileName, source, consoleLine),
@@ -179,14 +147,14 @@ internal class Program
         nfa.Build("( |\n|\r|\t)+", 9999);
 
         var consoleLine = new TrackedConsoleLine();
-        consoleLine.Write($"CREATED NFA IN {(DateTime.Now - startTime).TotalMilliseconds}ms");
+        consoleLine.Write($"CREATED NFA IN {(DateTime.Now - startTime).TotalMilliseconds}ms", color: ConsoleColor.Cyan);
         startTime = DateTime.Now;
 
         Dfa = nfa
             .ConvertToDfa()
             .MinimizeDfa();
 
-        consoleLine.Write($" [] CREATED DFA IN {(DateTime.Now - startTime).TotalMilliseconds}ms");
+        consoleLine.Write($" [] CREATED DFA IN {(DateTime.Now - startTime).TotalMilliseconds}ms", color: ConsoleColor.Cyan);
     }
 
     public static string Generate(string fileName, TokenStream source, TrackedConsoleLine consoleLine)
@@ -230,13 +198,13 @@ internal class Program
             }
 
             var lineChar = source.Offset - prevLine + 1;
-            consoleLine.Write($" !! {fileName}:{lineNumber}:{lineChar} - {ex.Message}");
+            consoleLine.Write($" !! {fileName}:{lineNumber}:{lineChar} - {ex.Message}", true, ConsoleColor.Red);
             throw new Exception($"{fileName}:{lineNumber}:{lineChar}", ex);
         }
 
         var millis = (DateTime.Now - startTime).TotalMilliseconds;
         AppendLine($"// GENERATED IN {millis}ms");
-        consoleLine.Write($" [] {fileName}.g.cs GENERATED IN {millis}ms");
+        consoleLine.Write($" [] GENERATED IN {millis}ms", true, ConsoleColor.Green);
 
         return sourceBuilders.Remove(ThreadId, out var _v)
             ? _v.ToString()
