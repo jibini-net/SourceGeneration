@@ -23,11 +23,13 @@ public class ServiceGrammar
         };
 
         // "service" "{"
+        Program.StartSpan(ClassType.TopLevel);
         stream.Poll();
         if (stream.Poll() != (int)LCurly)
         {
             throw new Exception($"Expected left curly");
         }
+        Program.EndSpan();
 
         while (stream.Next != (int)RCurly)
         {
@@ -47,7 +49,9 @@ public class ServiceGrammar
         }
 
         // "}"
+        Program.StartSpan(ClassType.TopLevel);
         stream.Poll();
+        Program.EndSpan();
 
         return result;
     }

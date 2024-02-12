@@ -27,11 +27,8 @@ namespace SourceGenerator.VsAdapter
             {
                 socket.Connect(ip);
 
-                var encodedName = Path.GetFileName(file.Path)
-                    .Replace("\\", "\\\\")
-                    .Replace("{", "\\{")
-                    .Replace("}", "\\}");
-                socket.Send(Encoding.UTF8.GetBytes($"generate {{{encodedName}}} "));
+                var fileName = Path.GetFileName(file.Path);
+                socket.Send(Encoding.UTF8.GetBytes($"generate {{{fileName}}} "));
                 socket.Send(Encoding.UTF8.GetBytes(file.GetText().ToString()));
                 socket.Send(new byte[] { 0x00 });
 

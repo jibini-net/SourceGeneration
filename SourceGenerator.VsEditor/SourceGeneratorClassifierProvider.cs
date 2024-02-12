@@ -32,7 +32,7 @@ namespace SourceGenerator.VsEditor
         /// <returns>A classifier for the text buffer, or null if the provider cannot do so in its current state.</returns>
         public IClassifier GetClassifier(ITextBuffer buffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(creator: () => new SourceGeneratorClassifier(buffer, classificationRegistry));
+            return buffer.Properties.GetOrCreateSingletonProperty(creator: () => new SourceGeneratorClassifier(classificationRegistry, buffer));
         }
     }
 }

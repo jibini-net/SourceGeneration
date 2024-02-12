@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace SourceGenerator;
 
@@ -10,7 +11,11 @@ using static Token;
 
 internal class Program
 {
+#if DEBUG
+    public const string BIND_INTERFACE = "0.0.0.0";
+#else
     public const string BIND_INTERFACE = "127.0.0.1";
+#endif
     public const int PORT = 58994;
 
     public static Fsa Dfa { get; private set; }
@@ -30,7 +35,7 @@ internal class Program
         server.Listen(PORT);
 
         var consoleLine = new TrackedConsoleLine();
-        consoleLine.Write($"LISTING ON PORT {PORT}", color: ConsoleColor.Cyan);
+        consoleLine.Write($"LISTENING ON PORT {PORT}", color: ConsoleColor.Cyan);
         while (true)
         {
             var client = server.Accept();
@@ -86,7 +91,7 @@ internal class Program
                 var output = command switch
                 {
                     "generate" => Generate(fileName, source, consoleLine),
-                    "highlight" => throw new NotImplementedException(),
+                    "highlight" => Highlight(fileName, source, consoleLine),
                     _ => throw new Exception("Invalid command")
                 };
 
@@ -96,7 +101,7 @@ internal class Program
                 var fullMessage = ex.InnerException is null
                     ? ex.Message
                     : $"{ex.Message} - {ex.InnerException.Message}";
-
+                consoleLine.Write($" !! {fullMessage}", color: ConsoleColor.Red);
                 client.Send(Encoding.UTF8.GetBytes(fullMessage));
             }
         }
@@ -198,7 +203,6 @@ internal class Program
             }
 
             var lineChar = source.Offset - prevLine + 1;
-            consoleLine.Write($" !! {fileName}:{lineNumber}:{lineChar} - {ex.Message}", true, ConsoleColor.Red);
             throw new Exception($"{fileName}:{lineNumber}:{lineChar}", ex);
         }
 
@@ -209,5 +213,127 @@ internal class Program
         return sourceBuilders.Remove(ThreadId, out var _v)
             ? _v.ToString()
             : throw new Exception("String builder missing from dictionary");
+    }
+
+    private static ConcurrentDictionary<int, (TokenStream source, List<MatchSpan> spanList)> spanLists = new();
+    private static (TokenStream source, List<MatchSpan> spanList) sourceSpanList => spanLists[ThreadId];
+
+    public static void StartSpan(ClassType classification, int? index = null)
+    {
+        if (!spanLists.ContainsKey(ThreadId))
+        {
+            return;
+        }
+        var (source, spanList) = sourceSpanList;
+        index ??= source.Offset;
+
+        var prev = spanList.LastOrDefault();
+        if (prev is not null)
+        {
+            if (prev.l == -1)
+            {
+                prev.l = index.Value - prev.s;
+            }
+
+            if (prev.s + prev.l < index.Value)
+            {
+                spanList.Add(new()
+                {
+                    c = ClassType.PlainText,
+                    s = prev.s + prev.l,
+                    l = index.Value - (prev.s + prev.l)
+                });
+            }
+        }
+
+        spanList.Add(new()
+        {
+            c = classification,
+            s = index.Value
+        });
+    }
+
+    public static void EndSpan(int? index = null)
+    {
+        if (!spanLists.ContainsKey(ThreadId))
+        {
+            return;
+        }
+        var (source, spanList) = sourceSpanList;
+        index ??= source.Offset;
+
+        var prev = spanList.LastOrDefault();
+        if (prev is not null && prev.l == -1)
+        {
+            prev.l = index.Value - prev.s;
+        }
+    }
+
+    public static string Highlight(string fileName, TokenStream source, TrackedConsoleLine consoleLine)
+    {
+        var startTime = DateTime.Now;
+
+        spanLists[ThreadId] = (source, new());
+
+        var ext = Path.GetExtension(fileName).ToLowerInvariant();
+        var modelName = Path.GetFileNameWithoutExtension(fileName);
+
+        try
+        {
+            _ = source.Next;
+            var sourceStart = source.Offset;
+            StartSpan(ClassType.PlainText, sourceStart);
+
+            switch (ext)
+            {
+                case ".model":
+                    TopLevelGrammar.MatchModel(source, modelName, meta: true);
+                    break;
+                case ".view":
+                    TopLevelGrammar.MatchView(source, modelName, meta: true);
+                    break;
+            }
+
+            EndSpan();
+
+            var (_, spanList) = sourceSpanList;
+            var last = spanList.LastOrDefault();
+            if (last.s + last.l < source.Source.Length)
+            {
+                spanList.Add(new()
+                {
+                    c = ClassType.PlainText,
+                    s = source.Offset,
+                    l = source.Source.Length - (last.s + last.l)
+                });
+            }
+
+            spanList.ForEach((it) => it.s -= sourceStart);
+            spanList.RemoveAll((it) => it.l == 0);
+        } catch (Exception ex)
+        {
+            spanLists.Remove(ThreadId, out var _);
+
+            int lineNumber = 1, prevLine = 0;
+            for (int i = 0; i <= source.Offset && i < source.Source.Length; i++)
+            {
+                if (source.Source[i] == '\n')
+                {
+                    lineNumber++;
+                    prevLine = i;
+                }
+            }
+
+            var lineChar = source.Offset - prevLine + 1;
+            consoleLine.Write($" !! {fileName}:{lineNumber}:{lineChar} - {ex.Message}", true, ConsoleColor.Red);
+            throw new Exception($"{fileName}:{lineNumber}:{lineChar}", ex);
+        }
+
+        var millis = (DateTime.Now - startTime).TotalMilliseconds;
+        consoleLine.Write($" [] HIGHLIGHTED IN {millis}ms", true, ConsoleColor.Magenta);
+
+        return spanLists.Remove(ThreadId, out var _v)
+            ? JsonSerializer.Serialize(_v.spanList)
+            : throw new Exception("Match spans missing from dictionary");
     }
 }

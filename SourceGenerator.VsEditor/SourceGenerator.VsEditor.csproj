@@ -44,6 +44,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Classification.cs" />
     <Compile Include="SourceGeneratorClassifier.cs" />
     <Compile Include="SourceGeneratorClassificationDefinition.cs" />
     <Compile Include="TopLevelFormat.cs" />

@@ -21,11 +21,13 @@ public class SchemaGrammar
         };
 
         // "schema" "{"
+        Program.StartSpan(ClassType.TopLevel);
         stream.Poll();
         if (stream.Poll() != (int)LCurly)
         {
             throw new Exception($"Expected left curly");
         }
+        Program.EndSpan();
 
         while (stream.Next != (int)RCurly)
         {
@@ -41,7 +43,9 @@ public class SchemaGrammar
         }
 
         // "}"
+        Program.StartSpan(ClassType.TopLevel);
         stream.Poll();
+        Program.EndSpan();
 
         return result;
     }
