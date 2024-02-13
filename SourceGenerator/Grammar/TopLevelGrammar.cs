@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using static Token;
+using static ClassType;
 
 /*
  * Implementation of source generation and semantic evaluation. The parser
@@ -175,7 +176,7 @@ public partial class TopLevelGrammar
     public static string MatchCSharp(TokenStream stream)
     {
         // "{"
-        Program.StartSpan(ClassType.TopLevel);
+        Program.StartSpan(TopLevel);
         if (stream.Poll() != (int)LCurly)
         {
             throw new Exception("Wrap verbatim C# code in curly braces");

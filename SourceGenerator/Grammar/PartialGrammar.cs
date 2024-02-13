@@ -50,10 +50,12 @@ public class PartialGrammar
             result.Fields.Add(field);
 
             // ","
+            Program.StartSpan(TopLevel);
             if (stream.Next != (int)RCurly && stream.Poll() != (int)Comma)
             {
                 throw new Exception("Expected comma or '}'");
             }
+            Program.EndSpan();
         }
 
         // "}"
