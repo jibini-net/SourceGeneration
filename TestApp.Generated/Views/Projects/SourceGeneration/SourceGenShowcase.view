@@ -19,7 +19,7 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 		style = {"width: 100%;"}
 		|
 		h4(| class = {"my-auto"} |
-			{"Source Generation"}
+			<">Source Generation</">
 		)
 		a(|
 			href = {links.GetNamed("SourceGenerationRepo")},
@@ -28,7 +28,7 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 			|
 			h5(| class = {"mb-0"} |
 				i(| class = {"fab fa-github me-2"} |)
-				{"Repo"}
+				<">Repo</">
 			)
 		)
 	)
@@ -57,7 +57,7 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 		p(| class = {"my-4"} |
 			<">
 			The developer can build large portions of the application codebase from
-			fewer succinct lines leveraging structured generation patterns.
+			succinct lines leveraging structured generation patterns.
 			</">
 		)
 		</>

@@ -15,12 +15,12 @@ div(| class = {"d-flex flex-row"} |
 		class = {"btn btn-danger ms-2"},
 		onclick = {"dispatch(this, 'Decrement');"}
 		|
-		{"-"}
+		<">-</">
 	)
 	button(|
 		class = {"btn btn-success ms-2"},
 		onclick = {"dispatch(this, 'Increment');"}
 		|
-		{"+"}
+		<">+</">
 	)
 )

@@ -1,6 +1,7 @@
 ﻿namespace SourceGenerator.Grammar;
 
 using static Token;
+using static ClassType;
 
 /*
  * Implementation of source generation and semantic evaluation. The parser
@@ -24,19 +25,26 @@ public class HtmlNodeGrammar
         if (stream.Next == (int)LCurly)
         {
             name = TopLevelGrammar.MatchCSharp(stream);
-        } else if (stream.Poll() != (int)Ident)
-        {
-            throw new Exception("Expected name for HTML attribute");
         } else
         {
-            name = stream.Text;
+            Program.StartSpan(ClassType.Assign);
+            if (stream.Poll() != (int)Ident)
+            {
+                throw new Exception("Expected name for HTML attribute");
+            } else
+            {
+                name = stream.Text;
+            }
+            Program.EndSpan();
         }
 
         // "=" "{" {C# code} "}"
-        if (stream.Poll() != (int)Assign)
+        Program.StartSpan(ClassType.Assign);
+        if (stream.Poll() != (int)Token.Assign)
         {
             throw new Exception("Expected '='");
         }
+        Program.EndSpan();
         var value = TopLevelGrammar.MatchCSharp(stream);
 
         return (name, value);
@@ -50,10 +58,12 @@ public class HtmlNodeGrammar
         };
 
         // "<>"
+        Program.StartSpan(Delimeter3);
         if (stream.Poll() != (int)LRfReduce)
         {
             throw new Exception("Expected '<>'");
         }
+        Program.EndSpan();
 
         // [{fragment} ...]
         while (stream.Next != (int)RRfReduce)
@@ -63,7 +73,9 @@ public class HtmlNodeGrammar
         }
 
         // "</>"
+        Program.StartSpan(Delimeter3);
         stream.Poll();
+        Program.EndSpan();
 
         return result;
     }
@@ -78,10 +90,12 @@ public class HtmlNodeGrammar
             .Replace("\n", "\\n\"\n            + \"");
 
         // "<\">"
+        Program.StartSpan(Delimeter3);
         if (stream.Poll() != (int)LMultiLine)
         {
             throw new Exception("Expected '<\">'");
         }
+        Program.EndSpan();
 
         // {string content}
         var startIndex = stream.Offset;
@@ -97,7 +111,9 @@ public class HtmlNodeGrammar
         var content = stream.Source.Substring(startIndex, length);
 
         // "</\">"
+        Program.StartSpan(Delimeter3);
         stream.Poll();
+        Program.EndSpan();
 
         return new()
         {
@@ -129,6 +145,7 @@ public class HtmlNodeGrammar
                 return MatchStringSegment(stream);
         }
 
+        var delimStart = stream.Offset;
         // {tag} [{alias}]
         if (stream.Poll() != (int)Ident)
         {
@@ -140,10 +157,17 @@ public class HtmlNodeGrammar
             Attribs = new(),
             Children = new()
         };
+        var special = SpecialTags.TryGetValue(result.Tag ?? "", out var specialKv);
+        Program.StartSpan((special || (result.Tag[0] >= 'A' && result.Tag[0] <= 'Z'))
+            ? Delimeter2
+            : Delimeter, delimStart);
+        Program.EndSpan();
         if (stream.Next == (int)Ident)
         {
             // "{alias name}"
+            Program.StartSpan(ClassType.Assign);
             stream.Poll();
+            Program.EndSpan();
 
             if (result.Tag[0] < 'A' || result.Tag[0] > 'Z')
             {
@@ -152,17 +176,23 @@ public class HtmlNodeGrammar
             result.Alias = stream.Text;
         }
 
+        Program.StartSpan((special || (result.Tag[0] >= 'A' && result.Tag[0] <= 'Z'))
+            ? Delimeter2
+            : Delimeter);
         // "("
         if (stream.Poll() != (int)LParen)
         {
             throw new Exception("Expected left parens");
         }
+        Program.EndSpan();
 
         // ["|" {name} "=" {value} ["," ...] "|"]
         if (stream.Next == (int)Bar)
         {
+            Program.StartSpan(Delimeter2);
             // "|"
             stream.Poll();
+            Program.EndSpan();
 
             while (stream.Next != (int)Bar)
             {
@@ -173,15 +203,19 @@ public class HtmlNodeGrammar
                 }
                 result.Attribs[name] = value;
 
+                Program.StartSpan(Delimeter2);
                 // ","
                 if (stream.Next != (int)Bar && stream.Poll() != (int)Comma)
                 {
                     throw new Exception("Expected comma or '|'");
                 }
+                Program.EndSpan();
             }
 
+            Program.StartSpan(Delimeter2);
             // "|"
             stream.Poll();
+            Program.EndSpan();
         }
 
         // [{fragment} ...]
@@ -192,11 +226,15 @@ public class HtmlNodeGrammar
         }
 
         // ")"
+        Program.StartSpan((special || (result.Tag[0] >= 'A' && result.Tag[0] <= 'Z'))
+            ? Delimeter2
+            : Delimeter);
         stream.Poll();
+        Program.EndSpan();
 
-        if (SpecialTags.TryGetValue(result.Tag ?? "", out var kv))
+        if (special)
         {
-            var (validator, _) = kv;
+            var (validator, _) = specialKv;
             validator(result);
         }
 

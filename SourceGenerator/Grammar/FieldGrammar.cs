@@ -1,6 +1,7 @@
 ﻿namespace SourceGenerator.Grammar;
 
 using static Token;
+using static ClassType;
 
 /*
  * Implementation of source generation and semantic evaluation. The parser
@@ -23,26 +24,36 @@ public class FieldGrammar
         if (stream.Next == (int)LCurly)
         {
             result.TypeName = TopLevelGrammar.MatchCSharp(stream);
-        } else if (stream.Poll() != (int)Ident)
-        {
-            throw new Exception("Expected field type name");
         } else
         {
-            result.TypeName = stream.Text;
+            Program.StartSpan(TypeName);
+            if (stream.Poll() != (int)Ident)
+            {
+                throw new Exception("Expected field type name");
+            } else
+            {
+                result.TypeName = stream.Text;
+            }
+            Program.EndSpan();
         }
 
         // {field name}
+        Program.StartSpan(ClassType.Assign);
         if (stream.Poll() != (int)Ident)
         {
             throw new Exception("Expected field member name");
         }
         result.Name = stream.Text;
 
-        if (stream.Next == (int)Assign)
+        if (stream.Next == (int)Token.Assign)
         {
             // "=" "{" {C# expression} "}"
             stream.Poll();
+            Program.EndSpan();
             result.Initial = TopLevelGrammar.MatchCSharp(stream);
+        } else
+        {
+            Program.EndSpan();
         }
 
         return result;

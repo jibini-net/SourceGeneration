@@ -7,7 +7,7 @@ interface {
 inject({TestApp.Services.ILinkPathGenerator} {links})
 inject({TestApp.Services.IResourceInliner} {inliner})
 
-h4({"This Site"})
+h4(<">This Site</">)
 p(
 	<">
 	My portfolio site is written in my own reactive declarative markup
@@ -15,7 +15,7 @@ p(
 	</">
 )
 
-p({"Some demos:"})
+p(<">Some demos:</">)
 DemoTabs(|
 	title = {"Up/Down"},
 	prefix = {"up-down"}

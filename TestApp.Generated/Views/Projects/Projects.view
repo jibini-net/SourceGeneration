@@ -15,13 +15,13 @@ CascadingState cascade(
 		|
 
 		h4(| class = {"mx-auto"} |
-			{"Project Portfolio"}
+			<">Project Portfolio</">
 		)
 		h5(|
 			class = {"mb-0 mx-auto"},
 			style = {"max-width: 30rem;font-weight: normal;"}
 			|
-			{"A variety of open source software projects I've been working on."}
+			<">A variety of open source software projects I've been working on.</">
 		)
 
 	)

@@ -27,7 +27,7 @@ nav(|
 		type = {"button"},
 		role = {"tab"}
 		|
-		{".view"}
+		<">.view</">
 	)
 	button(|
 		class = {"nav-link"},
@@ -36,7 +36,7 @@ nav(|
 		type = {"button"},
 		role = {"tab"}
 		|
-		{".cs"}
+		<">.cs</">
 	)
 
 )

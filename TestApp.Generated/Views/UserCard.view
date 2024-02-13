@@ -11,13 +11,13 @@ div(| class = {"d-flex _UserCard"} |
 
 		<>
 		span(| class = {"my-auto me-2"} |
-			{"Guest"}
+			<">Guest</">
 		)
 		button(|
 			class = {"btn btn-success my-auto ms-auto"},
 			onclick = {"CascadingState.logIn(this);"}
 			|
-			{"Log in"}
+			<">Log in</">
 		)
 		</>
 
@@ -29,7 +29,7 @@ div(| class = {"d-flex _UserCard"} |
 			class = {"btn btn-outline-secondary my-auto ms-auto"},
 			onclick = {"CascadingState.logOut(this);"}
 			|
-			{"Log out"}
+			<">Log out</">
 		)
 		</>
 	)
