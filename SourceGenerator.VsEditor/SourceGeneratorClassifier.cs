@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Linq;
 
 using static SourceGenerator.VsEditor.SourceGeneratorClassificationDefinition;
+using Microsoft.SqlServer.Server;
 
 namespace SourceGenerator.VsEditor
 {
@@ -32,8 +33,10 @@ namespace SourceGenerator.VsEditor
         internal SourceGeneratorClassifier(IClassificationTypeRegistryService registry, ITextBuffer text)
         {
             this.text = text;
-            types[nameof(PlainText)] = registry.GetClassificationType(nameof(PlainText));
-            types[nameof(TopLevel)] = registry.GetClassificationType(nameof(TopLevel));
+            types = Enum.GetNames(typeof(ClassType))
+                .ToDictionary(
+                    (it) => it,
+                    (it) => registry.GetClassificationType(it));
 
             ITextDocument textDocument;
             if (text.Properties.TryGetProperty(typeof(ITextDocument), out textDocument))
@@ -137,7 +140,7 @@ namespace SourceGenerator.VsEditor
 
             return spans
                 .SkipWhile((it) => it.s + it.l <= span.Span.Start)
-                .TakeWhile((it) => it.s + it.l <= span.Span.End)
+                .TakeWhile((it) => it.s <= span.Span.End)
                 .Select((it) =>
                     new ClassificationSpan(new SnapshotSpan(
                         span.Snapshot,

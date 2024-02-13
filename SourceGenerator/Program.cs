@@ -235,15 +235,15 @@ internal class Program
                 prev.l = index.Value - prev.s;
             }
 
-            if (prev.s + prev.l < index.Value)
-            {
-                spanList.Add(new()
-                {
-                    c = ClassType.PlainText,
-                    s = prev.s + prev.l,
-                    l = index.Value - (prev.s + prev.l)
-                });
-            }
+            //if (prev.s + prev.l < index.Value)
+            //{
+            //    spanList.Add(new()
+            //    {
+            //        c = ClassType.PlainText,
+            //        s = prev.s + prev.l,
+            //        l = index.Value - (prev.s + prev.l)
+            //    });
+            //}
         }
 
         spanList.Add(new()
@@ -297,16 +297,16 @@ internal class Program
             EndSpan();
 
             var (_, spanList) = sourceSpanList;
-            var last = spanList.LastOrDefault();
-            if (last.s + last.l < source.Source.Length)
-            {
-                spanList.Add(new()
-                {
-                    c = ClassType.PlainText,
-                    s = source.Offset,
-                    l = source.Source.Length - (last.s + last.l)
-                });
-            }
+            //var last = spanList.LastOrDefault();
+            //if (last.s + last.l < source.Source.Length)
+            //{
+            //    spanList.Add(new()
+            //    {
+            //        c = ClassType.PlainText,
+            //        s = source.Offset,
+            //        l = source.Source.Length - (last.s + last.l)
+            //    });
+            //}
 
             spanList.ForEach((it) => it.s -= sourceStart);
             spanList.RemoveAll((it) => it.l == 0);

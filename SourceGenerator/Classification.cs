@@ -3,7 +3,12 @@
 public enum ClassType
 {
     PlainText = 1,
-    TopLevel
+    TopLevel,
+    Delimeter,
+    Delimeter2,
+    Delimeter3,
+    Assign,
+    TypeName
 }
 
 public class MatchSpan

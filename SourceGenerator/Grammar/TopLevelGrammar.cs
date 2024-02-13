@@ -209,6 +209,7 @@ public partial class TopLevelGrammar
         stream.Seek(start + length);
         Program.EndSpan();
 
+        //TODO Fix issues with escaping curly braces in verbatim C#
         return NonPrecededBackslash()
             .Replace(stream.Source.Substring(start, length - 1), "")
             // This doesn't catch "\\" which becomes "\"
