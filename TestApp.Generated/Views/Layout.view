@@ -8,22 +8,26 @@ inject({TestApp.Services.ILinkPathGenerator} {links})
 
 div(| class = {"content"} |
 	div(| class = {"top-bar"} |
+
 		a(|
 			href = {""},
 			class = {"brand"}
 			|
 			h4(
-				{"Zach Goethel"}
+				<">Zach Goethel</">
 				span(| class = {"blink-cursor"} |)
 			)
 		)
+
 		div(| class = {"page-links"} |
+
 			a(| href = {"projects"} |
 				div(| class = {"page-icon"} |
 					i(| class = {"fa fa-folder"} |)
 				)
-				{"Projects"}
+				<">Projects</">
 			)
+
 			a(|
 				href = {links.GetNamed("GitHub")},
 				target = {"_blank"}
@@ -31,8 +35,9 @@ div(| class = {"content"} |
 				div(| class = {"page-icon"} |
 					i(| class = {"fab fa-github"} |)
 				)
-				{"GitHub"}
+				<">GitHub</">
 			)
+
 			a(|
 				href = {links.GetNamed("LinkedIn")},
 				target = {"_blank"}
@@ -40,25 +45,31 @@ div(| class = {"content"} |
 				div(| class = {"page-icon"} |
 					i(| class = {"fab fa-linkedin"} |)
 				)
-				{"LinkedIn"}
+				<">LinkedIn</">
 			)
+
 		)
+
 	)
 	div(| class = {"page-body"} |
+
 		child({0})
+
 	)
 	div(| class = {"bottom-bar bg-dark"} |
+
 		div(| class = {"credit"} |
 			i(
-				{"Created by "}
+				<">Created by </">
 				a(|
 					href = {links.GetNamed("GitHub")},
 					target = {"_blank"}
 					|
-					{"Zach Goethel"}
+					<">Zach Goethel</">
 				)
-				{". Have a wonderful day!"}
+				<">. Have a wonderful day!</">
 			)
 		)
+
 	)
 )

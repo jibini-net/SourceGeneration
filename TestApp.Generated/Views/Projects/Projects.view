@@ -13,14 +13,66 @@ CascadingState cascade(
 		class = {"banner orange-banner d-flex flex-column mb-5"},
 		style = {"text-align: center;"}
 		|
+
 		h4(| class = {"mx-auto"} |
-			{"Project Portfolio"}
+			<">Project Portfolio</">
 		)
 		h5(|
 			class = {"mb-0 mx-auto"},
 			style = {"max-width: 30rem;font-weight: normal;"}
 			|
-			{"A variety of open source software projects I've been working on."}
+			<">A variety of open source software projects I've been working on.</">
+		)
+
+	)
+
+	div(| class = {"d-flex flex-row flex-wrap"} |
+		div(| class = {"col-12 col-md-8"} |
+
+			div(| class = {"bg-dark border border-light p-3 mb-4"} |
+
+				if({page.Get<string>("openDrawer") == "Source Generation"}
+
+					SourceGenShowcase()
+
+					SeoExclude(
+						SourceGenShowcase()
+					)
+				)
+
+				if({page.Get<string>("openDrawer") == "Finite State Automata"}
+
+					FiniteStateMachinesShowcase()
+
+					SeoExclude(
+						FiniteStateMachinesShowcase()
+					)
+				)
+
+			)
+
+			div(| class = {"check-engine"} |
+
+				if({page.Get<string>("openDrawer") == "Check Engine"}
+
+					CheckEngineShowcase()
+
+					SeoExclude(
+						CheckEngineShowcase()
+					)
+				)
+
+			)
+
+		)
+		div(| class = {"col-12 col-md-4"} |
+
+			div(| class = {"bg-light p-3 text-dark pb-5 ms-0 ms-md-2"} |
+
+				ThisSiteShowcase()
+
+			)
+
 		)
 	)
 	div(| class = {"d-flex flex-row flex-wrap"} |

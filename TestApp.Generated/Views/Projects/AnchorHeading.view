@@ -18,8 +18,10 @@ if({page?.Get<string>("openDrawer") == name}
 		|
 		{string.IsNullOrEmpty(headerText) ? name : headerText}
 	)
+
 	script(
-		unsafe(<">
+		unsafe(
+			<">
 			$(() =>
 			{
 				if (document.headerFocused != (document.headerFocused = true))
@@ -27,7 +29,8 @@ if({page?.Get<string>("openDrawer") == name}
 					document.getElementById("</">){id}unsafe(<">").scrollIntoView();
 				}
 			});
-			</">)
+			</">
+		)
 	)
 	</>
 )

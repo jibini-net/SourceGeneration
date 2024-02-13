@@ -8,16 +8,18 @@ inject({TestApp.Services.IResourceInliner} {inliner})
 
 Host(
 	Home()
+
 	<>
-	title({"Home - Zach Goethel"})
+	title(<">Zach Goethel</">)
 	meta(|
 		name = {"description"},
-		content = {".NET and C developer specializing in business software; obsessed with language compilers and graphics"}
+		content = {"C#.NET and UNIX developer specializing in business software; obsessed with language compilers and graphics pipelines"}
 		|)
 	style(
 		unsafe({await inliner.PreLoad("styles/Home.css")})
 	)
 	</>
+
 	<>
 	script(
 		unsafe({await inliner.PreLoad("js/CascadingState.js")})

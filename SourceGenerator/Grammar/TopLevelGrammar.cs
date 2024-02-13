@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using static Token;
+using static ClassType;
 
 /*
  * Implementation of source generation and semantic evaluation. The parser
@@ -11,11 +12,14 @@ using static Token;
  */
 public partial class TopLevelGrammar
 {
-    public static void MatchModel(TokenStream stream, string modelName)
+    public static void MatchModel(TokenStream stream, string modelName, bool meta = false)
     {
-        Program.AppendLine("public class {0}",
-            modelName);
-        Program.AppendLine("{{");
+        if (!meta)
+        {
+            Program.AppendLine("public class {0}",
+                modelName);
+            Program.AppendLine("{{");
+        }
 
         while (stream.Next > 0)
         {
@@ -23,29 +27,46 @@ public partial class TopLevelGrammar
             {
                 case (int)LCurly:
                     var cSharp = MatchCSharp(stream);
-                    Program.AppendLine(cSharp.Replace("{", "{{").Replace("}", "}}"));
+                    if (!meta)
+                    {
+                        Program.AppendLine(cSharp
+                            .Replace("{", "{{")
+                            .Replace("}", "}}"));
+                    }
                     break;
 
                 case (int)Schema:
                     var schema = SchemaGrammar.Match(stream);
-                    SchemaGrammar.Write(schema);
+                    if (!meta)
+                    {
+                        SchemaGrammar.Write(schema);
+                    }
                     break;
 
                 case (int)Partial:
                     var partial = PartialGrammar.Match(stream, modelName);
-                    PartialGrammar.Write(partial);
+                    if (!meta)
+                    {
+                        PartialGrammar.Write(partial);
+                    }
                     break;
                     
                 case (int)Repo:
                     var repo = RepoGrammar.Match(stream);
-                    RepoGrammar.Write(repo);
+                    if (!meta)
+                    {
+                        RepoGrammar.Write(repo);
+                    }
                     break;
                     
                 case (int)Service:
                     var services = ServiceGrammar.Match(stream, modelName);
-                    ServiceGrammar.WriteServiceInterface(services);
-                    ServiceGrammar.WriteDbService(services);
-                    ServiceGrammar.WriteApiService(services);
+                    if (!meta)
+                    {
+                        ServiceGrammar.WriteServiceInterface(services);
+                        ServiceGrammar.WriteDbService(services);
+                        ServiceGrammar.WriteApiService(services);
+                    }
                     break;
                     
                 default:
@@ -53,28 +74,34 @@ public partial class TopLevelGrammar
             }
         }
 
-        Program.AppendLine("}}");
+        if (!meta)
+        {
+            Program.AppendLine("}}");
+        }
     }
 
-    public static void MatchView(TokenStream stream, string modelName)
+    public static void MatchView(TokenStream stream, string modelName, bool meta = false)
     {
-        Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
-        Program.AppendLine("using System.Text;");
-        Program.AppendLine("using System.Text.Json;");
-        Program.AppendLine("using System.Web;");
-        Program.AppendLine("using Microsoft.Extensions.DependencyInjection;");
+        if (!meta)
+        {
+            Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
+            Program.AppendLine("using System.Text;");
+            Program.AppendLine("using System.Text.Json;");
+            Program.AppendLine("using System.Web;");
+            Program.AppendLine("using Microsoft.Extensions.DependencyInjection;");
 
-        Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
-            modelName);
-        Program.AppendLine("{{");
-        Program.AppendLine("    // Extend and fully implement all actions in a subclass");
-        
-        Program.AppendLine("    private readonly IServiceProvider sp;");
-        Program.AppendLine("    public readonly List<RenderDelegate> Children = new();");
-        Program.AppendLine("    public {0}Base(IServiceProvider sp)\n    {{",
-            modelName);
-        Program.AppendLine("        this.sp = sp;");
-        Program.AppendLine("    }}");
+            Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
+                modelName);
+            Program.AppendLine("{{");
+            Program.AppendLine("    // Extend and fully implement all actions in a subclass");
+
+            Program.AppendLine("    private readonly IServiceProvider sp;");
+            Program.AppendLine("    public readonly List<RenderDelegate> Children = new();");
+            Program.AppendLine("    public {0}Base(IServiceProvider sp)\n    {{",
+                modelName);
+            Program.AppendLine("        this.sp = sp;");
+            Program.AppendLine("    }}");
+        }
 
         var renderBuilder = new StringBuilder();
         void buildDom(string expr)
@@ -86,7 +113,10 @@ public partial class TopLevelGrammar
             renderBuilder.AppendLine($"        {stmt}");
         }
 
-        buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}open-{modelName}({{indexByTag}})-->\"");
+        if (!meta)
+        {
+            buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}open-{modelName}({{indexByTag}})-->\"");
+        }
 
         ServiceGrammar.Dto actions = new()
         {
@@ -98,39 +128,55 @@ public partial class TopLevelGrammar
             {
                 case (int)LCurly:
                     var cSharp = MatchCSharp(stream);
-                    Program.AppendLine(cSharp
-                        .Replace("{", "{{")
-                        .Replace("}", "}}"));
+                    if (!meta)
+                    {
+                        Program.AppendLine(cSharp
+                            .Replace("{", "{{")
+                            .Replace("}", "}}"));
+                    }
                     break;
 
                 case (int)State:
                     var schema = SchemaGrammar.Match(stream);
-                    //TODO Make protected
-                    SchemaGrammar.Write(schema, accessLevel: "public");
-                    SchemaGrammar.WriteStateDump(schema, modelName);
+                    if (!meta)
+                    {
+                        //TODO Make protected
+                        SchemaGrammar.Write(schema, accessLevel: "public");
+                        SchemaGrammar.WriteStateDump(schema, modelName);
+                    }
                     break;
 
                 case (int)Interface:
                     actions = ServiceGrammar.Match(stream, modelName);
-                    ServiceGrammar.WriteViewInterface(actions);
+                    if (!meta)
+                    {
+                        ServiceGrammar.WriteViewInterface(actions);
+                    }
                     break;
 
                 default:
                     var domElement = HtmlNodeGrammar.Match(stream);
-                    HtmlNodeGrammar.Write(domElement, buildDom, buildLogic);
+                    if (!meta)
+                    {
+                        HtmlNodeGrammar.Write(domElement, buildDom, buildLogic);
+                    }
                     break;
             }
         }
 
-        buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}close-{modelName}({{indexByTag}})-->\"");
+        if (!meta)
+        { 
+            buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}close-{modelName}({{indexByTag}})-->\"");
 
-        ServiceGrammar.WriteViewRenderer(renderBuilder.ToString(), modelName);
-        ServiceGrammar.WriteViewController(actions);
+            ServiceGrammar.WriteViewRenderer(renderBuilder.ToString(), modelName);
+            ServiceGrammar.WriteViewController(actions);
+        }
     }
 
     public static string MatchCSharp(TokenStream stream)
     {
         // "{"
+        Program.StartSpan(TopLevel);
         if (stream.Poll() != (int)LCurly)
         {
             throw new Exception("Wrap verbatim C# code in curly braces");
@@ -160,7 +206,11 @@ public partial class TopLevelGrammar
                     continue;
             }
         }
+
         stream.Seek(start + length);
+        Program.EndSpan();
+
+        //TODO Fix issues with escaping curly braces in verbatim C#
         return NonPrecededBackslash()
             .Replace(stream.Source.Substring(start, length - 1), "")
             // This doesn't catch "\\" which becomes "\"

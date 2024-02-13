@@ -1,6 +1,7 @@
 ﻿namespace SourceGenerator.Grammar;
 
 using static Token;
+using static ClassType;
 
 /*
  * Implementation of source generation and semantic evaluation. The parser
@@ -25,6 +26,7 @@ public class ActionGrammar
         };
 
         // {SQL proc name} "("
+        Program.StartSpan(Delimeter);
         if (stream.Poll() != (int)Ident)
         {
             throw new Exception("Expected procedure name for repo");
@@ -34,6 +36,7 @@ public class ActionGrammar
         {
             throw new Exception("Expected left parens");
         }
+        Program.EndSpan();
 
         // "..."
         if (stream.Next == (int)Splat)
@@ -48,33 +51,45 @@ public class ActionGrammar
             if (stream.Next == (int)LCurly)
             {
                 parType = TopLevelGrammar.MatchCSharp(stream);
-            } else if (stream.Poll() != (int)Ident)
-            {
-                throw new Exception("Expected proc parameter type");
             } else
             {
-                parType = stream.Text;
+                Program.StartSpan(TypeName);
+                if (stream.Poll() != (int)Ident)
+                {
+                    throw new Exception("Expected proc parameter type");
+                } else
+                {
+                    parType = stream.Text;
+                }
+                Program.EndSpan();
             }
 
             // {param name}
+            Program.StartSpan(ClassType.Assign);
             if (stream.Poll() != (int)Ident)
             {
                 throw new Exception("Expected proc parameter name");
             }
+            Program.EndSpan();
             result.Params.Add((parType, stream.Text));
 
             // ","
+            Program.StartSpan(Delimeter);
             if (stream.Next != (int)RParen && stream.Poll() != (int)Comma)
             {
                 throw new Exception("Expected comma or ')'");
             }
+            Program.EndSpan();
         }
 
         // ")"
+        Program.StartSpan(Delimeter);
         stream.Poll();
+        Program.EndSpan();
 
         if (stream.Next == (int)Arrow)
         {
+            Program.StartSpan(TypeName);
             // "=>" ["json"] {return type}
             stream.Poll();
             if (stream.Next == (int)Json)
@@ -85,6 +100,7 @@ public class ActionGrammar
 
             if (stream.Next == (int)LCurly)
             {
+                Program.EndSpan();
                 result.ReturnType = TopLevelGrammar.MatchCSharp(stream);
             } else if (stream.Poll() != (int)Ident)
             {
@@ -92,6 +108,7 @@ public class ActionGrammar
             } else
             {
                 result.ReturnType = stream.Text;
+                Program.EndSpan();
             }
         }
 

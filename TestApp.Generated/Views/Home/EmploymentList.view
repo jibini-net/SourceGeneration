@@ -10,9 +10,11 @@ div(|
 	class = {"bg-dark"},
 	id = {"top-bg-blocker"}
 	|)
+
 div(| class = {"bg-light text-dark p-3 mt-5"} |
+
 	h5(
-		i({"August 2021 - Now"})
+		i(<">August 2021 - Now</">)
 	)
 	h4(
 		a(|
@@ -28,12 +30,13 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 				|)
 		)
 		span(| class = {"smaller"} |
-			{".NET Software Developer"}
+			<">.NET Software Developer</">
 		)
 	)
 	p(
 		unsafe({"&mdash;"})
 	)
+
 	p(
 		<">
 		We work with customers from public and private sectors to address their
@@ -43,16 +46,16 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 			href = {links.GetNamed("AspNet")},
 			target = {"_blank"}
 			|
-			{"ASP.NET Core"}
+			<">ASP.NET Core</">
 		)
-		{" and "}
+		<"> and </">
 		a(|
 			href = {links.GetNamed("SqlServer")},
 			target = {"_blank"}
 			|
-			{"Microsoft SQL Server"}
+			<">Microsoft SQL Server</">
 		)
-		{"."}
+		<">.</">
 	)
 	p(
 		<">
@@ -71,21 +74,24 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 			href = {links.GetNamed("Blazor")},
 			target = {"_blank"}
 			|
-			{"Blazor"}
+			<">Blazor</">
 		)
 		<">
 		as a frontend technology. We built new libraries shared across our
 		projects to increase code reuse and reduce redundant effort.
 		</">
 	)
+
 )
+
 div(|
 	class = {"border border-light p-3 mt-3 d-flex flex-row"},
 	style = {"background: #ffffff0d;"}
 	|
 	div(
+
 		h5(| style = {"font-weight: normal;"} |
-			i({"Fall 2020 - Sprint 2023"})
+			i(<">Fall 2020 - Sprint 2023</">)
 		)
 		h4(
 			a(|
@@ -93,30 +99,36 @@ div(|
 				target = {"_blank"},
 				style = {"color: white;"}
 				|
-				unsafe({"University of Wisconsin&mdash;La Crosse"})
+				unsafe(<">University of Wisconsin&mdash;La Crosse</">)
 			)
 		)
+
 	)
 	div(|
 		class = {"ms-auto"},
 		style = {"text-align: right;"}
 		|
+
 		span(
-			{"Bachelor's in"}
+			<">Bachelor's in</">
 			br()
-			strong({"Computer Science"})
+			strong(<">Computer Science</">)
 			br()
 			p(| class = {"mb-1"} |
-				{"-"}
+				<">-</">
 			)
-			span({"math minor"})
+			span(<">math minor</">)
 		)
+
 	)
 )
+
 div(| class = {"border-top border-light my-3"} |)
+
 div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
+
 	h5(
-		i({"June 2020 - August 2021"})
+		i(<">June 2020 - August 2021</">)
 	)
 	h4(
 		a(|
@@ -124,15 +136,16 @@ div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 			target = {"_blank"},
 			class = {"me-2"}
 			|
-			{"Multistack, LLC."}
+			<">Multistack, LLC.</">
 		)
 		span(| class = {"smaller"} |
-			{"Internal Tools Developer"}
+			<">Internal Tools Developer</">
 		)
 	)
 	p(
 		unsafe({"&mdash;"})
 	)
+
 	p(
 		<">
 		My favorite part of this job was the direct interaction with engineers.
@@ -143,7 +156,7 @@ div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 			href = {links.GetNamed("Epicor")},
 			target = {"_blank"}
 			|
-			{"Epicor ERP"}
+			<">Epicor ERP</">
 		)
 		<">.
 		The tools are still used throughout the company and save countless hours of
@@ -152,14 +165,16 @@ div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 	)
 	p(
 		<">
-			In the meantime, I learned crucial details about inventory management
-			and the mechanical engineering process.
+		In the meantime, I learned crucial details about inventory management
+		and the mechanical engineering process.
 		</">
 	)
+
 )
 div(| class = {"bg-white text-dark p-3 mt-3 bg-opacity-75"} |
+
 	h5(
-		i({"Summer 2019 - Summer 2020"})
+		i(<">Summer 2019 - Summer 2020</">)
 	)
 	h4(
 		a(|
@@ -167,22 +182,25 @@ div(| class = {"bg-white text-dark p-3 mt-3 bg-opacity-75"} |
 			target = {"_blank"},
 			class = {"me-2"}
 			|
-			{"Festival Foods"}
+			<">Festival Foods</">
 		)
 		span(| class = {"smaller"} |
-			{"Kitchen Prep"}
+			<">Kitchen Prep</">
 		)
 	)
 	p(
 		unsafe({"&mdash;"})
 	)
+
 	p(
 		<">
 		Working in the regional "Fresh Cut" department, which pre-prepares
 		produce for four local grocery stores.
 		</">
 	)
+
 )
+
 img(|
 	id = {"swirlies"},
 	class = {"d-none d-md-block"},

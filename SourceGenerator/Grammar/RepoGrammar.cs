@@ -1,6 +1,7 @@
 ﻿namespace SourceGenerator.Grammar;
 
 using static Token;
+using static ClassType;
 
 /*
  * Implementation of source generation and semantic evaluation. The parser
@@ -21,11 +22,13 @@ public class RepoGrammar
         };
 
         // "repo" "{"
+        Program.StartSpan(TopLevel);
         stream.Poll();
         if (stream.Poll() != (int)LCurly)
         {
             throw new Exception($"Expected left curly");
         }
+        Program.EndSpan();
 
         while (stream.Next != (int)RCurly)
         {
@@ -34,14 +37,18 @@ public class RepoGrammar
             result.Procs.Add(proc);
 
             // ","
+            Program.StartSpan(TopLevel);
             if (stream.Next != (int)RCurly && stream.Poll() != (int)Comma)
             {
                 throw new Exception("Expected comma or '}'");
             }
+            Program.EndSpan();
         }
 
         // "}"
+        Program.StartSpan(TopLevel);
         stream.Poll();
+        Program.EndSpan();
 
         return result;
     }
