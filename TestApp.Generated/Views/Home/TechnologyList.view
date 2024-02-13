@@ -22,13 +22,13 @@ div(| class = {"text-white-50"} |
 		id = {"fixed-clone"},
 		class = {"bg-dark pb-4 pt-5"}
 		|
-		{"Technologies"}
+		<">Technologies</">
 	)
 	h4(|
 		id = {"scroll-clone"},
 		class = {"pt-5"}
 		|
-		{"Technologies"}
+		<">Technologies</">
 	)
 
 	div(| class = {"techs-container bg-dark"} |

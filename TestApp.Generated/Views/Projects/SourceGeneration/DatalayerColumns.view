@@ -11,7 +11,7 @@ div(| class = {"d-flex flex-row flex-wrap"} |
 	div(| class = {"col-12 col-md-6 p-2"} |
 
 		h5(| class = {"bg-white border border-dark p-2 mb-0"} |
-			{"Account.model"}
+			<">Account.model</">
 		)
 
 		c(

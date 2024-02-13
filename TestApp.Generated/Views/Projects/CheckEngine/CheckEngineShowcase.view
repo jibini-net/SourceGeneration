@@ -27,13 +27,13 @@ div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 				style = {"transform: translateY(-3px);border: none !important;"}
 				|)
 			unsafe({"&nbsp;"})
-			{"Check Engine"}
+			<">Check Engine</">
 		)
 		h6(|
 			class = {"mb-0 mx-auto"},
 			style = {"max-width: 30rem;font-weight: normal;"}
 			|
-			{"2D tile-based platformer and top-down game engine"}
+			<">2D tile-based platformer and top-down game engine</">
 		)
 
 	)
@@ -48,7 +48,7 @@ div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 			style = {"white-space: nowrap;"}
 			|
 			i(| class = {"fab fa-github me-2"} |)
-			{"Repo"}
+			<">Repo</">
 		)
 	)
 )
@@ -68,7 +68,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					alt = {"Lighting and Game Mode Demo"}
 					|)
 			)
-			i({"(above: top-down and platformer game world stages)"})
+			i(<">(above: top-down and platformer game world stages)</">)
 		)
 
 		div(| class = {"col-12 col-md-7 mb-1"} |
@@ -87,36 +87,37 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 
 					tr(
 						td(
-							strong({"Platform Support"})
+							strong(<">Platform Support</">)
 						)
 						td(
 							ul(
-								li({"Windows on x86/x86_64"})
+								li(<">Windows on x86/x86_64</">)
 								li(
-									{"Linux on armhf/aarch64"}
+									<">Linux on armhf/aarch64</">
 									br()
-									{"(Raspberry Pi 4 w/ VideoCore 6)"})
+									<">(Raspberry Pi 4 w/ VideoCore 6)</">
+								)
 							)
 						)
 					)
 
 					tr(
 						td(
-							strong({"OpenGL"})
+							strong(<">OpenGL</">)
 						)
-						td({"Core 4.3 or ES 3.0"})
+						td(<">Core 4.3 or ES 3.0</">)
 					)
 
 					tr(
 						td(
-							strong({"Runtime"})
+							strong(<">Runtime</">)
 						)
-						td({"OpenJDK 11 or similar"})
+						td(<">OpenJDK 11 or similar</">)
 					)
 
 					tr(
 						td(
-							strong({"Downloads"})
+							strong(<">Downloads</">)
 						)
 						td(
 							a(|
@@ -125,7 +126,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 								class = {"btn btn-sm btn-primary"}
 								|
 								i(| class = {"fa fa-file me-2"} |)
-								{"Runnable Test Game"}
+								<">Runnable Test Game</">
 							)
 						)
 					)
@@ -149,7 +150,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 				alt = {"Pathtraced 2D Lighting"}
 				|)
 
-			h6({"Pathtraced Lighting"})
+			h6(<">Pathtraced Lighting</">)
 			p(
 				<">
 				Lighting is performed by generating a vector of distance measurements
@@ -178,7 +179,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					alt = {"Non-player Character With Behavior"}
 					|)
 
-				h6({"Behavior System"})
+				h6(<">Behavior System</">)
 				p(
 					<">
 					Non-player characters can be assigned behaviors which update each frame
@@ -200,7 +201,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 							target = {"_blank"}
 							|
 							i(| class = {"fa fa-file me-2"} |)
-							{"WanderingBehavior.kt"}
+							<">WanderingBehavior.kt</">
 						)
 					)
 
@@ -210,7 +211,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 							target = {"_blank"}
 							|
 							i(| class = {"fa fa-file me-2"} |)
-							{"PlayerTargetingBehavior.kt"}
+							<">PlayerTargetingBehavior.kt</">
 						)
 					)
 
@@ -225,7 +226,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					alt = {"Dependency Injection Code Example"}
 					|)
 
-				h6({"Dependency Injection"})
+				h6(<">Dependency Injection</">)
 				p(
 					<">
 					The engine provides automatic injection of singleton types called "engine objects." Types are
@@ -247,7 +248,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					alt = {"AABB Physics, Friction, and Momentum"}
 					|)
 
-				h6({"AABB Collision, Friction, and Platforming"})
+				h6(<">AABB Collision, Friction, and Platforming</">)
 				p(
 					<">
 					Limited physics calculations are supported by the engine, including resolving
@@ -270,7 +271,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					alt = {"Imgui Integration Example"}
 					|)
 
-				h6({"Included Imgui bindings"})
+				h6(<">Included Imgui bindings</">)
 				p(
 					<">
 					In order to guarantee compatibility with Raspberry Pi and the engine's own rendering,
@@ -289,14 +290,14 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 						target = {"_blank"}
 						|
 						i(| class = {"fab fa-github me-2"} |)
-						{"My Fork"}
+						<">My Fork</">
 					)
 				)
 
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
 
-				h6({"Animation and Resource Loading"})
+				h6(<">Animation and Resource Loading</">)
 				p(
 					<">
 					The engine supports loading several common image formats, and also supports
@@ -337,7 +338,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 						img(|
 							src = {"images/checkengine/gendreau_yell_right.gif"},
 							style = {"max-width: 100%;transform: scaleX(-1);"},
-								alt = {"Character Yelling Left Animation"}
+							alt = {"Character Yelling Left Animation"}
 							|)
 
 					)

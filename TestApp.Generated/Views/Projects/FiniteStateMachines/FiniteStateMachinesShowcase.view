@@ -17,10 +17,10 @@ AnchorHeading(|
 Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Automata"} |
 	<>
 	h4(| class = {"mt-5"} |
-		{"Finite State Machines"}
+		<">Finite State Machines</">
 		i(| style = {"font-size: 0.9rem;"} |
 			unsafe({"&nbsp;"})
-			{"& lexing-parsing"}
+			<">& lexing-parsing</">
 		)
 	)
 
@@ -35,7 +35,7 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Au
 			iframe(| src = {links.GetNamed("Fsa")} |)
 		)
 		i(| id = {"fsa-caption"} |
-			{"(above: construction and minimization of a finite state automaton)"}
+			<">(above: construction and minimization of a finite state automaton)</">
 		)
 		a(|
 			href = {links.GetNamed("Fsa")},
@@ -125,10 +125,10 @@ var (token, match) = dfa.Search(source, offset);</">
 				href = {links.GetNamed("Fsa.cs")},
 				target = {"_blank"}
 				|
-				{"Fsa.cs"}
+				<">Fsa.cs</">
 			)
 			unsafe({"&mdash;"})
-			{"Implementation of regular expression and lexing"}
+			<">Implementation of regular expression and lexing</">
 		)
 
 		div(| class = {"alert alert-info mb-2"} |
@@ -137,10 +137,10 @@ var (token, match) = dfa.Search(source, offset);</">
 				href = {links.GetNamed("TokenStream.cs")},
 				target = {"_blank"}
 				|
-				{"TokenStream.cs"}
+				<">TokenStream.cs</">
 			)
 			unsafe({"&mdash;"})
-			{"Wrapper for searching an input source text token-by-token"}
+			<">Wrapper for searching an input source text token-by-token</">
 		)
 
 		hr()

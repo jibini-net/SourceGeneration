@@ -10,7 +10,7 @@ Host(
 	Home()
 
 	<>
-	title({"Zach Goethel"})
+	title(<">Zach Goethel</">)
 	meta(|
 		name = {"description"},
 		content = {"C#.NET and UNIX developer specializing in business software; obsessed with language compilers and graphics pipelines"}
