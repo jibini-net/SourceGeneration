@@ -14,7 +14,7 @@ public class RepoGrammar
         public List<ActionGrammar.Dto> Procs { get; set; }
     }
 
-    public static Dto Match(TokenStream stream)
+    public static Dto Match(TokenStream stream, Dictionary<string, List<FieldGrammar.Dto>> splats)
     {
         var result = new Dto()
         {
@@ -33,7 +33,7 @@ public class RepoGrammar
         while (stream.Next != (int)RCurly)
         {
             // {dbo} "." {name} "(" {parameter list} ")" ["=>" {return type}]
-            var proc = ActionGrammar.Match(stream);
+            var proc = ActionGrammar.Match(stream, splats);
             result.Procs.Add(proc);
 
             // ","
@@ -65,10 +65,13 @@ public class RepoGrammar
 
         foreach (var proc in dto.Procs)
         {
+            var args = string.IsNullOrEmpty(proc.SplatFrom)
+                ? string.Join(',', proc.Params.Select((it) => $"{it.type} {it.name}"))
+                : $"{proc.SplatFrom} splat";
             Program.AppendLine("        public async {0} {1}({2})",
                 proc.ReturnType == "void" ? "Task" : $"Task<{proc.ReturnType}>",
                 proc.Name.Replace(".", "__"),
-                string.Join(',', proc.Params.Select((it) => $"{it.type} {it.name}")));
+                args);
             Program.AppendLine("        {{");
 
             if (proc.ReturnType == "void")
@@ -90,6 +93,10 @@ public class RepoGrammar
                     Program.AppendLine(",");
                 }
                 Program.Append("                ");
+                if (!string.IsNullOrEmpty(proc.SplatFrom))
+                {
+                    Program.Append("splat.");
+                }
                 Program.Append(par);
             }
             Program.AppendLine("\n            }});");

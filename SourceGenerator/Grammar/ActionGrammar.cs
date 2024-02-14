@@ -13,11 +13,12 @@ public class ActionGrammar
     {
         public string Name { get; set; }
         public string ReturnType { get; set; }
+        public string SplatFrom { get; set; }
         public List<(string type, string name)> Params { get; set; }
         public bool IsJson { get; set; }
     }
 
-    public static Dto Match(TokenStream stream)
+    public static Dto Match(TokenStream stream, Dictionary<string, List<FieldGrammar.Dto>> splats)
     {
         var result = new Dto()
         {
@@ -41,7 +42,26 @@ public class ActionGrammar
         // "..."
         if (stream.Next == (int)Splat)
         {
-            throw new NotImplementedException("TODO Model field splat is not implemented");
+            Program.StartSpan(TypeName);
+            stream.Poll();
+
+            if (stream.Poll() != (int)Ident)
+            {
+                throw new Exception("Expected splat type identifier");
+            }
+            result.SplatFrom = stream.Text;
+            Program.EndSpan();
+
+            if (splats.TryGetValue(result.SplatFrom, out var splat))
+            {
+                result.Params = splat
+                    .Select((it) => (it.TypeName, it.Name))
+                    .ToList();
+                goto skipArgs;
+            } else
+            {
+                throw new Exception($"No splat type called '{result.SplatFrom}'");
+            }
         }
 
         while (stream.Next != (int)RParen)
@@ -82,9 +102,13 @@ public class ActionGrammar
             Program.EndSpan();
         }
 
+    skipArgs:
         // ")"
         Program.StartSpan(Delimeter);
-        stream.Poll();
+        if (stream.Poll() != (int)RParen)
+        {
+            throw new Exception("Expected ')'");
+        }
         Program.EndSpan();
 
         if (stream.Next == (int)Arrow)

@@ -35,10 +35,14 @@ public class ServiceGrammar
         while (stream.Next != (int)RCurly)
         {
             // {action name} "(" {parameter list} ")" ["=>" {return type}]
-            var action = ActionGrammar.Match(stream);
+            var action = ActionGrammar.Match(stream, new());
             if (action.IsJson)
             {
                 throw new Exception("JSON is not valid for service action");
+            }
+            if (!string.IsNullOrEmpty(action.SplatFrom))
+            {
+                throw new Exception("Splats are not supported in services");
             }
             result.Actions.Add(action);
 
@@ -93,10 +97,11 @@ public class ServiceGrammar
 
         foreach (var action in dto.Actions)
         {
+            var args = string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}"));
             Program.AppendLine("        public async {0} {1}({2})",
                 action.ReturnType == "void" ? "Task" : $"Task<{action.ReturnType}>",
                 action.Name,
-                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+                args);
             Program.AppendLine("        {{");
 
             if (action.ReturnType == "void")

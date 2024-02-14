@@ -12,6 +12,7 @@ public enum Token
     Json,
     State,
     Interface,
+    Dto,
     Ident,
     LCurly,
     RCurly,
