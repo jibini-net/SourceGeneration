@@ -69,7 +69,7 @@ public partial class TopLevelGrammar
                     break;
 
                 case (int)Service:
-                    var services = ServiceGrammar.Match(stream, modelName);
+                    var services = ServiceGrammar.Match(stream, modelName, splats);
                     if (!meta)
                     {
                         ServiceGrammar.WriteServiceInterface(services);
@@ -91,6 +91,7 @@ public partial class TopLevelGrammar
 
     public static void MatchView(TokenStream stream, string modelName, bool meta = false)
     {
+        Dictionary<string, List<FieldGrammar.Dto>> splats = new();
         if (!meta)
         {
             Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
@@ -146,7 +147,7 @@ public partial class TopLevelGrammar
                     break;
 
                 case (int)State:
-                    var schema = SchemaGrammar.Match(stream, modelName, new());
+                    var schema = SchemaGrammar.Match(stream, modelName, splats);
                     if (!meta)
                     {
                         //TODO Make protected
@@ -156,7 +157,7 @@ public partial class TopLevelGrammar
                     break;
 
                 case (int)Interface:
-                    actions = ServiceGrammar.Match(stream, modelName);
+                    actions = ServiceGrammar.Match(stream, modelName, splats);
                     if (!meta)
                     {
                         ServiceGrammar.WriteViewInterface(actions);

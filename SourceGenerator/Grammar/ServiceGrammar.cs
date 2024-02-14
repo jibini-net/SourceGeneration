@@ -15,7 +15,7 @@ public class ServiceGrammar
         public List<ActionGrammar.Dto> Actions { get; set; }
     }
 
-    public static Dto Match(TokenStream stream, string modelName)
+    public static Dto Match(TokenStream stream, string modelName, Dictionary<string, List<FieldGrammar.Dto>> splats)
     {
         var result = new Dto()
         {
@@ -35,7 +35,7 @@ public class ServiceGrammar
         while (stream.Next != (int)RCurly)
         {
             // {action name} "(" {parameter list} ")" ["=>" {return type}]
-            var action = ActionGrammar.Match(stream, new());
+            var action = ActionGrammar.Match(stream, splats);
             if (action.IsJson)
             {
                 throw new Exception("JSON is not valid for service action");
