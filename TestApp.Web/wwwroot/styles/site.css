@@ -144,6 +144,14 @@ body {
     border: 0.5px solid #ffffff52;
 }
 
+    .code-preview, .code-preview * {
+        font-family: monospace !important;
+    }
+
+    .code-preview p {
+        display: inline;
+    }
+
 .tab-content {
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;

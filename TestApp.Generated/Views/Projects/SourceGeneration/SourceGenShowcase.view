@@ -50,20 +50,74 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 		</">
 	)
 
-	if ({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
+	if({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
 
 		<>
 		SourceGenTabs()
-		p(| class = {"my-4"} |
+
+		p(| class = {"mt-4 mb-4"} |
 			<">
 			The developer can build large portions of the application codebase from
 			succinct lines leveraging structured generation patterns.
 			</">
 		)
+
+		h5(<">Language Server with Visual Studio integration</">)
+		center(
+			img(|
+				src = {"images/sg/language-server.png"},
+				alt = {"Language server and Visual Studio 2022"},
+				style = {"max-width: 100%;height: auto;"},
+				class = {"mt-4 mb-2"}
+				|)
+			br()
+			i(| class = {"mb-5"} |
+				<">(above: source generation language server running next to Visual Studio 2022)</">
+			)
+		)
+		p(| class = {"mb-5"} |)
+
+		h5(<">Syntax highlighting and validation</">)
+		center(
+			img(|
+				src = {"images/sg/vs-view-highlighting.png"},
+				alt = {"Custom syntax highlighting"},
+				style = {"max-width: 100%;height: auto;"},
+				class = {"mt-4 mb-2"}
+				|)
+			br()
+			i(| class = {"mb-5"} |
+				<">(above: custom syntax highlighting extension with semantic colors)</">
+			)
+		)
+		center(
+			img(|
+				src = {"images/sg/syntax-invalid.png"},
+				alt = {"Rudimentary syntax error messages"},
+				style = {"max-width: 100%;height: auto;"},
+				class = {"mt-4 mb-2"}
+				|)
+			br()
+			i(| class = {"mb-5"} |
+				<">(above: simple validation messages for syntax correctness)</">
+			)
+		)
+		p(| class = {"mb-4"} |)
 		</>
 
-		div(| style = {"height: 4.5rem;overflow: hidden;pointer-events: none;"} |
-			SourceGenTabs()
+		div(| style = {"position: relative;"} |
+
+			div(|
+				style = {"position: absolute;z-index: 1;width: 100%;height: 12.5rem;cursor: pointer;"
+					+ "background: linear-gradient(0deg, rgba(255,255,255,0.2) 0%, rgb(119 119 119 / 15%) 19%, rgba(255,255,255,0) 100%);"},
+				onclick = {"dispatch(this.closest('._Drawer'), 'Toggle');"},
+				title = {"Click for more"}
+				|)
+
+			div(| style = {"height: 12.5rem;overflow: hidden;pointer-events: none;"} |
+				SourceGenTabs()
+			)
+
 		)
 	)
 	</>

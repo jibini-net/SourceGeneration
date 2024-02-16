@@ -35,7 +35,9 @@ repo {
 	dbo.Account_GetWithPassword(string email)
 		=> Account.WithPassword,
 
-	dbo.Account_SetResetToken(string email, string resetToken)
+	dbo.Account_SetResetToken(
+		string email,
+		string resetToken)
 		=> Account.WithReset,
 
 	dbo.Account_GetByResetToken(string resetToken)
@@ -44,17 +46,25 @@ repo {
 	dbo.Account_GetWithRoles(int id)
 		=> Account.WithRoles,
 
-	dbo.Account_ResetPassword(string resetToken, string passwordScheme, string passwordHash, string passwordSalt)
+	dbo.Account_ResetPassword(
+		string resetToken,
+		string passwordScheme,
+		string passwordHash,
+		string passwordSalt)
 		=> Account
 }
 
 service {
-	AttemptLogin(string email, string password)
+	AttemptLogin(
+		string email,
+		string password)
 		=> Account.WithSession,
 
 	LogOut(),
 
-	Refresh(string accessToken, string refreshToken)
+	Refresh(
+		string accessToken,
+		string refreshToken)
 		=> Account.WithSession,
 
 	BeginReset(string email),
@@ -62,5 +72,7 @@ service {
 	GetResetDetails(string resetToken)
 		=> Account,
 
-	ResetPassword(string resetToken, string password)
+	ResetPassword(
+		string resetToken,
+		string password)
 }
