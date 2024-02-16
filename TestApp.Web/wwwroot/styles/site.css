@@ -5,11 +5,15 @@
 }
 
     .banner.green-banner {
-        background: url("../images/banner_green.svg") no-repeat;
+        background: url("images/banner_green.svg") no-repeat;
     }
 
     .banner.orange-banner {
-        background: url("../images/banner_orange.svg") no-repeat;
+        background: url("images/banner_orange.svg") no-repeat;
+    }
+
+    .banner.blue-banner {
+        background: url("images/banner_blue.svg") no-repeat;
     }
 
     .banner.blue-banner {

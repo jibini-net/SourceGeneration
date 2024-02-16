@@ -13,12 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Remove="Generated\**" />
-    <Compile Remove="Generated\**" />
-    <EmbeddedResource Remove="Generated\**" />
     <None Remove="**\*.model" />
 	<None Remove="**\*.view" />
-    <None Remove="Generated\**" />
   </ItemGroup>
 
   <ItemGroup>

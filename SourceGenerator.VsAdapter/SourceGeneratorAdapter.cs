@@ -56,8 +56,12 @@ namespace SourceGenerator.VsAdapter
                 .Where((it) => findExts.Contains(
                     Path.GetExtension(it.Path).ToLowerInvariant()))
                 .ToList();
-            var completed = new SemaphoreSlim(0, files.Count);
             var sources = new BlockingCollection<(string file, MemoryStream source)>();
+            if (files.Count == 0)
+            {
+                goto skipWait;
+            }
+            var completed = new SemaphoreSlim(0, files.Count);
 
             foreach (var file in files)
             {
@@ -103,6 +107,7 @@ namespace SourceGenerator.VsAdapter
             {
                 completed.Wait();
             }
+        skipWait:
 
             // Add all sources from main thread for safety
             //context.AddSource("_Includes.g.cs", INCLUDES);

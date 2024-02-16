@@ -14,7 +14,7 @@ public class SchemaGrammar
         public List<FieldGrammar.Dto> Fields { get; set; }
     }
 
-    public static Dto Match(TokenStream stream)
+    public static Dto Match(TokenStream stream, string modelName, Dictionary<string, List<FieldGrammar.Dto>> splats)
     {
         var result = new Dto()
         {
@@ -50,6 +50,7 @@ public class SchemaGrammar
         stream.Poll();
         Program.EndSpan();
 
+        splats[modelName] = result.Fields;
         return result;
     }
 

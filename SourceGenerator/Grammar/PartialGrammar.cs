@@ -16,7 +16,7 @@ public class PartialGrammar
         public List<FieldGrammar.Dto> Fields { get; set; }
     }
 
-    public static Dto Match(TokenStream stream, string modelName)
+    public static Dto Match(TokenStream stream, string modelName, Dictionary<string, List<FieldGrammar.Dto>> splats, bool inherit = true)
     {
         var result = new Dto()
         {
@@ -34,7 +34,7 @@ public class PartialGrammar
             throw new Exception($"Expected partial model class name");
         }
         Program.EndSpan();
-        result.SuperClass = modelName;
+        result.SuperClass = inherit ? modelName : "";
         result.Name = stream.Text;
         Program.StartSpan(TopLevel);
         if (stream.Poll() != (int)LCurly)
@@ -63,14 +63,24 @@ public class PartialGrammar
         stream.Poll();
         Program.EndSpan();
 
+        //TODO Enforce 'schema' occurs before 'partial'
+        splats[$"{modelName}.{result.Name}"] = result.Fields
+            .Union(splats.GetValueOrDefault(result.SuperClass, new()))
+            .ToList();
         return result;
     }
 
     public static void Write(Dto dto)
     {
-        Program.AppendLine("    public partial class {0} : {1}",
-            dto.Name,
-            dto.SuperClass);
+        if (string.IsNullOrEmpty(dto.SuperClass))
+        {
+            Program.AppendLine("    public partial class {0}", dto.Name);
+        } else
+        {
+            Program.AppendLine("    public partial class {0} : {1}",
+                dto.Name,
+                dto.SuperClass);
+        }
         Program.AppendLine("    {{");
 
         foreach (var field in dto.Fields)

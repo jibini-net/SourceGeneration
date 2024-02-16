@@ -135,6 +135,7 @@ internal class Program
         nfa.Build("json", (int)Json);
         nfa.Build("state", (int)State);
         nfa.Build("interface", (int)Interface);
+        nfa.Build("dto", (int)Dto);
         nfa.Build(word, (int)Ident);
         nfa.Build("{", (int)LCurly);
         nfa.Build("}", (int)RCurly);
