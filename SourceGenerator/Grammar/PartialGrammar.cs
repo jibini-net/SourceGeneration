@@ -74,7 +74,7 @@ public class PartialGrammar
     {
         if (string.IsNullOrEmpty(dto.SuperClass))
         {
-            Program.AppendLine("    public class {0}", dto.Name);
+            Program.AppendLine("    public partial class {0}", dto.Name);
         } else
         {
             Program.AppendLine("    public partial class {0} : {1}",

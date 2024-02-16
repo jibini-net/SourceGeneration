@@ -17,7 +17,7 @@ public partial class TopLevelGrammar
         Dictionary<string, List<FieldGrammar.Dto>> splats = new();
         if (!meta)
         {
-            Program.AppendLine("public class {0}",
+            Program.AppendLine("public partial class {0}",
                 modelName);
             Program.AppendLine("{{");
         }
@@ -153,6 +153,14 @@ public partial class TopLevelGrammar
                         //TODO Make protected
                         SchemaGrammar.Write(schema, accessLevel: "public");
                         SchemaGrammar.WriteStateDump(schema, modelName);
+                    }
+                    break;
+
+                case (int)Dto:
+                    var dto = PartialGrammar.Match(stream, modelName, splats, inherit: false);
+                    if (!meta)
+                    {
+                        PartialGrammar.Write(dto);
                     }
                     break;
 

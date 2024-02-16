@@ -40,10 +40,6 @@ public class ServiceGrammar
             {
                 throw new Exception("JSON is not valid for service action");
             }
-            if (!string.IsNullOrEmpty(action.SplatFrom))
-            {
-                throw new Exception("Splats are not supported in services");
-            }
             result.Actions.Add(action);
 
             // ","
@@ -70,10 +66,13 @@ public class ServiceGrammar
 
         foreach (var action in dto.Actions)
         {
+            var args = string.IsNullOrEmpty(action.SplatFrom)
+                ? string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}"))
+                : $"{action.SplatFrom} splat";
             Program.AppendLine("        {0} {1}({2});",
                 action.ReturnType == "void" ? "Task" : $"Task<{action.ReturnType}>",
                 action.Name,
-                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+                args);
         }
 
         Program.AppendLine("    }}");
@@ -97,7 +96,9 @@ public class ServiceGrammar
 
         foreach (var action in dto.Actions)
         {
-            var args = string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}"));
+            var args = string.IsNullOrEmpty(action.SplatFrom)
+                ? string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}"))
+                : $"{action.SplatFrom} splat";
             Program.AppendLine("        public async {0} {1}({2})",
                 action.ReturnType == "void" ? "Task" : $"Task<{action.ReturnType}>",
                 action.Name,
@@ -113,14 +114,20 @@ public class ServiceGrammar
                     action.ReturnType,
                     action.Name);
             }
-            foreach (var par in action.Params.Select((it) => it.name))
+            if (string.IsNullOrEmpty(action.SplatFrom))
             {
-                if (par != action.Params.First().name)
+                foreach (var par in action.Params.Select((it) => it.name))
                 {
-                    Program.AppendLine(",");
+                    if (par != action.Params.First().name)
+                    {
+                        Program.AppendLine(",");
+                    }
+                    Program.Append("                ");
+                    Program.Append(par);
                 }
-                Program.Append("                ");
-                Program.Append(par);
+            } else
+            {
+                Program.Append("splat");
             }
             Program.AppendLine("\n                ));");
             Program.AppendLine("        }}");
@@ -141,10 +148,13 @@ public class ServiceGrammar
 
         foreach (var action in dto.Actions)
         {
+            var args = string.IsNullOrEmpty(action.SplatFrom)
+                ? string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}"))
+                : $"{action.SplatFrom} splat";
             Program.AppendLine("        public async {0} {1}({2})",
                 action.ReturnType == "void" ? "Task" : $"Task<{action.ReturnType}>",
                 action.Name,
-                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+                string.Join(',', args));
             Program.AppendLine("        {{");
 
             if (action.ReturnType == "void")
@@ -166,6 +176,10 @@ public class ServiceGrammar
                     Program.AppendLine(",");
                 }
                 Program.Append("                ");
+                if (!string.IsNullOrEmpty(action.SplatFrom))
+                {
+                    Program.Append("splat.");
+                }
                 Program.Append(par);
             }
             Program.AppendLine("\n            }});");
@@ -181,20 +195,26 @@ public class ServiceGrammar
 
         foreach (var action in dto.Actions)
         {
+            var args = string.IsNullOrEmpty(action.SplatFrom)
+                ? string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}"))
+                : $"{action.SplatFrom} splat";
             Program.AppendLine("        {0} {1}({2});",
                 action.ReturnType,
                 action.Name,
-                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+                args);
         }
 
         Program.AppendLine("    }}");
 
         foreach (var action in dto.Actions)
         {
+            var args = string.IsNullOrEmpty(action.SplatFrom)
+                ? string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}"))
+                : $"{action.SplatFrom} splat";
             Program.AppendLine("    public abstract {0} {1}({2});",
                 action.ReturnType,
                 action.Name,
-                string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}")));
+                args);
         }
 
         if (dto.Actions.Count == 0)
