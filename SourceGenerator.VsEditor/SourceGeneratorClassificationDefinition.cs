@@ -42,16 +42,16 @@ namespace SourceGenerator.VsEditor
         internal static ClassificationTypeDefinition TopLevel;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name(nameof(Delimeter))]
-        internal static ClassificationTypeDefinition Delimeter;
+        [Name(nameof(Delimiter))]
+        internal static ClassificationTypeDefinition Delimiter;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name(nameof(Delimeter2))]
-        internal static ClassificationTypeDefinition Delimeter2;
+        [Name(nameof(Delimiter2))]
+        internal static ClassificationTypeDefinition Delimiter2;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name(nameof(Delimeter3))]
-        internal static ClassificationTypeDefinition Delimeter3;
+        [Name(nameof(Delimiter3))]
+        internal static ClassificationTypeDefinition Delimiter3;
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(nameof(Assign))]

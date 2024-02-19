@@ -4,9 +4,9 @@
     {
         PlainText = 1,
         TopLevel,
-        Delimeter,
-        Delimeter2,
-        Delimeter3,
+        Delimiter,
+        Delimiter2,
+        Delimiter3,
         Assign,
         TypeName
     }

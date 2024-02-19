@@ -38,43 +38,43 @@ namespace SourceGenerator.VsEditor
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = nameof(Delimeter))]
-    [Name(nameof(DelimeterFormat))]
+    [ClassificationType(ClassificationTypeNames = nameof(Delimiter))]
+    [Name(nameof(DelimiterFormat))]
     [UserVisible(true)]
     [Order(Before = Priority.Default)]
-    internal sealed class DelimeterFormat : ClassificationFormatDefinition
+    internal sealed class DelimiterFormat : ClassificationFormatDefinition
     {
-        public DelimeterFormat()
+        public DelimiterFormat()
         {
-            DisplayName = nameof(Delimeter);
+            DisplayName = nameof(Delimiter);
             ForegroundColor = Colors.DeepPink;//LightSteelBlue;
         }
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = nameof(Delimeter2))]
-    [Name(nameof(Delimeter2Format))]
+    [ClassificationType(ClassificationTypeNames = nameof(Delimiter2))]
+    [Name(nameof(Delimiter2Format))]
     [UserVisible(true)]
     [Order(Before = Priority.Default)]
-    internal sealed class Delimeter2Format : ClassificationFormatDefinition
+    internal sealed class Delimiter2Format : ClassificationFormatDefinition
     {
-        public Delimeter2Format()
+        public Delimiter2Format()
         {
-            DisplayName = nameof(Delimeter2);
+            DisplayName = nameof(Delimiter2);
             ForegroundColor = Colors.LawnGreen;//Orange;
         }
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = nameof(Delimeter3))]
-    [Name(nameof(Delimeter3Format))]
+    [ClassificationType(ClassificationTypeNames = nameof(Delimiter3))]
+    [Name(nameof(Delimiter3Format))]
     [UserVisible(true)]
     [Order(Before = Priority.Default)]
-    internal sealed class Delimeter3Format : ClassificationFormatDefinition
+    internal sealed class Delimiter3Format : ClassificationFormatDefinition
     {
-        public Delimeter3Format()
+        public Delimiter3Format()
         {
-            DisplayName = nameof(Delimeter3);
+            DisplayName = nameof(Delimiter3);
             ForegroundColor = Colors.Orange;
         }
     }

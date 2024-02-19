@@ -27,7 +27,7 @@ public class ActionGrammar
         };
 
         // {SQL proc name} "("
-        Program.StartSpan(Delimeter);
+        Program.StartSpan(Delimiter);
         if (stream.Poll() != (int)Ident)
         {
             throw new Exception("Expected procedure name for repo");
@@ -94,7 +94,7 @@ public class ActionGrammar
             result.Params.Add((parType, stream.Text));
 
             // ","
-            Program.StartSpan(Delimeter);
+            Program.StartSpan(Delimiter);
             if (stream.Next != (int)RParen && stream.Poll() != (int)Comma)
             {
                 throw new Exception("Expected comma or ')'");
@@ -104,7 +104,7 @@ public class ActionGrammar
 
     skipArgs:
         // ")"
-        Program.StartSpan(Delimeter);
+        Program.StartSpan(Delimiter);
         if (stream.Poll() != (int)RParen)
         {
             throw new Exception("Expected ')'");

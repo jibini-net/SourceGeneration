@@ -58,7 +58,7 @@ public class HtmlNodeGrammar
         };
 
         // "<>"
-        Program.StartSpan(Delimeter3);
+        Program.StartSpan(Delimiter3);
         if (stream.Poll() != (int)LRfReduce)
         {
             throw new Exception("Expected '<>'");
@@ -73,7 +73,7 @@ public class HtmlNodeGrammar
         }
 
         // "</>"
-        Program.StartSpan(Delimeter3);
+        Program.StartSpan(Delimiter3);
         stream.Poll();
         Program.EndSpan();
 
@@ -90,7 +90,7 @@ public class HtmlNodeGrammar
             .Replace("\n", "\\n\"\n            + \"");
 
         // "<\">"
-        Program.StartSpan(Delimeter3);
+        Program.StartSpan(Delimiter3);
         if (stream.Poll() != (int)LMultiLine)
         {
             throw new Exception("Expected '<\">'");
@@ -111,7 +111,7 @@ public class HtmlNodeGrammar
         var content = stream.Source.Substring(startIndex, length);
 
         // "</\">"
-        Program.StartSpan(Delimeter3);
+        Program.StartSpan(Delimiter3);
         stream.Poll();
         Program.EndSpan();
 
@@ -159,8 +159,8 @@ public class HtmlNodeGrammar
         };
         var special = SpecialTags.TryGetValue(result.Tag ?? "", out var specialKv);
         Program.StartSpan((special || (result.Tag[0] >= 'A' && result.Tag[0] <= 'Z'))
-            ? Delimeter2
-            : Delimeter, delimStart);
+            ? Delimiter2
+            : Delimiter, delimStart);
         Program.EndSpan();
         if (stream.Next == (int)Ident)
         {
@@ -177,8 +177,8 @@ public class HtmlNodeGrammar
         }
 
         Program.StartSpan((special || (result.Tag[0] >= 'A' && result.Tag[0] <= 'Z'))
-            ? Delimeter2
-            : Delimeter);
+            ? Delimiter2
+            : Delimiter);
         // "("
         if (stream.Poll() != (int)LParen)
         {
@@ -189,7 +189,7 @@ public class HtmlNodeGrammar
         // ["|" {name} "=" {value} ["," ...] "|"]
         if (stream.Next == (int)Bar)
         {
-            Program.StartSpan(Delimeter2);
+            Program.StartSpan(Delimiter2);
             // "|"
             stream.Poll();
             Program.EndSpan();
@@ -203,7 +203,7 @@ public class HtmlNodeGrammar
                 }
                 result.Attribs[name] = value;
 
-                Program.StartSpan(Delimeter2);
+                Program.StartSpan(Delimiter2);
                 // ","
                 if (stream.Next != (int)Bar && stream.Poll() != (int)Comma)
                 {
@@ -212,7 +212,7 @@ public class HtmlNodeGrammar
                 Program.EndSpan();
             }
 
-            Program.StartSpan(Delimeter2);
+            Program.StartSpan(Delimiter2);
             // "|"
             stream.Poll();
             Program.EndSpan();
@@ -227,8 +227,8 @@ public class HtmlNodeGrammar
 
         // ")"
         Program.StartSpan((special || (result.Tag[0] >= 'A' && result.Tag[0] <= 'Z'))
-            ? Delimeter2
-            : Delimeter);
+            ? Delimiter2
+            : Delimiter);
         stream.Poll();
         Program.EndSpan();
 
