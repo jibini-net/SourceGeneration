@@ -12,13 +12,15 @@ public class SchemaGrammar
     public struct Dto
     {
         public List<FieldGrammar.Dto> Fields { get; set; }
+        public string ModelName { get; set; }
     }
 
     public static Dto Match(TokenStream stream, string modelName, Dictionary<string, List<FieldGrammar.Dto>> splats)
     {
         var result = new Dto()
         {
-            Fields = new()
+            Fields = new(),
+            ModelName = modelName
         };
 
         // "schema" "{"
@@ -56,6 +58,8 @@ public class SchemaGrammar
 
     public static void Write(Dto dto, string accessLevel = "public")
     {
+        Program.AppendLine("typedef struct {0}\n{{", dto.ModelName);
+
         foreach (var field in dto.Fields)
         {
             Program.AppendLine("    {0} {1}",
@@ -67,6 +71,8 @@ public class SchemaGrammar
             }
             Program.AppendLine(";");
         }
+
+        Program.AppendLine("}} {0}_t;", dto.ModelName);
     }
 
     public static void WriteStateDump(Dto _, string __)

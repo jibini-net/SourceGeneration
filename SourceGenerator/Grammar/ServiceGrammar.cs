@@ -81,15 +81,20 @@ public class ServiceGrammar
 
     public static void WriteViewRenderer(string renderContent, string modelName)
     {
-        Program.AppendLine("    void render_{0}({0}_t *state)\n    {{", modelName);
-        Program.AppendLine("//        var build = new StringBuilder();");
-        Program.AppendLine("//        using var writer = new StringWriter(build);");
+        Program.AppendLine("    void _{0}_render({0}_t *state, dom_build_t *writer)\n    {{", modelName);
 
         Program.Append(renderContent
             .Replace("{", "{{")
             .Replace("}", "}}"));
 
-        Program.AppendLine("//        return build.ToString();");
+        Program.AppendLine("    }}");
+
+        Program.AppendLine("    char *{0}_render({0}_t *state)\n    {{", modelName);
+        Program.AppendLine("        dom_build_t writer = (dom_build_t){{0}};");
+        Program.AppendLine("        _{0}_render(state, &writer);", modelName);
+        Program.AppendLine("        char *result = writer_tostr(&writer);");
+        Program.AppendLine("        writer_free(&writer);");
+        Program.AppendLine("        return result;");
         Program.AppendLine("    }}");
     }
 

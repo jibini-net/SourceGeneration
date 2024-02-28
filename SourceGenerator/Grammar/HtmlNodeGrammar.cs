@@ -272,24 +272,6 @@ public class HtmlNodeGrammar
 
     public static Dictionary<string, (SpecialValidator, SpecialRenderBuilder)> SpecialTags = new()
     {
-        ["unsafe"] = (
-            (dto) =>
-            {
-                if (dto.Attribs.Count > 0)
-                {
-                    throw new Exception("'unsafe' has no available attributes");
-                }
-                if (dto.Children.Count != 1 || dto.Children.Single().Children is not null)
-                {
-                    throw new Exception("'unsafe' must have exactly one literal child");
-                }
-            },
-            (dto, buildDom, buildLogic) =>
-            {
-                var child = dto.Children.Single();
-                Write(child, buildDom, buildLogic, unsafeHtml: true);
-            }),
-
         ["if"] = (
             (dto) =>
             {
@@ -325,10 +307,6 @@ public class HtmlNodeGrammar
             LoopValidator("for", "header"),
             LoopRenderBuilder("for")),
 
-        ["foreach"] = (
-            LoopValidator("foreach", "header"),
-            LoopRenderBuilder("foreach")),
-
         ["child"] = (
             (dto) =>
             {
@@ -344,9 +322,11 @@ public class HtmlNodeGrammar
             },
             (dto, buildDom, buildLogic) =>
             {
-                buildLogic($"await Children[{dto.Children.First().InnerContent}](state, tagCounts, writer);");
+                //CORE
+                buildLogic($"await Children[{dto.Children.First().InnerContent}](writer);");
             }),
 
+        /*
         ["parent"] = (
             (dto) =>
             {
@@ -365,6 +345,7 @@ public class HtmlNodeGrammar
             {
                 buildLogic($"var {dto.Children[1].InnerContent} = state.FindParent(\"{dto.Children[0].InnerContent}\");");
             }),
+        */
 
         ["br"] = (
             (dto) =>
@@ -380,6 +361,7 @@ public class HtmlNodeGrammar
             }
         ),
 
+        /*
         ["using"] = (
             (dto) =>
             {
@@ -418,43 +400,47 @@ public class HtmlNodeGrammar
                 buildLogic($"var {dto.Children[1].InnerContent} = sp.GetRequiredService<{dto.Children[0].InnerContent}>();");
             }
         ),
+        */
     };
 
     //TODO Improve
     public static void WriteSubComponent(Dto dto, Action<string> buildDom, Action<string> buildLogic)
     {
         var aliased = !string.IsNullOrEmpty(dto.Alias);
-        if (aliased)
-        {
-            buildLogic($"StateDump {dto.Alias};");
-        }
+        //if (aliased)
+        //{
+        //    buildLogic($"StateDump {dto.Alias};");
+        //}
 
         buildLogic("{\n");
 
         foreach (var (child, i) in dto.Children.Select((it, i) => (it, i)))
         {
-            buildLogic($"async Task _child_{i}(StateDump state, Dictionary<string, int> tagCounts, StringWriter writer) {{");
+            //CORE
+            var unique = Guid.NewGuid().ToString().Replace("-", "_");
+            buildLogic($"goto skip_{unique};");
+
+            buildLogic($"{{//_child_{i}(StringWriter writer, ...) {{");
 
             Write(child, buildDom, buildLogic);
 
-            buildLogic("await Task.CompletedTask;");
-            buildLogic("}\n");
+            buildLogic("}");
+
+            buildLogic($"skip_{unique}:");
         }
 
         var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
         var creationAction = $@"
-            await ((Func<Task<string>>)(async () => {{
-                var indexByTag = tagCounts.GetNextIndexByTag(""{dto.Tag}"");
-                var subState = state.GetOrAddChild(""{dto.Tag}"", indexByTag);
-                {(aliased ? $"{dto.Alias} = subState;" : "")}
-                var component = sp.GetService(typeof({dto.Tag}Base.IView)) as {dto.Tag}Base;
-                component.LoadState(subState.State);
+            {{
+                {dto.Tag}_t component = ({dto.Tag}_t){{0}};
                 {string.Join("\n                ", assignActions)}
-                component.Children.AddRange(new RenderDelegate[] {{
-                    {string.Join(", ", dto.Children.Select((_, i) => $"_child_{i}"))}
-                }});
-                return await component.RenderAsync(subState, indexByTag);
-            }})).Invoke()
+                //CORE
+                //component.Children.AddRange(new RenderDelegate[] {{
+                //    {string.Join(", ", dto.Children.Select((_, i) => $"_child_{i}"))}
+                //}});
+                _{dto.Tag}_render(&component, writer);
+                """";
+            }}
 
             ".Trim();
         buildDom(creationAction);
@@ -466,14 +452,13 @@ public class HtmlNodeGrammar
     public static void WriteDomElement(Dto dto, Action<string> buildDom, Action<string> buildLogic)
     {
         string escStr(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
-        var escAttr = ".ToString().Replace(\"\\\"\", \"&quot;\")";
-        string attrib(string k, string v) => $" {escStr(k)}=\\\"\" + ({v}){escAttr} + \"\\\"";
+        string attrib(string k, string v) => $" {escStr(k)}=\\\"\" + ({v}) + \"\\\"";
 
         var drawTags = !string.IsNullOrEmpty(dto.Tag);
         if (drawTags)
         {
             var attribs = dto.Attribs.Select((kv) => attrib(kv.Key, kv.Value));
-            buildDom($"(\"<{dto.Tag}{string.Join("", attribs)}>\").Replace(\"disabled=\\\"False\\\"\", \"\")");
+            buildDom($"(\"<{dto.Tag}{string.Join("", attribs)}>\")");
         }
 
         foreach (var child in dto.Children)
@@ -490,11 +475,7 @@ public class HtmlNodeGrammar
     //TODO Improve
     public static void WriteInnerContent(Dto dto, Action<string> buildDom, bool unsafeHtml = false)
     {
-        var htmlEnc = unsafeHtml
-            ? ""
-            : "HttpUtility.HtmlEncode";
-
-        buildDom($"{htmlEnc}(({dto.InnerContent})?.ToString() ?? \"\")");
+        buildDom(dto.InnerContent);
     }
 
     //TODO Improve

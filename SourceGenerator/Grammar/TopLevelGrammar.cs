@@ -94,19 +94,21 @@ public partial class TopLevelGrammar
         Dictionary<string, List<FieldGrammar.Dto>> splats = new();
         if (!meta)
         {
-            Program.AppendLine("typedef struct {0}// : {0}Base.IView",
+            Program.AppendLine("#include \"writer.h\"");
+            Program.AppendLine("#include \"components.h\"");
+            Program.AppendLine("//class {0} : {0}Base.IView",
                 modelName);
-            Program.AppendLine("{{");
+            Program.AppendLine("//{{");
         }
 
         var renderBuilder = new StringBuilder();
         void buildDom(string expr)
         {
-            renderBuilder.AppendLine($"//        await writer.WriteAsync({expr});");
+            renderBuilder.AppendLine($"        writer_append(writer, {expr});");
         }
         void buildLogic(string stmt)
         {
-            renderBuilder.AppendLine($"//        {stmt}");
+            renderBuilder.AppendLine($"        {stmt}");
         }
 
         if (!meta)
@@ -174,9 +176,9 @@ public partial class TopLevelGrammar
 
             ServiceGrammar.WriteViewRenderer(renderBuilder.ToString(), modelName);
             ServiceGrammar.WriteViewController(actions);
-        }
 
-        Program.AppendLine("}} {0}_t;", modelName);
+            Program.AppendLine("//}}");
+        }
     }
 
     public static string MatchCSharp(TokenStream stream)
