@@ -172,9 +172,6 @@ internal class Program
         var startTime = DateTime.Now;
         AppendLine($"// GENERATED FROM {fileName} AT {startTime:yyyy-MM-dd HH:mm:ss}");
 
-        AppendLine("#nullable disable");
-        AppendLine("namespace Generated;");
-
         var ext = Path.GetExtension(fileName).ToLowerInvariant();
         var modelName = Path.GetFileNameWithoutExtension(fileName);
 

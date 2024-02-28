@@ -17,7 +17,7 @@ public partial class TopLevelGrammar
         Dictionary<string, List<FieldGrammar.Dto>> splats = new();
         if (!meta)
         {
-            Program.AppendLine("public partial class {0}",
+            Program.AppendLine("typedef struct {0}",
                 modelName);
             Program.AppendLine("{{");
         }
@@ -85,7 +85,7 @@ public partial class TopLevelGrammar
 
         if (!meta)
         {
-            Program.AppendLine("}}");
+            Program.AppendLine("}} {0}_t;", modelName);
         }
     }
 
@@ -94,38 +94,24 @@ public partial class TopLevelGrammar
         Dictionary<string, List<FieldGrammar.Dto>> splats = new();
         if (!meta)
         {
-            Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
-            Program.AppendLine("using System.Text;");
-            Program.AppendLine("using System.Text.Json;");
-            Program.AppendLine("using System.Web;");
-            Program.AppendLine("using Microsoft.Extensions.DependencyInjection;");
-
-            Program.AppendLine("public abstract class {0}Base : {0}Base.IView",
+            Program.AppendLine("typedef struct {0}// : {0}Base.IView",
                 modelName);
             Program.AppendLine("{{");
-            Program.AppendLine("    // Extend and fully implement all actions in a subclass");
-
-            Program.AppendLine("    private readonly IServiceProvider sp;");
-            Program.AppendLine("    public readonly List<RenderDelegate> Children = new();");
-            Program.AppendLine("    public {0}Base(IServiceProvider sp)\n    {{",
-                modelName);
-            Program.AppendLine("        this.sp = sp;");
-            Program.AppendLine("    }}");
         }
 
         var renderBuilder = new StringBuilder();
         void buildDom(string expr)
         {
-            renderBuilder.AppendLine($"        await writer.WriteAsync({expr});");
+            renderBuilder.AppendLine($"//        await writer.WriteAsync({expr});");
         }
         void buildLogic(string stmt)
         {
-            renderBuilder.AppendLine($"        {stmt}");
+            renderBuilder.AppendLine($"//        {stmt}");
         }
 
         if (!meta)
         {
-            buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}open-{modelName}({{indexByTag}})-->\"");
+            buildDom($"$\"<!--{modelName}-->\"");
         }
 
         ServiceGrammar.Dto actions = new()
@@ -183,12 +169,14 @@ public partial class TopLevelGrammar
         }
 
         if (!meta)
-        { 
-            buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}close-{modelName}({{indexByTag}})-->\"");
+        {
+            buildDom($"$\"<!--/{modelName}-->\"");
 
             ServiceGrammar.WriteViewRenderer(renderBuilder.ToString(), modelName);
             ServiceGrammar.WriteViewController(actions);
         }
+
+        Program.AppendLine("}} {0}_t;", modelName);
     }
 
     public static string MatchCSharp(TokenStream stream)

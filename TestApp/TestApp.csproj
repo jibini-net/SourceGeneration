@@ -13,8 +13,4 @@
     <None Remove="wwwroot\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TestApp.Generated\TestApp.Generated.csproj" />
-  </ItemGroup>
-
 </Project>

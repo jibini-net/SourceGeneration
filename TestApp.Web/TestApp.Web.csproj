@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TestApp\TestApp.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="assets\Account.model.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

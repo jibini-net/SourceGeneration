@@ -58,34 +58,19 @@ public class SchemaGrammar
     {
         foreach (var field in dto.Fields)
         {
-            Program.AppendLine("    {0} {1} {2} {{ get; set; }}",
-                accessLevel,
+            Program.AppendLine("    {0} {1}",
                 field.TypeName,
                 field.Name);
             if (!string.IsNullOrEmpty(field.Initial))
             {
-                Program.AppendLine("        = {0};", field.Initial);
+                Program.AppendLine("        = {0}", field.Initial);
             }
+            Program.AppendLine(";");
         }
     }
 
-    public static void WriteStateDump(Dto dto, string modelName)
+    public static void WriteStateDump(Dto _, string __)
     {
-        string member(string name) => $"            [\"{name}\"] = {name},";
-        var members = dto.Fields.Select((it) => member(it.Name));
-
-        Program.AppendLine("    public Dictionary<string, object> GetState()\n    {{");
-        Program.AppendLine("        return new()\n        {{");
-        Program.AppendLine(string.Join("\n", members));
-        Program.AppendLine("        }};");
-        Program.AppendLine("    }}");
-
-        string typeOf(string name) => dto.Fields.FirstOrDefault((it) => it.Name == name).TypeName;
-        string assign(string name) => $"        {{{{ {name} = state.TryGetValue(\"{name}\", out var _v) ? (_v is null ? default({typeOf(name)}) : _v.ParseIfNot<{typeOf(name)}>()) : {name}; }}}}";
-        var assignments = dto.Fields.Select((it) => assign(it.Name));
-
-        Program.AppendLine("    public void LoadState(Dictionary<string, object> state)\n    {{");
-        Program.AppendLine(string.Join("\n", assignments));
-        Program.AppendLine("    }}");
+        Program.AppendLine("    // State dumps and restorations are not supported");
     }
 }

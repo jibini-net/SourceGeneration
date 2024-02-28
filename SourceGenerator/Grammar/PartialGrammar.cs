@@ -72,15 +72,12 @@ public class PartialGrammar
 
     public static void Write(Dto dto)
     {
-        if (string.IsNullOrEmpty(dto.SuperClass))
+        Program.AppendLine("    typedef struct {0}", dto.Name);
+        if (!string.IsNullOrEmpty(dto.SuperClass))
         {
-            Program.AppendLine("    public partial class {0}", dto.Name);
-        } else
-        {
-            Program.AppendLine("    public partial class {0} : {1}",
-                dto.Name,
-                dto.SuperClass);
+            Program.AppendLine($"    // Discarded superclass '{dto.SuperClass}'");
         }
+        Program.AppendLine("    }}");
         Program.AppendLine("    {{");
 
         foreach (var field in dto.Fields)
@@ -94,6 +91,6 @@ public class PartialGrammar
             }
         }
         
-        Program.AppendLine("    }}");
+        Program.AppendLine("    }} {0}_t", dto.Name);
     }
 }
