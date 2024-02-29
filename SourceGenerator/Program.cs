@@ -171,7 +171,8 @@ internal class Program
         AppendLine("#pragma once");
 
         var startTime = DateTime.Now;
-        AppendLine($"// GENERATED FROM {fileName} AT {startTime:yyyy-MM-dd HH:mm:ss}");
+        // These files are likely source controled
+        //AppendLine($"// GENERATED FROM {fileName} AT {startTime:yyyy-MM-dd HH:mm:ss}");
 
         var ext = Path.GetExtension(fileName).ToLowerInvariant();
         var modelName = Path.GetFileNameWithoutExtension(fileName);
@@ -206,7 +207,8 @@ internal class Program
         }
 
         var millis = (DateTime.Now - startTime).TotalMilliseconds;
-        AppendLine($"// GENERATED IN {millis}ms");
+        // These files are likely source controled
+        //AppendLine($"// GENERATED IN {millis}ms");
         consoleLine.Write($" [] GENERATED IN {millis}ms", true, ConsoleColor.Green);
 
         return sourceBuilders.Remove(ThreadId, out var _v)
