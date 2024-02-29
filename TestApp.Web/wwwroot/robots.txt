@@ -1,6 +1,0 @@
-﻿Sitemap: https://jibini.net/sitemap.xml
-User-agent: *
-Disallow: /images
-Disallow: /js
-Disallow: /styles
-Disallow: /fontawesome-5.15.4
