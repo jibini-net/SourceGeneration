@@ -1,10 +1,25 @@
-# SourceGeneration
-Descriptor language transpiler for .NET datalayers and reactive UI
+# "Rezacht Core"
+Descriptor language transpiler for templated web content in C
 
-Several branches exist as submodules of other projects. This allows custom language features if a project calls for them, or for translation to languages other than C#.
+Visit the [wiki](https://github.com/jibini-net/SourceGeneration/wiki) for basic syntax and usage instructions.
 
-Visit the [wiki](https://github.com/jibini-net/SourceGeneration/wiki) for toolchain setup
-and basic usage instructions.
+This is a port for microcontrollers which omits
+ - Reactive UI and supporting JS
+ - Component action interfaces
+ - Generated view controllers
+ - Generated SQL data layers
+ - HTML escaping and some security handling
+ - Some child-parent relationship features
+ - Dependency injection pipeline
+
+Primarily, this port allows
+ - Efficient concatenation of numerous strings
+ - Component state variables
+ - Rendering of static HTML
+ - Component and sub-component rendering
+ - Conditional and flow control logic
+
+Component state in dynamic memory must be managed externally. Generated HTML and content from `writer_t` must be freed manually.
 
 ---
 
