@@ -56,7 +56,7 @@ public class SchemaGrammar
         return result;
     }
 
-    public static void Write(Dto dto, string accessLevel = "public")
+    public static void Write(Dto dto)
     {
         Program.AppendLine("typedef struct {0}\n{{", dto.ModelName);
 
@@ -73,6 +73,12 @@ public class SchemaGrammar
         }
 
         Program.AppendLine("}} {0}_t;", dto.ModelName);
+
+        Program.AppendLine("void _{0}_render({0}_t *state, writer_t *writer);", dto.ModelName);
+        Program.AppendLine("char *{0}_render({0}_t *state);", dto.ModelName);
+
+        Program.AppendLine("4c27e626-5404-40f4-bba1-adcc5a721701");
+        Program.AppendLine("#include \"{0}.view.g.h\"\n", dto.ModelName);
     }
 
     public static void WriteStateDump(Dto _, string __)

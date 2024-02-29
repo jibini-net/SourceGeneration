@@ -1,0 +1,10 @@
+state {
+	int count
+}
+
+if({state->count}
+
+	SubComponent(| content = {"Flex is epic"} |)
+
+	<">Not epic</">
+)

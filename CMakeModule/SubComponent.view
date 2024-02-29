@@ -1,0 +1,13 @@
+state {
+    {char *}content
+}
+
+div(| class = {"d-flex"} |
+    h4({state->content ? state->content : ""})
+)
+
+<>
+<">
+    <h1>Verbatim HTML and Templated Content (</">{state->content}<">)</h1>
+</">
+</>

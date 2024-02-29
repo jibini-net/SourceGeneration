@@ -87,7 +87,7 @@ public class HtmlNodeGrammar
             .Replace("\\", "\\\\")
             .Replace("\"", "\\\"")
             .Replace("\r", "")
-            .Replace("\n", "\\n\"\n            + \"");
+            .Replace("\n", "\\\\n\");\n        writer_append(writer, \"");
 
         // "<\">"
         Program.StartSpan(Delimiter3);
@@ -322,8 +322,8 @@ public class HtmlNodeGrammar
             },
             (dto, buildDom, buildLogic) =>
             {
-                //CORE
-                buildLogic($"await Children[{dto.Children.First().InnerContent}](writer);");
+                buildLogic($"//CORE");
+                buildLogic($"//await Children[{dto.Children.First().InnerContent}](writer);");
             }),
 
         /*
@@ -431,8 +431,8 @@ public class HtmlNodeGrammar
 
         var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
         var creationAction = $@"
-            {{
-                {dto.Tag}_t component = ({dto.Tag}_t){{0}};
+            ({{
+                {dto.Tag}_t component = {{0}};
                 {string.Join("\n                ", assignActions)}
                 //CORE
                 //component.Children.AddRange(new RenderDelegate[] {{
@@ -440,7 +440,7 @@ public class HtmlNodeGrammar
                 //}});
                 _{dto.Tag}_render(&component, writer);
                 """";
-            }}
+            }})
 
             ".Trim();
         buildDom(creationAction);
@@ -452,13 +452,13 @@ public class HtmlNodeGrammar
     public static void WriteDomElement(Dto dto, Action<string> buildDom, Action<string> buildLogic)
     {
         string escStr(string s) => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
-        string attrib(string k, string v) => $" {escStr(k)}=\\\"\" + ({v}) + \"\\\"";
+        string attrib(string k, string v) => $"writer_append(writer, \" {escStr(k)}=\\\"\");writer_append(writer, {v});writer_append(writer, (\"\\\"";
 
         var drawTags = !string.IsNullOrEmpty(dto.Tag);
         if (drawTags)
         {
             var attribs = dto.Attribs.Select((kv) => attrib(kv.Key, kv.Value));
-            buildDom($"(\"<{dto.Tag}{string.Join("", attribs)}>\")");
+            buildDom($"(\"<{dto.Tag}{(dto.Attribs.Count > 0 ? "\"));" : "")}{string.Join("", attribs)}>\")");
         }
 
         foreach (var child in dto.Children)

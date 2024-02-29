@@ -17,9 +17,7 @@ public partial class TopLevelGrammar
         Dictionary<string, List<FieldGrammar.Dto>> splats = new();
         if (!meta)
         {
-            Program.AppendLine("typedef struct {0}",
-                modelName);
-            Program.AppendLine("{{");
+            Program.AppendLine("// Generated datalayers are not supported");
         }
 
         while (stream.Next > 0)
@@ -37,55 +35,28 @@ public partial class TopLevelGrammar
                     break;
 
                 case (int)Schema:
-                    var schema = SchemaGrammar.Match(stream, modelName, splats);
-                    if (!meta)
-                    {
-                        SchemaGrammar.Write(schema);
-                    }
+                    _ = SchemaGrammar.Match(stream, modelName, splats);
                     break;
 
                 case (int)Partial:
-                    var partial = PartialGrammar.Match(stream, modelName, splats);
-                    if (!meta)
-                    {
-                        PartialGrammar.Write(partial);
-                    }
+                    _ = PartialGrammar.Match(stream, modelName, splats);
                     break;
 
                 case (int)Dto:
-                    var dto = PartialGrammar.Match(stream, modelName, splats, inherit: false);
-                    if (!meta)
-                    {
-                        PartialGrammar.Write(dto);
-                    }
+                    _ = PartialGrammar.Match(stream, modelName, splats, inherit: false);
                     break;
 
                 case (int)Repo:
-                    var repo = RepoGrammar.Match(stream, splats);
-                    if (!meta)
-                    {
-                        RepoGrammar.Write(repo);
-                    }
+                    _ = RepoGrammar.Match(stream, splats);
                     break;
 
                 case (int)Service:
-                    var services = ServiceGrammar.Match(stream, modelName, splats);
-                    if (!meta)
-                    {
-                        ServiceGrammar.WriteServiceInterface(services);
-                        ServiceGrammar.WriteDbService(services);
-                        ServiceGrammar.WriteApiService(services);
-                    }
+                    _ = ServiceGrammar.Match(stream, modelName, splats);
                     break;
                     
                 default:
                     throw new Exception($"Invalid token '{stream.Text}' for top-level");
             }
-        }
-
-        if (!meta)
-        {
-            Program.AppendLine("}} {0}_t;", modelName);
         }
     }
 
@@ -113,7 +84,7 @@ public partial class TopLevelGrammar
 
         if (!meta)
         {
-            buildDom($"$\"<!--{modelName}-->\"");
+            buildDom($"\"<!--{modelName}-->\"");
         }
 
         ServiceGrammar.Dto actions = new()
@@ -138,8 +109,7 @@ public partial class TopLevelGrammar
                     var schema = SchemaGrammar.Match(stream, modelName, splats);
                     if (!meta)
                     {
-                        //TODO Make protected
-                        SchemaGrammar.Write(schema, accessLevel: "public");
+                        SchemaGrammar.Write(schema);
                         SchemaGrammar.WriteStateDump(schema, modelName);
                     }
                     break;
@@ -172,7 +142,7 @@ public partial class TopLevelGrammar
 
         if (!meta)
         {
-            buildDom($"$\"<!--/{modelName}-->\"");
+            buildDom($"\"<!--/{modelName}-->\"");
 
             ServiceGrammar.WriteViewRenderer(renderBuilder.ToString(), modelName);
             ServiceGrammar.WriteViewController(actions);
