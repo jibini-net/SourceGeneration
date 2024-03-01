@@ -3,7 +3,7 @@ state {
 }
 
 div(| class = {"d-flex"} |
-    h4({state->content ? state->content : ""})
+    h4({state->content})
 )
 
 <>

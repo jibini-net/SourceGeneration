@@ -7,7 +7,7 @@
         writer_append(writer, "<!--SubComponent-->");
         writer_append(writer, ("<div"));writer_append(writer, " class=\"");writer_append(writer, "d-flex");writer_append(writer, ("\">"));
         writer_append(writer, ("<h4>"));
-        writer_append(writer, state->content ? state->content : "");
+        writer_append(writer, state->content);
         writer_append(writer, "</h4>");
         writer_append(writer, "</div>");
         writer_append(writer, "\n");
