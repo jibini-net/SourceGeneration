@@ -9,7 +9,8 @@
         {
 
         writer_append(writer, ({
-                SubComponent_t component = {0};
+                SubComponent_t component = {};
+                _RZ_MEMSET(&component, 0, sizeof(SubComponent_t));
                 component.content = ("Flex is epic");
                 //CORE
                 //component.Children.AddRange(new RenderDelegate[] {

@@ -432,7 +432,8 @@ public class HtmlNodeGrammar
         var assignActions = dto.Attribs.Select((kv) => $"component.{kv.Key} = ({kv.Value});");
         var creationAction = $@"
             ({{
-                {dto.Tag}_t component = {{0}};
+                {dto.Tag}_t component = {{}};
+                _RZ_MEMSET(&component, 0, sizeof({dto.Tag}_t));
                 {string.Join("\n                ", assignActions)}
                 //CORE
                 //component.Children.AddRange(new RenderDelegate[] {{

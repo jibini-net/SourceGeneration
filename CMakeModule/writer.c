@@ -21,7 +21,12 @@ void _writer_add_page(writer_t *ptr)
 
 void writer_append(writer_t *ptr, char *segment)
 {
+    if (!segment)
+    {
+        return;
+    }
     size_t remaining = _RZ_STRLEN(segment);
+    
     while (*segment != '\0')
     {
         if (!ptr->head 

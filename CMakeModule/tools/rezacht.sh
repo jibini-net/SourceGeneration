@@ -6,12 +6,11 @@ if [ $# -eq 0 ]; then
 fi
 
 filename="$1"
-output_file_c="generated/${filename}.g.c"
-output_file_h="generated/${filename}.g.h"
+just_name=$(basename $1)
+output_file_c="generated/${just_name}.g.c"
+output_file_h="generated/${just_name}.g.h"
 
-generated_source=$((echo -n "generate {${filename}} " && cat "$filename" && echo -n -e "\0") | nc 10.2.21.251 58994)
-
-mkdir generated
+generated_source=$((echo -n "generate {${just_name}} " && cat "$filename" && echo -n -e "\0") | nc 127.0.0.1 58994)
 
 (echo -e "$generated_source" | awk -v RS="4c27e626-5404-40f4-bba1-adcc5a721701" 'NR==2 {print $0}') > "${output_file_c}"
 (echo -e "$generated_source" | awk -v RS="4c27e626-5404-40f4-bba1-adcc5a721701" 'NR==1 {print $0}') > "${output_file_h}"
