@@ -2,7 +2,9 @@
 Descriptor language transpiler for .NET datalayers and reactive UI
 
 Several branches exist as submodules of other projects. This allows custom language features if a project calls for them, or for translation to languages other than C#:
- - "Rezacht Core" - a port for generating templated HTML on embedded systems in C
+ - [Visualizer](https://github.com/jibini-net/SourceGeneration/tree/visualizer) - Source for the FSA creation/minimization demo found [here](https://apps.jibini.net/Fsa) (desktop recommended)
+ - ["Rezacht Core"](https://github.com/jibini-net/SourceGeneration/tree/rezacht-core) - a port for generating templated HTML on embedded systems in C
+ - [Turtle Public](https://github.com/jibini-net/SourceGeneration/tree/turtlepublic) - the branch used to generate the [Minecraft Turtle monitoring portal](https://t.jibini.net/), a low-stakes testbed for initially creating this project
 
 Visit the [wiki](https://github.com/jibini-net/SourceGeneration/wiki) for toolchain setup
 and basic usage instructions.
