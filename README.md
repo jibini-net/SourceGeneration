@@ -81,7 +81,7 @@ Multiple nodes can be grouped into one using `<>` and `</>` and multiline string
 surrounded with `<">` and `</">`.
 
 ```
-if({state-> count > 0}
+if({state->count > 0}
 
     <>
     h1(<">Success block</">)
