@@ -1,7 +1,8 @@
 # SourceGeneration
 Descriptor language transpiler for .NET datalayers and reactive UI
 
-Several branches exist as submodules of other projects. This allows custom language features if a project calls for them, or for translation to languages other than C#.
+Several branches exist as submodules of other projects. This allows custom language features if a project calls for them, or for translation to languages other than C#:
+ - "Rezacht Core" - a port for generating templated HTML on embedded systems in C
 
 Visit the [wiki](https://github.com/jibini-net/SourceGeneration/wiki) for toolchain setup
 and basic usage instructions.
