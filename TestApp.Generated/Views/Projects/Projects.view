@@ -29,7 +29,7 @@ CascadingState cascade(
 	div(| class = {"d-flex flex-row flex-wrap"} |
 		div(| class = {"col-12 col-md-8"} |
 
-			div(| class = {"bg-dark border border-light p-3 mb-4"} |
+			div(| class = {"bg-dark border border-light p-4 mb-4"} |
 
 				if({page.Get<string>("openDrawer") == "Source Generation"}
 
@@ -67,7 +67,7 @@ CascadingState cascade(
 		)
 		div(| class = {"col-12 col-md-4"} |
 
-			div(| class = {"bg-light p-3 text-dark pb-5 ms-0 ms-md-2"} |
+			div(| class = {"bg-light p-4 text-dark pb-5 ms-0 ms-md-2"} |
 
 				ThisSiteShowcase()
 
