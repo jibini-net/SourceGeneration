@@ -35,7 +35,16 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Au
 			iframe(| src = {links.GetNamed("Fsa")} |)
 		)
 		i(| id = {"fsa-caption"} |
-			<">(above: construction and minimization of a finite state automaton)</">
+			<">(above: construction and minimization of a finite state automaton; </">
+			a(|
+				href = {links.GetNamed("Fsa")},
+				target = {"_blank"},
+				title = {"Open in new tab"}
+				|
+				<">View Full Size </">
+				i(| class = {"fas fa-external-link-alt"} |)
+			)
+			<">)</">
 		)
 		a(|
 			href = {links.GetNamed("Fsa")},

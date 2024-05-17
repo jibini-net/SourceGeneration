@@ -10,9 +10,9 @@
 }
 
     #fsa-preview iframe {
-        width: 800px;
-        height: 600px;
-        scale: 0.5;
+        width: 1200px;
+        height: 880px;
+        scale: 0.333;
         transform-origin: top left;
         overflow: hidden;
     }
@@ -21,6 +21,7 @@
         position: absolute;
         width: 100%;
         bottom: 0;
+        left: 0;
     }
 
     #fsa-preview #fsa-link {
