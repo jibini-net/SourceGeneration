@@ -2,14 +2,14 @@
 
 public partial class Fsa
 {
-    /*
-     * Creates new nodes in the FSA to match the provided word. The resulting
-     * machine is likely nondeterministic, depending on which regular expression
-     * is provided and any logical "ORs" or ambiguous tokens.
-     * 
-     * Paths are not reused nor optimized at this stage. If a letter is already
-     * in the "next" list of a state, it is added as an epsilon transition.
-     */
+    /// <summary>
+    /// Creates new nodes in the FSA to match the provided word. The resulting
+    /// machine is likely nondeterministic, depending on which regular expression
+    /// is provided and any logical "ORs" or ambiguous tokens.
+    /// 
+    /// Paths are not reused nor optimized at this stage. If a letter is already
+    /// in the "next" list of a state, it is added as an epsilon transition.
+    /// </summary>
     public void Build(string word, int accept, out List<Fsa> frontier)
     {
         frontier = [this];
@@ -114,14 +114,14 @@ public partial class Fsa
         }
     }
 
-    /*
-     * Creates new nodes in the FSA to match the provided word. The resulting
-     * machine is likely nondeterministic, depending on which regular expression
-     * is provided and any logical "ORs" or ambiguous tokens.
-     * 
-     * Paths are not reused nor optimized at this stage. If a letter is already
-     * in the "next" list of a state, it is added as an epsilon transition.
-     */
+    /// <summary>
+    /// Creates new nodes in the FSA to match the provided word. The resulting
+    /// machine is likely nondeterministic, depending on which regular expression
+    /// is provided and any logical "ORs" or ambiguous tokens.
+    /// 
+    /// Paths are not reused nor optimized at this stage. If a letter is already
+    /// in the "next" list of a state, it is added as an epsilon transition.
+    /// </summary>
     public void Build(string word, int accept)
     {
         Build(word, accept, out var _);
