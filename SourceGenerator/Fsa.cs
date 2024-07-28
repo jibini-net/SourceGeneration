@@ -16,7 +16,8 @@ namespace SourceGenerator;
 public partial class Fsa
 {
     /// <summary>
-    /// Debug value indicating the character used to arrive in this state.
+    /// Debug value indicating the character used to arrive in this state. Only
+    /// used while building the initial NFA.
     /// </summary>
     [JsonIgnore]
     public char Letter { get; private set; } = '\0';

@@ -1,4 +1,6 @@
-﻿namespace SourceGenerator;
+﻿using System.Buffers;
+
+namespace SourceGenerator;
 
 public partial class Fsa
 {
@@ -12,97 +14,12 @@ public partial class Fsa
     /// </summary>
     public void Build(string word, int accept, out List<Fsa> frontier)
     {
-        frontier = [this];
-        // State which will be restored to when using "+" expression operator
-        var restoreTo = this;
-        var parensDepth = 0;
-        var isEscaped = false;
-
-        for (var regIndex = 0; regIndex < word.Length; regIndex++)
+        if (word.Length == 0)
         {
-            var c = word[regIndex];
-
-            if (parensDepth > 0 || (c == ')' && !isEscaped))
-            {
-                // We are currently "within parentheses;" discard chars
-                switch (c)
-                {
-                    case '(':
-                        parensDepth++;
-                        break;
-
-                    case ')':
-                        if (--parensDepth < 0) goto outer_break;
-                        else break;
-                }
-                // Discard all characters, including last balanced ')'
-                continue;
-            }
-
-            if (!isEscaped)
-            {
-                switch (c)
-                {
-                    case '\\':
-                        isEscaped = true;
-                        continue;
-
-                    case '|':
-                        {
-                            var subExpr = new Fsa();
-                            Epsilon.Add(subExpr);
-                            subExpr.Build(word[(regIndex + 1)..], accept, out var _frontier);
-                            // Merge the "ORed" frontier with the parent frontier
-                            frontier.AddRange(_frontier);
-                        }
-                        goto outer_break;
-
-                    case '(':
-                        {
-                            // Enter parentheses discarding mode
-                            parensDepth++;
-                            var subExpr = restoreTo = new Fsa();
-                            // Merge all states to parentheses using eps transitions
-                            foreach (var state in frontier)
-                            {
-                                state.Epsilon.Add(subExpr);
-                            }
-                            subExpr.Build(word[(regIndex + 1)..], 0, out frontier);
-                        }
-                        continue;
-
-                    case '+':
-                        foreach (var state in frontier)
-                        {
-                            state.Epsilon.Add(restoreTo);
-                        }
-                        continue;
-                }
-            }
-            // Any non-escaping character resets to not being escaped
-            isEscaped = false;
-
-            // Always create a new node, which will likely become nondeterministic
-            var useState = new Fsa(c);
-            // Creates intermediate node to avoid infinite cyclic flow
-            restoreTo = new Fsa();
-            restoreTo.Next[c] = useState;
-
-            foreach (var state in frontier)
-            {
-                if (state.Next.ContainsKey(c))
-                {
-                    // Tokens are nondeterministic via eps transitions
-                    state.Epsilon.Add(restoreTo);
-                } else
-                {
-                    state.Next[c] = useState;
-                }
-            }
-            // After appending a char, frontier is always one merged branch
-            frontier = [useState];
+            throw new ApplicationException("Regular expression content is required");
         }
-    outer_break:
+
+        _ParseOR(word, 0, out _, out frontier);
 
         if (accept > 0)
         {
@@ -125,5 +42,102 @@ public partial class Fsa
     public void Build(string word, int accept)
     {
         Build(word, accept, out var _);
+    }
+
+    protected void _ParseOR(string word, int start, out int end, out List<Fsa> frontier)
+    {
+        end = start - 1;
+        frontier = [];
+
+        do
+        {
+            _ParsePLUS(word, ++end, out end, out var _frontier);
+
+            frontier.AddRange(_frontier);
+        } while (end < word.Length && word[end] == '|');
+    }
+
+    protected void _ParsePLUS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
+    {
+        _ParsePARENS(word, start, out end, out frontier, escaped: escaped);
+
+        if (!escaped && end < word.Length && word[end] == '+')
+        {
+            end++;
+
+            var epsState = new Fsa('\0');
+            epsState.Next[Letter] = this;
+
+            foreach (var state in frontier)
+            {
+                if (Letter == '\0')
+                {
+                    state.Epsilon.Add(this);
+                } else
+                {
+                    state.Epsilon.Add(epsState);
+                }
+            }
+        }
+    }
+
+    protected void _ParsePARENS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
+    {
+        if (!escaped && start < word.Length && word[start] == '(')
+        {
+            // Revert to top of parsing hierarchy
+            _ParseOR(word, start + 1, out end, out var _frontier);
+
+            var merge = new Fsa();
+            foreach (var state in _frontier)
+            {
+                state.Epsilon.Add(merge);
+            }
+
+            frontier = [merge];
+
+            if (end >= word.Length || word[end] != ')')
+            {
+                throw new ApplicationException($"Expected ')' at character {end}");
+            }
+            end++;
+        } else
+        {
+            _ParseLETTER(word, start, out end, out frontier, escaped: escaped);
+        }
+    }
+
+    protected void _ParseLETTER(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
+    {
+        if (start >= word.Length
+            || (!escaped && (word[start] == ')' || word[start] == '|' || word[start] == '+')))
+        {
+            end = start;
+            frontier = [this];
+            return;
+        }
+
+        var letter = word[start];
+        if (!escaped && letter == '\\')
+        {
+            _ParsePLUS(word, start + 1, out end, out frontier, escaped: true);
+            return;
+        }
+
+        end = start + 1;
+        var newState = new Fsa(letter);
+
+        if (Next.ContainsKey(letter))
+        {
+            var epsState = new Fsa('\0');
+            epsState.Next[letter] = newState;
+
+            Epsilon.Add(epsState);
+        } else
+        {
+            Next[letter] = newState;
+        }
+
+        newState._ParsePLUS(word, start + 1, out end, out frontier);
     }
 }
