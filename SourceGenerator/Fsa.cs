@@ -29,6 +29,7 @@ public class Fsa
         Letter = letter;
     }
 
+    // Enables (de-)serialization
     public Dictionary<string, Fsa> n
     {
         get => Next.ToDictionary((it) => it.Key + "", (it) => it.Value);
@@ -47,6 +48,7 @@ public class Fsa
     [JsonIgnore]
     public Dictionary<char, Fsa> Next { get; private set; } = new();
 
+    // Enables (de-)serialization
     public List<string> a
     {
         get => Accepts.Select((it) => it.ToString()).ToList();
