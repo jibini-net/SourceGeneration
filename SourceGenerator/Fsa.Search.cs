@@ -79,7 +79,7 @@ public partial class Fsa
             return (0, "");
         } else
         {
-            return (match, text.Substring(startIndex, longestEnd - startIndex));
+            return (match, text[startIndex..longestEnd]);
         }
     }
 }

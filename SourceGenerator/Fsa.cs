@@ -39,7 +39,7 @@ public partial class Fsa
     /// here, the FSA will be deterministic.
     /// </summary>
     [JsonIgnore]
-    public Dictionary<char, Fsa> Next { get; private set; } = new();
+    public Dictionary<char, Fsa> Next { get; private set; } = [];
 
     // Enables (de-)serialization
     [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Field for JSON serialization only")]
@@ -56,14 +56,14 @@ public partial class Fsa
     /// IDs of tokens which are accepted if this state is reached during a match.
     /// </summary>
     [JsonIgnore]
-    public List<int> Accepts { get; private set; } = new();
+    public List<int> Accepts { get; private set; } = [];
 
     /// <summary>
     /// States which can be reached by taking no action, and are reached if the
     /// parent state ("this") is reached.
     /// </summary>
     [JsonIgnore]
-    public List<Fsa> Epsilon { get; private set; } = new();
+    public List<Fsa> Epsilon { get; private set; } = [];
 
     public Fsa()
     {
@@ -90,9 +90,9 @@ public partial class Fsa
     /// </summary>
     protected IEnumerable<Fsa> AdjacentSet(char c)
     {
-        if (Next.ContainsKey(c))
+        if (Next.TryGetValue(c, out var _v))
         {
-            yield return Next[c];
+            yield return _v;
         }
         yield break;
     }
@@ -115,7 +115,7 @@ public partial class Fsa
                 }
             }
             findChildren(this);
-            return visited.ToList();
+            return [.. visited];
         }
     }
 }

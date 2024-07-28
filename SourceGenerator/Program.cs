@@ -20,10 +20,10 @@ internal class Program
 
     public static Fsa Dfa { get; private set; }
 
-    public static int ThreadId => Thread.CurrentThread.ManagedThreadId;
+    public static int ThreadId => Environment.CurrentManagedThreadId;
     
-    private static ConcurrentDictionary<int, StringBuilder> sourceBuilders = new();
-    private static StringBuilder sourceBuilder => sourceBuilders[ThreadId];
+    private static readonly ConcurrentDictionary<int, StringBuilder> sourceBuilders = new();
+    private static StringBuilder SourceBuilder => sourceBuilders[ThreadId];
 
     public static void Main(string[] _)
     {
@@ -109,12 +109,12 @@ internal class Program
 
     public static void Append(string source, params object[] args)
     {
-        sourceBuilder.Append(string.Format(source, args));
+        SourceBuilder.Append(string.Format(source, args));
     }
 
     public static void AppendLine(string source, params object[] args)
     {
-        sourceBuilder.AppendLine(string.Format(source, args));
+        SourceBuilder.AppendLine(string.Format(source, args));
     }
 
     private static void InitializeFsa()
@@ -216,8 +216,8 @@ internal class Program
             : throw new Exception("String builder missing from dictionary");
     }
 
-    private static ConcurrentDictionary<int, (TokenStream source, List<MatchSpan> spanList)> spanLists = new();
-    private static (TokenStream source, List<MatchSpan> spanList) sourceSpanList => spanLists[ThreadId];
+    private static readonly ConcurrentDictionary<int, (TokenStream source, List<MatchSpan> spanList)> spanLists = new();
+    private static (TokenStream source, List<MatchSpan> spanList) SourceSpanList => spanLists[ThreadId];
 
     public static void StartSpan(ClassType classification, int? index = null)
     {
@@ -225,7 +225,7 @@ internal class Program
         {
             return;
         }
-        var (source, spanList) = sourceSpanList;
+        var (source, spanList) = SourceSpanList;
         index ??= source.Offset;
 
         var prev = spanList.LastOrDefault();
@@ -260,7 +260,7 @@ internal class Program
         {
             return;
         }
-        var (source, spanList) = sourceSpanList;
+        var (source, spanList) = SourceSpanList;
         index ??= source.Offset;
 
         var prev = spanList.LastOrDefault();
@@ -274,7 +274,7 @@ internal class Program
     {
         var startTime = DateTime.Now;
 
-        spanLists[ThreadId] = (source, new());
+        spanLists[ThreadId] = (source, []);
 
         var ext = Path.GetExtension(fileName).ToLowerInvariant();
         var modelName = Path.GetFileNameWithoutExtension(fileName);
@@ -297,7 +297,7 @@ internal class Program
 
             EndSpan();
 
-            var (_, spanList) = sourceSpanList;
+            var (_, spanList) = SourceSpanList;
             //var last = spanList.LastOrDefault();
             //if (last.s + last.l < source.Source.Length)
             //{

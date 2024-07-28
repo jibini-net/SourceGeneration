@@ -5,7 +5,7 @@ public partial class Fsa
     /// <summary>
     /// Accessible nodes from this one, ignoring epsilon transitions from here.
     /// </summary>
-    protected Dictionary<char, List<Fsa>> memoizedClosures = new();
+    protected Dictionary<char, List<Fsa>> memoizedClosures = [];
 
     /// <summary>
     /// Returns a cached or calculated list of states accessible from this one
@@ -123,7 +123,7 @@ public partial class Fsa
                         new DictionaryComparer<char, List<Fsa>>())
                     .ToList();
                 // Partition members are (currently) indistinguishable
-                if (newParts.Count() == 1)
+                if (newParts.Count == 1)
                 {
                     continue;
                 }
@@ -218,7 +218,7 @@ public partial class Fsa
             return hash;
         }
 
-        private int ShiftAndWrap(int value, int positions)
+        private static int ShiftAndWrap(int value, int positions)
         {
             positions &= 0x1F;
             uint number = BitConverter.ToUInt32(BitConverter.GetBytes(value), 0);

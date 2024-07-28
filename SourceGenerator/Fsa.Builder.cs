@@ -51,7 +51,7 @@ public partial class Fsa
                         {
                             var subExpr = new Fsa();
                             Epsilon.Add(subExpr);
-                            subExpr.Build(word.Substring(regIndex + 1), accept, out var _frontier);
+                            subExpr.Build(word[(regIndex + 1)..], accept, out var _frontier);
                             // Merge the "ORed" frontier with the parent frontier
                             frontier.AddRange(_frontier);
                         }
@@ -67,7 +67,7 @@ public partial class Fsa
                             {
                                 state.Epsilon.Add(subExpr);
                             }
-                            subExpr.Build(word.Substring(regIndex + 1), 0, out frontier);
+                            subExpr.Build(word[(regIndex + 1)..], 0, out frontier);
                         }
                         continue;
 
