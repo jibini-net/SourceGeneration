@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-
-namespace SourceGenerator;
+﻿namespace SourceGenerator;
 
 public partial class Fsa
 {
@@ -51,13 +49,13 @@ public partial class Fsa
 
         do
         {
-            _ParsePLUS(word, ++end, out end, out var _frontier);
+            _ParseSERIES(word, ++end, out end, out var _frontier);
 
             frontier.AddRange(_frontier);
         } while (end < word.Length && word[end] == '|');
     }
 
-    protected void _ParsePLUS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
+    protected void _ParseSERIES(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
         if (start >= word.Length
             || (!escaped && (word[start] == ')' || word[start] == '|' || word[start] == '+')))
@@ -67,9 +65,15 @@ public partial class Fsa
             return;
         }
 
+        _ParsePLUS(word, start, out end, out frontier, escaped: escaped);
+
+        frontier.Single()._ParseSERIES(word, end, out end, out frontier);
+    }
+
+    protected void _ParsePLUS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
+    {
         var epsState = new Fsa();
         epsState._ParsePARENS(word, start, out end, out frontier, escaped: escaped);
-        Epsilon.Add(epsState);
 
         if (!escaped && end < word.Length && word[end] == '+')
         {
@@ -81,19 +85,11 @@ public partial class Fsa
             }
         }
 
-        frontier.Single()._ParsePLUS(word, end, out end, out frontier);
+        Epsilon.Add(epsState);
     }
 
     protected void _ParsePARENS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
-        if (start >= word.Length
-            || (!escaped && (word[start] == ')' || word[start] == '|' || word[start] == '+')))
-        {
-            end = start;
-            frontier = [this];
-            return;
-        }
-
         if (!escaped && start < word.Length && word[start] == '(')
         {
             // Revert to top of parsing hierarchy
@@ -120,18 +116,10 @@ public partial class Fsa
 
     protected void _ParseLETTER(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
-        if (start >= word.Length
-            || (!escaped && (word[start] == ')' || word[start] == '|' || word[start] == '+')))
-        {
-            end = start;
-            frontier = [this];
-            return;
-        }
-
         var letter = word[start];
         if (!escaped && letter == '\\')
         {
-            _ParsePLUS(word, start + 1, out end, out frontier, escaped: true);
+            _ParseSERIES(word, start + 1, out end, out frontier, escaped: true);
             return;
         }
 
