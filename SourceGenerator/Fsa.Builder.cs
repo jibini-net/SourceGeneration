@@ -12,11 +12,6 @@ public partial class Fsa
     /// </summary>
     public void Build(string word, int accept, out List<Fsa> frontier)
     {
-        if (word.Length == 0)
-        {
-            throw new ApplicationException("Regular expression content is required");
-        }
-
         _ParseOR(word, 0, out _, out frontier);
 
         if (accept > 0)
@@ -79,13 +74,16 @@ public partial class Fsa
         {
             end++;
 
+            Epsilon.Add(epsState);
             foreach (var state in frontier)
             {
                 state.Epsilon.Add(epsState);
             }
+        } else
+        {
+            //TODO Merge intead of re-parse
+            _ParsePARENS(word, start, out end, out frontier, escaped: escaped);
         }
-
-        Epsilon.Add(epsState);
     }
 
     protected void _ParsePARENS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
