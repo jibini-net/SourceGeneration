@@ -45,16 +45,17 @@ internal class Program
         }
         */
         var test = new Fsa();
-        test.Build("0((01+|(10))+|)", 1);
-        test.Build("0(a+|)", 2);
+        test.Build("0((01+|(10)+)|)", 1);
+        test.Build("0(a+|b)", 2);
 
-        //test = test.ConvertToDfa();
+        //var dfa = test.ConvertToDfa();
 
         var (a1, m1) = test.Search("00101", 0);
         var (a1b, m1b) = test.Search("0011101", 0);
         var (a2, m2) = test.Search("0", 0);
         var (a3, m3) = test.Search("0aaa", 0);
-        var (a4, m4) = test.Search("0100110", 0);
+        var (a4, m4) = test.Search("0100111111110", 0);
+        var (a5, m5) = test.Search("0011101", 0);
         var (a_bad, m_bad) = test.Search("01001100", 1);
     }
 

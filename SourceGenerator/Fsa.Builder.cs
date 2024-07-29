@@ -59,30 +59,39 @@ public partial class Fsa
 
     protected void _ParsePLUS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
+        if (start >= word.Length
+            || (!escaped && (word[start] == ')' || word[start] == '|' || word[start] == '+')))
+        {
+            end = start;
+            frontier = [this];
+            return;
+        }
+
         _ParsePARENS(word, start, out end, out frontier, escaped: escaped);
 
         if (!escaped && end < word.Length && word[end] == '+')
         {
             end++;
 
-            var epsState = new Fsa('\0');
-            epsState.Next[Letter] = this;
-
             foreach (var state in frontier)
             {
-                if (Letter == '\0')
-                {
-                    state.Epsilon.Add(this);
-                } else
-                {
-                    state.Epsilon.Add(epsState);
-                }
+                state.Epsilon.Add(this);
             }
         }
+
+        frontier.Single()._ParsePLUS(word, end, out end, out frontier);
     }
 
     protected void _ParsePARENS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
+        if (start >= word.Length
+            || (!escaped && (word[start] == ')' || word[start] == '|' || word[start] == '+')))
+        {
+            end = start;
+            frontier = [this];
+            return;
+        }
+
         if (!escaped && start < word.Length && word[start] == '(')
         {
             // Revert to top of parsing hierarchy
@@ -124,9 +133,7 @@ public partial class Fsa
             return;
         }
 
-        end = start + 1;
         var newState = new Fsa(letter);
-
         if (Next.ContainsKey(letter))
         {
             var epsState = new Fsa('\0');
@@ -138,6 +145,7 @@ public partial class Fsa
             Next[letter] = newState;
         }
 
-        newState._ParsePLUS(word, start + 1, out end, out frontier);
+        end = start + 1;
+        frontier = [newState];
     }
 }
