@@ -1,34 +1,29 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace SourceGenerator;
 
-/*
- * Implements a naive Finite State Automaton which supports nondeterminism
- * through epsilon transitions. Each state of the machine has a mapping of next
- * states, keyed against characters, but also a set of epsilon transitions
- * which can be reached with no character actions.
- * 
- * The longest valid match from any merged FSA will be returned. In the case of
- * ambiguous tokens, the token of highest precedence (lowest ID) will match.
- */
+/// <summary>
+/// Implements a naive Finite State Automaton which supports nondeterminism
+/// through epsilon transitions.Each state of the machine has a mapping of next
+/// states, keyed against characters, but also a set of epsilon transitions
+/// which can be reached with no character actions.
+/// 
+/// The longest valid match from any merged FSA will be returned. In the case of
+/// ambiguous tokens, the token of highest precedence (lowest ID) will match.
+/// </summary>
 [Serializable]
-public class Fsa
+public partial class Fsa
 {
-    /*
-     * Debug value indicating the character used to arrive in this state.
-     */
+    /// <summary>
+    /// Debug value indicating the character used to arrive in this state. Only
+    /// used while building the initial NFA.
+    /// </summary>
     [JsonIgnore]
     public char Letter { get; private set; } = '\0';
 
-    public Fsa()
-    {
-    }
-
-    public Fsa(char letter)
-    {
-        Letter = letter;
-    }
-
+    // Enables (de-)serialization
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Field for JSON serialization only")]
     public Dictionary<string, Fsa> n
     {
         get => Next.ToDictionary((it) => it.Key + "", (it) => it.Value);
@@ -40,13 +35,15 @@ public class Fsa
         }
     }
 
-    /*
-     * Set of transitions for particular letters; if all transitions are put
-     * here, the FSA will be deterministic.
-     */
+    /// <summary>
+    /// Set of transitions for particular letters; if all transitions are put
+    /// here, the FSA will be deterministic.
+    /// </summary>
     [JsonIgnore]
-    public Dictionary<char, Fsa> Next { get; private set; } = new();
+    public Dictionary<char, Fsa> Next { get; private set; } = [];
 
+    // Enables (de-)serialization
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Field for JSON serialization only")]
     public List<string> a
     {
         get => Accepts.Select((it) => it.ToString()).ToList();
@@ -56,148 +53,32 @@ public class Fsa
         }
     }
 
-    /*
-     * IDs of tokens which are accepted if this state is reached during a match.
-     */
+    /// <summary>
+    /// IDs of tokens which are accepted if this state is reached during a match.
+    /// </summary>
     [JsonIgnore]
-    public List<int> Accepts { get; private set; } = new();
+    public List<int> Accepts { get; private set; } = [];
 
-    /*
-     * States which can be reached by taking no action, and are reached if the
-     * parent state ("this") is reached.
-     */
+    /// <summary>
+    /// States which can be reached by taking no action, and are reached if the
+    /// parent state ("this") is reached.
+    /// </summary>
     [JsonIgnore]
-    public List<Fsa> Epsilon { get; private set; } = new();
+    public List<Fsa> Epsilon { get; private set; } = [];
 
-    /*
-     * Creates new nodes in the FSA to match the provided word. The resulting
-     * machine is likely nondeterministic, depending on which regular expression
-     * is provided and any logical "ORs" or ambiguous tokens.
-     * 
-     * Paths are not reused nor optimized at this stage. If a letter is already
-     * in the "next" list of a state, it is added as an epsilon transition.
-     */
-    public void Build(string word, int accept, out List<Fsa> frontier)
+    public Fsa()
     {
-        frontier = new() { this };
-        // State which will be restored to when using "+" expression operator
-        var restoreTo = this;
-        var parensDepth = 0;
-        var isEscaped = false;
-
-        for (var regIndex = 0; regIndex < word.Length; regIndex++)
-        {
-            var c = word[regIndex];
-
-            if (parensDepth > 0 || (c == ')' && !isEscaped))
-            {
-                // We are currently "within parentheses;" discard chars
-                switch (c)
-                {
-                    case '(':
-                        parensDepth++;
-                        break;
-
-                    case ')':
-                        if (--parensDepth < 0) goto outer_break;
-                        else break;
-                }
-                // Discard all characters, including last balanced ')'
-                continue;
-            }
-
-            if (!isEscaped)
-            {
-                switch (c)
-                {
-                    case '\\':
-                        isEscaped = true;
-                        continue;
-
-                    case '|':
-                        {
-                            var subExpr = new Fsa();
-                            Epsilon.Add(subExpr);
-                            subExpr.Build(word.Substring(regIndex + 1), accept, out var _frontier);
-                            // Merge the "ORed" frontier with the parent frontier
-                            frontier.AddRange(_frontier);
-                        }
-                        goto outer_break;
-
-                    case '(':
-                        {
-                            // Enter parentheses discarding mode
-                            parensDepth++;
-                            var subExpr = (restoreTo = new Fsa());
-                            // Merge all states to parentheses using eps transitions
-                            foreach (var state in frontier)
-                            {
-                                state.Epsilon.Add(subExpr);
-                            }
-                            subExpr.Build(word.Substring(regIndex + 1), 0, out frontier);
-                        }
-                        continue;
-
-                    case '+':
-                        foreach (var state in frontier)
-                        {
-                            state.Epsilon.Add(restoreTo);
-                        }
-                        continue;
-                }
-            }
-            // Any non-escaping character resets to not being escaped
-            isEscaped = false;
-
-            // Always create a new node, which will likely become nondeterministic
-            var useState = new Fsa(c);
-            // Creates intermediate node to avoid infinite cyclic flow
-            restoreTo = new Fsa();
-            restoreTo.Next[c] = useState;
-
-            foreach (var state in frontier)
-            {
-                if (state.Next.ContainsKey(c))
-                {
-                    // Tokens are nondeterministic via eps transitions
-                    state.Epsilon.Add(restoreTo);
-                } else
-                {
-                    state.Next[c] = useState;
-                }
-            }
-            // After appending a char, frontier is always one merged branch
-            frontier = new() { useState };
-        }
-    outer_break:
-
-        if (accept > 0)
-        {
-            foreach (var state in frontier)
-            {
-                // If there are already elements, tokens may be ambiguous
-                state.Accepts.Add(accept);
-            }
-        }
     }
 
-    /*
-     * Creates new nodes in the FSA to match the provided word. The resulting
-     * machine is likely nondeterministic, depending on which regular expression
-     * is provided and any logical "ORs" or ambiguous tokens.
-     * 
-     * Paths are not reused nor optimized at this stage. If a letter is already
-     * in the "next" list of a state, it is added as an epsilon transition.
-     */
-    public void Build(string word, int accept)
+    public Fsa(char letter)
     {
-        Build(word, accept, out var _);
+        Letter = letter;
     }
 
-    /*
-     * Finds all states accessible from this state without consuming any
-     * characters, and also any states recursively accessible thereunder.
-     */
+    /// <summary>
+    /// Finds all states accessible from this state without consuming any
+    /// characters, and also any states recursively accessible thereunder.
+    /// </summary>
     protected IEnumerable<Fsa> EpsilonClosure()
     {
         return new[] { this }
@@ -205,219 +86,22 @@ public class Fsa
             .Concat(Epsilon.SelectMany((it) => it.EpsilonClosure()));
     }
 
-    /*
-     * Single- or zero-element list of reachable deterministic states.
-     */
+    /// <summary>
+    /// Single- or zero-element collection of reachable deterministic states.
+    /// </summary>
     protected IEnumerable<Fsa> AdjacentSet(char c)
     {
-        if (Next.ContainsKey(c))
+        if (Next.TryGetValue(c, out var _v))
         {
-            yield return Next[c];
+            yield return _v;
         }
         yield break;
     }
 
-    /*
-     * Traverses the FSA in a breadth-first fashion, allowing vectorized
-     * traversal of a frontier in case of nondeterministic automata.
-     * 
-     * A "frontier" refers to the set of nodes currently being visited. An
-     * "epsilon closure" refers to nodes related to the frontier (and the
-     * frontier itself) accessible without consuming any characters. Acceptance
-     * states are achieved if any node on the frontier or any node in the
-     * resulting epsilon closure has a token ID in its accept list.
-     * 
-     * Any reached accept state will update the "longest end" tracker, and the
-     * last recorded longest match is returned on the first invalid state.
-     */
-    public (int accepted, string match) Search(string text, int startIndex)
-    {
-        // Used for deterministic paths
-        var node = this;
-        // Used once determinism ends
-        List<Fsa> closure = null;// = EpsilonClosure().Distinct().ToList();
-        int textIndex = startIndex, longestEnd = -1, match = 0;
-        var nfaMode = false;
-
-        for (;;)
-        {
-            if (!nfaMode && (node?.Epsilon?.Count ?? 0) > 0)
-            {
-                nfaMode = true;
-                closure = node.EpsilonClosure().Distinct().ToList();
-            }
-
-            if (nfaMode)
-            {
-                // Any accept state in the frontier is a valid match
-                var acceptState = closure.Where((it) => it.Accepts.Count > 0).FirstOrDefault();
-                if (acceptState is not null)
-                {
-                    longestEnd = textIndex;
-                    match = acceptState.Accepts.Min();
-                }
-
-                // "Invalid state" due to end of input or lack of next states
-                if (textIndex >= text.Length || closure.Count == 0)
-                {
-                    break;
-                }
-            } else
-            {
-                // Any accept state in the frontier is a valid match
-                if ((node?.Accepts?.Count ?? 0) > 0)
-                {
-                    longestEnd = textIndex;
-                    match = node.Accepts.Min();
-                }
-
-                // "Invalid state" due to end of input or lack of next states
-                if (textIndex >= text.Length || node is null)
-                {
-                    break;
-                }
-            }
-
-            var c = text[textIndex++];
-            if (nfaMode)
-            {
-                var frontier = closure.SelectMany((it) => it.AdjacentSet(c)).Distinct();
-                closure = frontier.SelectMany((it) => it.EpsilonClosure()).Distinct().ToList();
-            } else
-            {
-                node = node.Next.GetValueOrDefault(c);
-            }
-        }
-
-        if (longestEnd == -1)
-        {
-            return (0, "");
-        } else
-        {
-            return (match, text.Substring(startIndex, longestEnd - startIndex));
-        }
-    }
-
-    /*
-     * Accessible nodes from this one, ignoring epsilon transitions from here.
-     */
-    protected Dictionary<char, List<Fsa>> memoizedClosures = new();
-
-    /*
-     * Returns a cached or calculated list of states accessible from this one
-     * after applying the character transition. Only checks epsilon on children.
-     */
-    protected List<Fsa> AccessibleMemoized(char c)
-    {
-        return memoizedClosures.TryGetValue(c, out var cached)
-            ? cached
-            : (memoizedClosures[c] = AdjacentSet(c)
-                .SelectMany((it) => it.EpsilonClosure())
-                .Distinct()
-                .ToList());
-    }
-
-    /*
-     * Performs an expensive conversion between NFA and DFA which calculates the
-     * epsilon closures at all states for all characters in the alphabet. State
-     * is calculated and cached during runtime, which renders the FSA invalid if
-     * any of the structure is later modified.
-     * 
-     * Do not modify the NFA again after calling the conversion to DFA; the NFA
-     * would continue to function, but this method would not.
-     */
-    public Fsa ConvertToDfa()
-    {
-        var result = new Fsa()
-        {
-            Letter = Letter,
-            Accepts = new(Accepts)
-        };
-        var queue = new Queue<(Fsa node, List<Fsa> closure)>();
-        // Visited set for cycles and already-deterministic nodes
-        var replace = new Dictionary<HashSet<Fsa>, Fsa>(HashSet<Fsa>.CreateSetComparer());
-
-        queue.Enqueue((result, EpsilonClosure().Distinct().ToList()));
-        do
-        {
-            var (node, oldClosure) = queue.Dequeue();
-            // Find all actions which can be taken from this state
-            var alphabet = oldClosure.SelectMany((it) => it.Next.Keys).Distinct().ToList();
-
-            // Find all nodes accessible from all discovered characters
-            var closures = alphabet.ToDictionary(
-                (c) => c,
-                (c) => oldClosure.SelectMany((it) => it.AccessibleMemoized(c)).ToList());
-            
-            foreach (var (c, closure) in closures)
-            {
-                var withLetters = closure.Where((it) => it.Letter == c).ToHashSet();
-                // Find an existing state for target nodes
-                if (replace.TryGetValue(withLetters, out var cached))
-                {
-                    node.Next[c] = cached;
-                    continue;
-                }
-
-                var created = new Fsa()
-                {
-                    Letter = c,
-                    // Merged node will accept any tokens accepted by originals
-                    Accepts = closure.SelectMany((it) => it.Accepts).Distinct().ToList()
-                };
-                node.Next[c] = created;
-                replace[withLetters] = created;
-
-                queue.Enqueue((created, closure.ToList()));
-            }
-        } while (queue.Count > 0);
-
-        return result;
-    }
-
-    // https://codereview.stackexchange.com/questions/30332/proper-way-to-compare-two-dictionaries
-    public class DictionaryComparer<TKey, TValue> : IEqualityComparer<IDictionary<TKey, TValue>>
-    {
-        public DictionaryComparer()
-        {
-        }
-
-        public bool Equals(IDictionary<TKey, TValue> x, IDictionary<TKey, TValue> y)
-        {
-            if (x.Count != y.Count)
-                return false;
-            // Original code does not properly resolve hash collisions
-            //return GetHashCode(x) == GetHashCode(y);
-            return x.Count == y.Count
-                && x.All((it) => y.TryGetValue(it.Key, out var _v) && it.Value as object == _v as object);
-        }
-
-        public int GetHashCode(IDictionary<TKey, TValue> obj)
-        {
-            int hash = 0;
-            foreach (KeyValuePair<TKey, TValue> pair in obj)
-            {
-                int key = pair.Key.GetHashCode();
-                int value = pair.Value != null ? pair.Value.GetHashCode() : 0;
-                hash ^= ShiftAndWrap(key, 2) ^ value;
-            }
-            return hash;
-        }
-
-        private int ShiftAndWrap(int value, int positions)
-        {
-            positions &= 0x1F;
-            uint number = BitConverter.ToUInt32(BitConverter.GetBytes(value), 0);
-            uint wrapped = number >> (32 - positions);
-            return BitConverter.ToInt32(BitConverter.GetBytes((number << positions) | wrapped), 0);
-        }
-    }
-
     /// <summary>
     /// Traverses the entire network to find a distinct flattened node list.
-    /// Extremely expensive, so call sparingly.
     /// </summary>
-    private List<Fsa> _flat
+    private List<Fsa> Flat
     {
         get
         {
@@ -432,117 +116,7 @@ public class Fsa
                 }
             }
             findChildren(this);
-            return visited.ToList();
+            return [.. visited];
         }
-    }
-
-    /// <summary>
-    /// Creates the minimal number of states and transitions which match the
-    /// same tokens as the original DFA, also in linear time.
-    /// 
-    /// States are calculated by iterative paritioning of nodes, breaking out
-    /// partitions whose members are found to be distinguishable by their
-    /// outgoing transitions on any letter in the alphabet.
-    /// </summary>
-    public Fsa MinimizeDfa()
-    {
-        var remap = new Dictionary<Fsa, List<Fsa>>();
-        // Initial partition is by accept versus non-accept states, and also the
-        // token(s) which are accepted by accept states
-        var partitions = _flat
-            .GroupBy((it) => string.Join(',', it.Accepts.Distinct().Order()))
-            .Select((it) => it.ToList())
-            .ToList();
-        foreach (var p in partitions)
-        {
-            foreach (var n in p)
-            {
-                remap[n] = p;
-            }
-        }
-
-        // Continues until all partitions are indistinguishable internally
-        var prevCount = 0;
-        while (prevCount != partitions.Count)
-        {
-            prevCount = partitions.Count;
-
-            for (var i = 0; i < prevCount; i++)
-            {
-                var part = partitions[i];
-                // Next partitions are on any nodes in disagreement about which
-                // other partitions result from transitions on alphabet
-                var newParts = part
-                    .GroupBy((p) => p.Next
-                            .ToDictionary(
-                                (it) => it.Key,
-                                (it) => remap[it.Value]),
-                        new DictionaryComparer<char, List<Fsa>>())
-                    .ToList();
-                // Partition members are (currently) indistinguishable
-                if (newParts.Count() == 1)
-                {
-                    continue;
-                }
-
-                var partsRanges = newParts
-                    .Select((it) => it.ToList())
-                    .ToList();
-                // Replace partition at index, append any additional partitions
-                partitions[i] = partsRanges.First();
-                partitions.AddRange(partsRanges.Skip(1));
-
-                foreach (var p in partsRanges)
-                {
-                    foreach (var n in p)
-                    {
-                        remap[n] = p;
-                    }
-                }
-            }
-        }
-
-        return RemapPartitions(partitions);
-    }
-
-    /// <summary>
-    /// Reconstructs the minimal state graph for the DFA given a valid set of
-    /// partitions. The members in each partition must be indistinguishable.
-    /// </summary>
-    private Fsa RemapPartitions(List<List<Fsa>> parts)
-    {
-        var partMap = parts
-            // Create one replacement node for each partition
-            .Select((p) => (p, repl: new Fsa()))
-            // Relate all child nodes to replacement
-            .SelectMany((it) => it.p.Select((n) => (n, it.repl)))
-            // Index all replacement nodes selected above
-            .ToDictionary((it) => it.n, (it) => it.repl);
-        var visited = new Dictionary<Fsa, Fsa>();
-
-        Fsa remapPartitions(Fsa it)
-        {
-            if (visited.TryGetValue(it, out var _n))
-            {
-                return _n;
-            }
-            var replace = partMap[it];
-            visited[it] = replace;
-
-            replace.Accepts = replace.Accepts.Union(it.Accepts).ToList();
-            foreach (var (c, n) in it.Next)
-            {
-                var replaceNext = remapPartitions(n);
-                if (replace.Next.TryGetValue(c, out var _v) && _v != replaceNext)
-                {
-                    throw new Exception("Disagreement between partitions rebuilding minimized states");
-                }
-                replace.Next[c] = replaceNext;
-            }
-
-            return replace;
-        }
-
-        return remapPartitions(this);
     }
 }
