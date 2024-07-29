@@ -37,8 +37,24 @@ public partial class Fsa
         Build(word, accept, out var _);
     }
 
+    protected void _AddTransition(char on, Fsa to)
+    {
+        if (Next.ContainsKey(on))
+        {
+            // Become nondeterministic on second occurrence of letter
+            var epsState = new Fsa();
+            epsState.Next[on] = to;
+
+            Epsilon.Add(epsState);
+        } else
+        {
+            Next[on] = to;
+        }
+    }
+
     protected void _ParseOR(string word, int start, out int end, out List<Fsa> frontier)
     {
+        // "- 1" to counteract the initial "++end"
         end = start - 1;
         frontier = [];
 
@@ -57,6 +73,7 @@ public partial class Fsa
         {
             end = start;
             frontier = [this];
+
             return;
         }
 
@@ -74,6 +91,7 @@ public partial class Fsa
         {
             end++;
 
+            // Keep loop as sub-state to avoid unintended transitions
             Epsilon.Add(epsState);
             foreach (var state in frontier)
             {
@@ -81,8 +99,12 @@ public partial class Fsa
             }
         } else
         {
-            //TODO Merge intead of re-parse
-            _ParsePARENS(word, start, out end, out frontier, escaped: escaped);
+            // No looping to consider; merge in sub-state's transitions
+            Epsilon.AddRange(epsState.Epsilon);
+            foreach (var (k, v) in epsState.Next)
+            {
+                _AddTransition(k, v);
+            }
         }
     }
 
@@ -93,12 +115,12 @@ public partial class Fsa
             // Revert to top of parsing hierarchy
             _ParseOR(word, start + 1, out end, out var _frontier);
 
+            // Combine possible set of states down to one with epsilon
             var merge = new Fsa();
             foreach (var state in _frontier)
             {
                 state.Epsilon.Add(merge);
             }
-
             frontier = [merge];
 
             if (end >= word.Length || word[end] != ')')
@@ -115,23 +137,16 @@ public partial class Fsa
     protected void _ParseLETTER(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
         var letter = word[start];
+
         if (!escaped && letter == '\\')
         {
             _ParseSERIES(word, start + 1, out end, out frontier, escaped: true);
+
             return;
         }
 
         var newState = new Fsa(letter);
-        if (Next.ContainsKey(letter))
-        {
-            var epsState = new Fsa('\0');
-            epsState.Next[letter] = newState;
-
-            Epsilon.Add(epsState);
-        } else
-        {
-            Next[letter] = newState;
-        }
+        _AddTransition(letter, newState);
 
         end = start + 1;
         frontier = [newState];
