@@ -67,7 +67,9 @@ public partial class Fsa
             return;
         }
 
-        _ParsePARENS(word, start, out end, out frontier, escaped: escaped);
+        var epsState = new Fsa();
+        epsState._ParsePARENS(word, start, out end, out frontier, escaped: escaped);
+        Epsilon.Add(epsState);
 
         if (!escaped && end < word.Length && word[end] == '+')
         {
@@ -75,7 +77,7 @@ public partial class Fsa
 
             foreach (var state in frontier)
             {
-                state.Epsilon.Add(this);
+                state.Epsilon.Add(epsState);
             }
         }
 
