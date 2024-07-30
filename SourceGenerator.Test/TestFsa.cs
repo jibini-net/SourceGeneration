@@ -173,7 +173,8 @@ public class TestFsa
 
         fsa = fsa.ConvertToDfa();
 
-        Assert.Equal(2, fsa.Flat.Count((it) => it.Accepts.Count > 0));
+        Assert.Single(fsa.Flat, (it) => it.Accepts.Count > 0 && it.Letter == 'c');
+        Assert.Single(fsa.Flat, (it) => it.Accepts.Count > 0 && it.Letter == 'x');
 
         fsa = fsa.MinimizeDfa();
 
@@ -190,7 +191,8 @@ public class TestFsa
 
         fsa = fsa.ConvertToDfa();
 
-        Assert.Equal(2, fsa.Flat.Count((it) => it.Accepts.Count > 0));
+        Assert.Single(fsa.Flat, (it) => it.Accepts.Count > 0 && it.Letter == 'c');
+        Assert.Single(fsa.Flat, (it) => it.Accepts.Count > 0 && it.Letter == 'x');
 
         fsa = fsa.MinimizeDfa();
 
@@ -314,6 +316,142 @@ public class TestFsa
             start: 0,
             expectToken: 0,
             expectText: ""
+            );
+    }
+
+    [Fact]
+    public void CanMatchEpsilonOnReject()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("0+(a+|b+)1+", 1),
+                ("", 2)
+            ],
+            input: "000aaabbb111",
+            start: 0,
+            expectToken: 2,
+            expectText: ""
+            );
+    }
+
+    [Fact]
+    public void CanEscapePARENS()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("0+\\(a+|b+\\)1+", 1)
+            ],
+            input: "0(ab)1",
+            start: 0,
+            expectToken: 1,
+            expectText: "0(a"
+            );
+    }
+
+    [Fact]
+    public void CanMixEscapedPARENS()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("0+(\\(a+|b+\\))+1+", 1)
+            ],
+            input: "0(aaabbb)123",
+            start: 0,
+            expectToken: 1,
+            expectText: "0(aaabbb)1"
+            );
+    }
+
+    [Fact]
+    public void CanEscapePLUS()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("0\\+1", 1)
+            ],
+            input: "0+1+2",
+            start: 0,
+            expectToken: 1,
+            expectText: "0+1"
+            );
+    }
+
+    [Fact]
+    public void CanEscapeAndUsePLUS()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("0\\++1", 1)
+            ],
+            input: "0+++1+++2",
+            start: 0,
+            expectToken: 1,
+            expectText: "0+++1"
+            );
+    }
+
+    [Fact]
+    public void CanEscapePLUSAndUsePARENS()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("(0\\+1)\\+", 1)
+            ],
+            input: "0+1+2",
+            start: 0,
+            expectToken: 1,
+            expectText: "0+1+"
+            );
+    }
+
+    [Fact]
+    public void CanEscapeOR()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("\\|0\\|1\\|2\\|", 1)
+            ],
+            input: "|0|1|2|3|",
+            start: 0,
+            expectToken: 1,
+            expectText: "|0|1|2|"
+            );
+    }
+
+    [Fact]
+    public void CanEscapeORAndUsePARENS()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("(\\|0\\|1\\|2\\|)", 1)
+            ],
+            input: "|0|1|2|3|",
+            start: 0,
+            expectToken: 1,
+            expectText: "|0|1|2|"
+            );
+    }
+
+    [Fact]
+    public void CanMixEscapedOR()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("(\\|0\\||\\|1\\|)2\\|)", 1)
+            ],
+            input: "|0|2|3|",
+            start: 0,
+            expectToken: 1,
+            expectText: "|0|2|"
             );
     }
 }
