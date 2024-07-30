@@ -87,7 +87,7 @@ public partial class Fsa
         var epsState = new Fsa();
         epsState._ParsePARENS(word, start, out end, out frontier, escaped: escaped);
 
-        if (!escaped && end < word.Length && word[end] == '+')
+        if (end < word.Length && word[end] == '+')
         {
             end++;
 
