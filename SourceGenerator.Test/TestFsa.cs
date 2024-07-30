@@ -446,12 +446,22 @@ public class TestFsa
         _CanMatch(
             patterns:
             [
-                ("(\\|0\\||\\|1\\|)2\\|)", 1)
+                ("(\\|0\\||\\|1\\|)2\\|", 1)
             ],
             input: "|0|2|3|",
             start: 0,
             expectToken: 1,
             expectText: "|0|2|"
             );
+    }
+
+    [Fact]
+    public void CanDetectUnmatchedPARENS()
+    {
+        Assert.Throws<ApplicationException>(() =>
+        {
+            var fsa = new Fsa();
+            fsa.Build("a|b|c)", 1);
+        });
     }
 }

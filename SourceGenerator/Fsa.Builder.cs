@@ -12,7 +12,12 @@ public partial class Fsa
     /// </summary>
     public void Build(string word, int accept, out List<Fsa> frontier)
     {
-        _ParseOR(word, 0, out _, out frontier);
+        _ParseOR(word, 0, out var end, out frontier);
+
+        if (end < word.Length)
+        {
+            throw new ApplicationException($"Unexpected '{word[end]}' at character {end}");
+        }
 
         if (accept > 0)
         {
