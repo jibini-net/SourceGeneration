@@ -16,7 +16,7 @@ public partial class Fsa
 
         if (end < word.Length)
         {
-            throw new ApplicationException($"Unexpected '{word[end]}' at character {end}");
+            throw new ApplicationException($"Unexpected '{word[end]}' at offset {end}");
         }
 
         if (accept > 0)
@@ -74,7 +74,7 @@ public partial class Fsa
     protected void _ParseSERIES(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
         if (start >= word.Length
-            || (!escaped && (word[start] == ')' || word[start] == '|' || word[start] == '+')))
+            || (!escaped && (word[start] == ')' || word[start] == '|'/* || word[start] == '+'*/)))
         {
             end = start;
             frontier = [this];
@@ -89,19 +89,25 @@ public partial class Fsa
 
     protected void _ParsePLUS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
+        if (!escaped && word[start] == '+')
+        {
+            end = start;
+            goto infinite_loop_detected;
+        }
+
         var epsState = new Fsa();
         epsState._ParsePARENS(word, start, out end, out frontier, escaped: escaped);
 
         if (end < word.Length && word[end] == '+')
         {
-            end++;
-
             // Detect any paths from this state directly to the frontier--
             // creating a cycle here would cause infinite loops
             if (frontier.Contains(epsState) || frontier.Intersect(epsState.EpsilonClosure()).Any())
             {
-                throw new ApplicationException("Cannot use '+' on the empty string");
+                goto infinite_loop_detected;
             }
+
+            end++;
 
             // Keep loop as sub-state to avoid unintended transitions
             Epsilon.Add(epsState);
@@ -118,6 +124,11 @@ public partial class Fsa
                 _AddTransition(k, v);
             }
         }
+
+        return;
+
+    infinite_loop_detected:
+        throw new ApplicationException($"Cannot use '+' (at offset {end}) on the empty string");
     }
 
     protected void _ParsePARENS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
@@ -137,7 +148,7 @@ public partial class Fsa
 
             if (end >= word.Length || word[end] != ')')
             {
-                throw new ApplicationException($"Expected ')' at character {end}");
+                throw new ApplicationException($"Expected ')' at offset {end}");
             }
             end++;
         } else

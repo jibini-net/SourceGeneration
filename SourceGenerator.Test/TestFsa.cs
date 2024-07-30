@@ -485,5 +485,17 @@ public class TestFsa
             var fsa = new Fsa();
             fsa.Build("+", 1);
         });
+
+        Assert.Throws<ApplicationException>(() =>
+        {
+            var fsa = new Fsa();
+            fsa.Build("(+)", 1);
+        });
+
+        Assert.Throws<ApplicationException>(() =>
+        {
+            var fsa = new Fsa();
+            fsa.Build("(())+", 1);
+        });
     }
 }
