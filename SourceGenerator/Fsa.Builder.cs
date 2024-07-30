@@ -96,6 +96,13 @@ public partial class Fsa
         {
             end++;
 
+            // Detect any paths from this state directly to the frontier--
+            // creating a cycle here would cause infinite loops
+            if (frontier.Contains(epsState) || frontier.Intersect(epsState.EpsilonClosure()).Any())
+            {
+                throw new ApplicationException("Cannot use '+' on the empty string");
+            }
+
             // Keep loop as sub-state to avoid unintended transitions
             Epsilon.Add(epsState);
             foreach (var state in frontier)

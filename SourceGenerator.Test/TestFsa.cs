@@ -464,4 +464,26 @@ public class TestFsa
             fsa.Build("a|b|c)", 1);
         });
     }
+
+    [Fact]
+    public void CanDetectPLUSOnInfiniteLoop()
+    {
+        Assert.Throws<ApplicationException>(() =>
+        {
+            var fsa = new Fsa();
+            fsa.Build("()+", 1);
+        });
+
+        Assert.Throws<ApplicationException>(() =>
+        {
+            var fsa = new Fsa();
+            fsa.Build("(a|)+", 1);
+        });
+
+        Assert.Throws<ApplicationException>(() =>
+        {
+            var fsa = new Fsa();
+            fsa.Build("+", 1);
+        });
+    }
 }
