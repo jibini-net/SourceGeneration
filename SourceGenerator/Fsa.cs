@@ -101,7 +101,7 @@ public partial class Fsa
     /// <summary>
     /// Traverses the entire network to find a distinct flattened node list.
     /// </summary>
-    private List<Fsa> Flat
+    public List<Fsa> Flat
     {
         get
         {
