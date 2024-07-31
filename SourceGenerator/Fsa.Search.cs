@@ -35,11 +35,11 @@ public partial class Fsa
             if (nfaMode)
             {
                 // Any accept state in the frontier is a valid match
-                var acceptState = closure.Where((it) => it.Accepts.Count > 0).FirstOrDefault();
-                if (acceptState is not null)
+                var acceptState = closure.Where((it) => it.Accepts.Count > 0).ToList();
+                if (acceptState.Count > 0)
                 {
                     longestEnd = textIndex;
-                    match = acceptState.Accepts.Min();
+                    match = acceptState.SelectMany((it) => it.Accepts).Min();
                 }
 
                 // "Invalid state" due to end of input or lack of next states

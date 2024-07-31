@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerator.VsEditor", 
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SourceGenerator.Installer", "SourceGenerator.Installer\SourceGenerator.Installer.vdproj", "{86826616-280A-4DEB-99F6-CEAC33CF12CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceGenerator.Test", "SourceGenerator.Test\SourceGenerator.Test.csproj", "{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,18 @@ Global
 		{86826616-280A-4DEB-99F6-CEAC33CF12CE}.Release|Any CPU.ActiveCfg = Release
 		{86826616-280A-4DEB-99F6-CEAC33CF12CE}.Release|arm64.ActiveCfg = Release
 		{86826616-280A-4DEB-99F6-CEAC33CF12CE}.Release|x86.ActiveCfg = Release
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Debug|arm64.Build.0 = Debug|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Debug|x86.Build.0 = Debug|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Release|arm64.ActiveCfg = Release|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Release|arm64.Build.0 = Release|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Release|x86.ActiveCfg = Release|Any CPU
+		{8AE4AE15-AFD2-4FC4-B7F6-4A6A981E4153}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
