@@ -245,6 +245,32 @@ public class TestFsa
     }
 
     [Fact]
+    public void CanEndWithOR()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("0|", 1)
+            ],
+            input: "1",
+            start: 0,
+            expectToken: 1,
+            expectText: ""
+            );
+
+        _CanMatch(
+            patterns:
+            [
+                ("0|", 1)
+            ],
+            input: "0",
+            start: 0,
+            expectToken: 1,
+            expectText: "0"
+            );
+    }
+
+    [Fact]
     public void CanMatchWithOptionalPLUS()
     {
         _CanMatch(
@@ -461,6 +487,12 @@ public class TestFsa
         Assert.Throws<ApplicationException>(() =>
         {
             var fsa = new Fsa();
+            fsa.Build("(a|b|c", 1);
+        });
+
+        Assert.Throws<ApplicationException>(() =>
+        {
+            var fsa = new Fsa();
             fsa.Build("a|b|c)", 1);
         });
     }
@@ -496,6 +528,12 @@ public class TestFsa
         {
             var fsa = new Fsa();
             fsa.Build("(())+", 1);
+        });
+
+        Assert.Throws<ApplicationException>(() =>
+        {
+            var fsa = new Fsa();
+            fsa.Build("a++", 1);
         });
     }
 }
