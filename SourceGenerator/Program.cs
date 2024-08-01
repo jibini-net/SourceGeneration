@@ -120,14 +120,8 @@ internal class Program
     private static void InitializeFsa()
     {
         var startTime = DateTime.Now;
-
-        var letters = "a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z";
-        var capLetters = letters.ToUpperInvariant();
-        var numbers = "0|1|2|3|4|5|6|7|8|9";
-        var cSharpType = "\\<|\\>|\\[|\\]|\\.|\\?";
-        var word = $"({letters}|{capLetters}|_)+(|({letters}|{capLetters}|{numbers}|{cSharpType}|_)+)";
-
         var nfa = new Fsa();
+
         nfa.Build("schema", (int)Schema);
         nfa.Build("partial", (int)Partial);
         nfa.Build("repo", (int)Repo);
@@ -136,29 +130,27 @@ internal class Program
         nfa.Build("state", (int)State);
         nfa.Build("interface", (int)Interface);
         nfa.Build("dto", (int)Dto);
-        nfa.Build(word, (int)Ident);
-        nfa.Build("{", (int)LCurly);
-        nfa.Build("}", (int)RCurly);
+        nfa.Build("[a-zA-Z_]([a-zA-Z0-9_\\<\\>\\[\\]\\.\\?]+|)", (int)Ident);
+        nfa.Build("\\{", (int)LCurly);
+        nfa.Build("\\}", (int)RCurly);
         nfa.Build("\\(", (int)LParen);
         nfa.Build("\\)", (int)RParen);
-        nfa.Build(",", (int)Comma);
-        nfa.Build("...", (int)Splat);
-        nfa.Build("=", (int)Assign);
-        nfa.Build("=>", (int)Arrow);
-        nfa.Build("<>", (int)LRfReduce);
-        nfa.Build("</>", (int)RRfReduce);
-        nfa.Build("<\">", (int)LMultiLine);
-        nfa.Build("</\">", (int)RMultiLine);
+        nfa.Build("\\,", (int)Comma);
+        nfa.Build("\\.\\.\\.", (int)Splat);
+        nfa.Build("\\=", (int)Assign);
+        nfa.Build("\\=\\>", (int)Arrow);
+        nfa.Build("\\<\\>", (int)LRfReduce);
+        nfa.Build("\\<\\/\\>", (int)RRfReduce);
+        nfa.Build("\\<\\\"\\>", (int)LMultiLine);
+        nfa.Build("\\<\\/\\\"\\>", (int)RMultiLine);
         nfa.Build("\\|", (int)Bar);
-        nfa.Build("( |\n|\r|\t)+", 9999);
+        nfa.Build("[ \n\r\t]+", 9999);
 
         var consoleLine = new TrackedConsoleLine();
         consoleLine.Write($"CREATED NFA IN {(DateTime.Now - startTime).TotalMilliseconds}ms", color: ConsoleColor.Cyan);
         startTime = DateTime.Now;
 
-        Dfa = nfa
-            .ConvertToDfa()
-            .MinimizeDfa();
+        Dfa = nfa.ConvertToDfa().MinimizeDfa();
 
         consoleLine.Write($" [] CREATED DFA IN {(DateTime.Now - startTime).TotalMilliseconds}ms", color: ConsoleColor.Cyan);
     }
