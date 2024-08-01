@@ -1,5 +1,18 @@
 ﻿namespace SourceGenerator;
 
+public static partial class FsaExtensions
+{
+    public static List<Fsa> MergeFrontier(this List<Fsa> frontier)
+    {
+        var merge = new Fsa();
+        foreach (var state in frontier)
+        {
+            state.Epsilon.Add(merge);
+        }
+        return [merge];
+    }
+}
+
 public partial class Fsa
 {
     /// <summary>
@@ -74,7 +87,7 @@ public partial class Fsa
     protected void _ParseSERIES(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
         if (start >= word.Length
-            || (!escaped && (word[start] == ')' || word[start] == '|'/* || word[start] == '+'*/)))
+            || (!escaped && (word[start] == ')' || word[start] == '|')))
         {
             end = start;
             frontier = [this];
@@ -89,7 +102,7 @@ public partial class Fsa
 
     protected void _ParsePLUS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
-        if (!escaped && word[start] == '+')
+        if (!escaped && (word[start] == '+' || word[start] == '{'))
         {
             end = start;
             goto infinite_loop_detected;
@@ -98,13 +111,18 @@ public partial class Fsa
         var epsState = new Fsa();
         epsState._ParsePARENS(word, start, out end, out frontier, escaped: escaped);
 
-        if (end < word.Length && word[end] == '+')
+        if (end < word.Length && (word[end] == '+' || word[end] == '{'))
         {
             // Detect any paths from this state directly to the frontier--
             // creating a cycle here would cause infinite loops
             if (frontier.Contains(epsState) || frontier.Intersect(epsState.EpsilonClosure()).Any())
             {
                 goto infinite_loop_detected;
+            }
+
+            if (word[end] == '{')
+            {
+                throw new NotImplementedException("Bounded loops ('{}')");
             }
 
             end++;
@@ -128,27 +146,89 @@ public partial class Fsa
         return;
 
     infinite_loop_detected:
-        throw new ApplicationException($"Cannot use '+' (at offset {end}) on the empty string");
+        throw new ApplicationException($"Cannot use '+' or '{{}}' (at offset {end}) on the empty string");
     }
 
     protected void _ParsePARENS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
-        if (!escaped && start < word.Length && word[start] == '(')
+        if (!escaped && word[start] == '(')
         {
             // Revert to top of parsing hierarchy
-            _ParseOR(word, start + 1, out end, out var _frontier);
+            _ParseOR(word, start + 1, out end, out frontier);
 
             // Combine possible set of states down to one with epsilon
-            var merge = new Fsa();
-            foreach (var state in _frontier)
-            {
-                state.Epsilon.Add(merge);
-            }
-            frontier = [merge];
+            frontier = frontier.MergeFrontier();
 
             if (end >= word.Length || word[end] != ')')
             {
                 throw new ApplicationException($"Expected ')' at offset {end}");
+            }
+            end++;
+        } else
+        {
+            _ParseRANGE(word, start, out end, out frontier, escaped: escaped);
+        }
+    }
+
+    protected void _ParseRANGE(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
+    {
+        if (!escaped && word[start] == '[')
+        {
+            end = start + 1;
+            frontier = [];
+
+            for (var _escaped = false;
+                end < word.Length && (_escaped || word[end] != ']');
+                end++)
+            {
+                var letter = word[end];
+                switch (letter)
+                {
+                    case '\\' when !_escaped:
+                        _escaped = true;
+                        continue;
+
+                    case '-' when !_escaped:
+                        throw new ApplicationException($"Unexpected '-' at offset {end}");
+                }
+
+                var newState = new Fsa(letter);
+                _AddTransition(letter, newState);
+
+                frontier.Add(newState);
+
+                if (end + 1 < word.Length && word[end + 1] == '-')
+                {
+                    if (end + 2 >= word.Length || word[end + 2] == ']')
+                    {
+                        throw new ApplicationException($"Expected range end character at offset {end + 2}");
+                    }
+                    end += 2;
+
+                    var endLetter = word[end];
+                    if (endLetter <= letter)
+                    {
+                        throw new ApplicationException($"Range end (at offset {end}) must be greater than '{letter}'");
+                    }
+
+                    for (char c = (char)(letter + 1); c <= endLetter; c++)
+                    {
+                        var _newState = new Fsa(c);
+                        _AddTransition(c, _newState);
+
+                        frontier.Add(_newState);
+                    }
+                }
+
+                _escaped = false;
+            }
+
+            // Combine possible set of states down to one with epsilon
+            frontier = frontier.MergeFrontier();
+
+            if (end >= word.Length || word[end] != ']')
+            {
+                throw new ApplicationException($"Expected ']' at offset {end}");
             }
             end++;
         } else
