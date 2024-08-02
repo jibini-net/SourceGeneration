@@ -44,10 +44,15 @@ public partial class Fsa
 
                 for (var c = startNum; c <= endNum; c++)
                 {
-                    var builtExpr = string.Join("", Enumerable.Range(0, c).Select((_) => expr));
-                    _ParseOR(builtExpr, 0, out _, out var _frontier);
-
-                    frontier.AddRange(_frontier);
+                    if (c > 0)
+                    {
+                        var builtExpr = string.Join("", Enumerable.Range(0, c).Select((_) => expr));
+                        _ParseSERIES(builtExpr, 0, out _, out var _frontier);
+                        frontier.AddRange(_frontier);
+                    } else
+                    {
+                        frontier.Add(this);
+                    }
                 }
 
                 break;

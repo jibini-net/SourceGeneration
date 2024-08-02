@@ -41,6 +41,28 @@ public partial class TestFsa
             expectToken: 1,
             expectText: "ag"
             );
+
+        _CanMatch(
+            patterns:
+            [
+                ("a([abcdef]+|)", 1)
+            ],
+            input: "ag",
+            start: 0,
+            expectToken: 1,
+            expectText: "a"
+            );
+
+        _CanMatch(
+            patterns:
+            [
+                ("([abcdef]+|)", 1)
+            ],
+            input: "gh",
+            start: 0,
+            expectToken: 1,
+            expectText: ""
+            );
     }
 
     [Fact]
@@ -111,8 +133,19 @@ public partial class TestFsa
     }
 
     [Fact]
-    public void CanMatchBasicBoundedPLUS()
+    public void CanMatchBoundedPLUS()
     {
+        _CanMatch(
+            patterns:
+            [
+                ("(a|)", 1)
+            ],
+            input: "defdef",
+            start: 0,
+            expectToken: 1,
+            expectText: ""
+            );
+
         _CanMatch(
             patterns:
             [
