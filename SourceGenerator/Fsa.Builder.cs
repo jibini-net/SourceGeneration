@@ -70,6 +70,21 @@ public partial class Fsa
         }
     }
 
+    protected void _ParsePARENS(string word, int start, out int end, out List<Fsa> frontier)
+    {
+        // Revert to top of parsing hierarchy
+        _ParseOR(word, start + 1, out end, out frontier);
+
+        // Combine possible set of states down to one with epsilon
+        frontier = frontier.MergeFrontier();
+
+        if (end >= word.Length || word[end] != ')')
+        {
+            throw new ApplicationException($"Expected ')' at offset {end}");
+        }
+        end++;
+    }
+
     protected void _ParseOR(string word, int start, out int end, out List<Fsa> frontier)
     {
         // "- 1" to counteract the initial "++end"
@@ -100,11 +115,6 @@ public partial class Fsa
         frontier.Single()._ParseSERIES(word, end, out end, out frontier);
     }
 
-    protected void _ParsePLUS_Bounded(string word, ref int start, ref int end, ref List<Fsa> frontier)
-    {
-        throw new NotImplementedException("Bounded loops ('{}')");
-    }
-
     protected void _ParsePLUS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
         if (!escaped && (word[start] == '+' || word[start] == '{'))
@@ -114,7 +124,7 @@ public partial class Fsa
         }
 
         var epsState = new Fsa();
-        epsState._ParsePARENS(word, start, out end, out frontier, escaped: escaped);
+        epsState._ParseLETTER(word, start, out end, out frontier, escaped: escaped);
 
         if (end < word.Length && (word[end] == '+' || word[end] == '{'))
         {
@@ -156,109 +166,23 @@ public partial class Fsa
         throw new ApplicationException($"Cannot use '+' or '{{}}' (at offset {end}) on the empty string");
     }
 
-    protected void _ParsePARENS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
-    {
-        if (!escaped && word[start] == '(')
-        {
-            // Revert to top of parsing hierarchy
-            _ParseOR(word, start + 1, out end, out frontier);
-
-            // Combine possible set of states down to one with epsilon
-            frontier = frontier.MergeFrontier();
-
-            if (end >= word.Length || word[end] != ')')
-            {
-                throw new ApplicationException($"Expected ')' at offset {end}");
-            }
-            end++;
-        } else
-        {
-            _ParseRANGE(word, start, out end, out frontier, escaped: escaped);
-        }
-    }
-
-    protected void _ParseRANGE_Chars(string word, ref int start, ref int end, ref List<Fsa> frontier)
-    {
-        var letter = word[end];
-
-        var newState = new Fsa(letter);
-        _AddTransition(letter, newState);
-
-        frontier.Add(newState);
-
-        if (end + 1 < word.Length && word[end + 1] == '-')
-        {
-            if (end + 2 >= word.Length || word[end + 2] == ']')
-            {
-                throw new ApplicationException($"Expected range end character at offset {end + 2}");
-            }
-            end += 2;
-
-            var endLetter = word[end];
-            if (endLetter <= letter)
-            {
-                throw new ApplicationException($"Range end (at offset {end}) must be greater than '{letter}'");
-            }
-
-            for (char c = (char)(letter + 1); c <= endLetter; c++)
-            {
-                var _newState = new Fsa(c);
-                _AddTransition(c, _newState);
-
-                frontier.Add(_newState);
-            }
-        }
-    }
-
-    protected void _ParseRANGE(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
-    {
-        if (!escaped && word[start] == '[')
-        {
-            end = start + 1;
-            frontier = [];
-
-            for (var _escaped = false;
-                end < word.Length && (_escaped || word[end] != ']');
-                end++)
-            {
-                switch (word[end])
-                {
-                    case '\\' when !_escaped:
-                        _escaped = true;
-                        continue;
-
-                    case '-' when !_escaped:
-                        throw new ApplicationException($"Unexpected '-' at offset {end}");
-                }
-
-                _ParseRANGE_Chars(word, ref start, ref end, ref frontier);
-
-                _escaped = false;
-            }
-
-            // Combine possible set of states down to one with epsilon
-            frontier = frontier.MergeFrontier();
-
-            if (end >= word.Length || word[end] != ']')
-            {
-                throw new ApplicationException($"Expected ']' at offset {end}");
-            }
-            end++;
-        } else
-        {
-            _ParseLETTER(word, start, out end, out frontier, escaped: escaped);
-        }
-    }
-
     protected void _ParseLETTER(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
         var letter = word[start];
 
-        if (!escaped && letter == '\\')
+        switch (letter)
         {
-            _ParseSERIES(word, start + 1, out end, out frontier, escaped: true);
+            case '\\' when !escaped:
+                _ParseSERIES(word, start + 1, out end, out frontier, escaped: true);
+                return;
 
-            return;
+            case '(' when !escaped:
+                _ParsePARENS(word, start, out end, out frontier);
+                return;
+
+            case '[' when !escaped:
+                _ParseRANGE(word, start, out end, out frontier);
+                return;
         }
 
         var newState = new Fsa(letter);
