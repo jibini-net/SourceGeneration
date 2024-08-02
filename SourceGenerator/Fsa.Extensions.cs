@@ -4,8 +4,76 @@ public partial class Fsa
 {
     protected void _EXT_ParsePLUS_Bounded(string word, ref int start, ref int end, ref List<Fsa> frontier)
     {
+        frontier = [];
         var expr = word[start..end];
-        throw new NotImplementedException("Bounded loops ('{}')");
+
+        int startNum;
+        {
+            var (token, match) = CommonMatcher.Search(word, ++end);
+            if (token != (int)CommonMatch.Numbers)
+            {
+                throw new ApplicationException($"Expected numeric value at offset {end}");
+            }
+            startNum = int.Parse(match);
+
+            end += match.Length;
+        }
+
+        if (end >= word.Length)
+        {
+            goto expected_operator;
+        }
+        switch (word[end++])
+        {
+            case ',':
+                int endNum;
+                {
+                    var (token, match) = CommonMatcher.Search(word, end);
+                    if (token != (int)CommonMatch.Numbers)
+                    {
+                        throw new ApplicationException($"Expected numeric value at offset {end}");
+                    }
+                    endNum = int.Parse(match);
+
+                    end += match.Length;
+                }
+                if (endNum < startNum)
+                {
+                    throw new ApplicationException("Loop upper bound must be greater than or equal to lower bound");
+                }
+
+                for (var c = startNum; c <= endNum; c++)
+                {
+                    var builtExpr = string.Join("", Enumerable.Range(0, c).Select((_) => expr));
+                    _ParseOR(builtExpr, 0, out _, out var _frontier);
+
+                    frontier.AddRange(_frontier);
+                }
+
+                break;
+
+            case '+':
+                throw new NotImplementedException("Bounded loop with '+'");
+                //end++;
+                //break;
+
+            default:
+                goto expected_operator;
+        }
+
+        // Combine possible set of states down to one with epsilon
+        frontier = frontier.MergeFrontier();
+
+        if (end >= word.Length || word[end] != '}')
+        {
+            throw new ApplicationException($"Expected '}}' at offset {end}");
+        }
+        end++;
+
+        return;
+
+    expected_operator:
+        throw new ApplicationException($"Expected ',' or '+' at offset {end}");
     }
 
     protected void _EXT_ParseRANGE_Chars(string word, ref int start, ref int end, ref List<Fsa> frontier)

@@ -111,6 +111,43 @@ public partial class TestFsa
     }
 
     [Fact]
+    public void CanMatchBasicBoundedPLUS()
+    {
+        _CanMatch(
+            patterns:
+            [
+                ("[abc]{1,1}", 1)
+            ],
+            input: "abcabc",
+            start: 0,
+            expectToken: 1,
+            expectText: "a"
+            );
+
+        _CanMatch(
+            patterns:
+            [
+                ("[abc]{1,2}", 1)
+            ],
+            input: "abcabc",
+            start: 0,
+            expectToken: 1,
+            expectText: "ab"
+            );
+
+        _CanMatch(
+            patterns:
+            [
+                ("[abc]{1,3}", 1)
+            ],
+            input: "abcabc",
+            start: 0,
+            expectToken: 1,
+            expectText: "abc"
+            );
+    }
+
+    [Fact]
     public void CanDetectRANGEBackwardsOrder()
     {
         Assert.Throws<ApplicationException>(() =>
