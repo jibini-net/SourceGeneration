@@ -2,12 +2,12 @@
 
 public partial class Fsa
 {
-    protected void _ParsePLUS_Bounded(string word, ref int start, ref int end, ref List<Fsa> frontier)
+    protected void _EXT_ParsePLUS_Bounded(string word, ref int start, ref int end, ref List<Fsa> frontier)
     {
         throw new NotImplementedException("Bounded loops ('{}')");
     }
 
-    protected void _ParseRANGE_Chars(string word, ref int start, ref int end, ref List<Fsa> frontier)
+    protected void _EXT_ParseRANGE_Chars(string word, ref int start, ref int end, ref List<Fsa> frontier)
     {
         var letter = word[end];
 
@@ -40,7 +40,7 @@ public partial class Fsa
         }
     }
 
-    protected void _ParseRANGE(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
+    protected void _EXT_ParseRANGE(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
         if (!escaped && word[start] == '[')
         {
@@ -61,7 +61,7 @@ public partial class Fsa
                         throw new ApplicationException($"Unexpected '-' at offset {end}");
                 }
 
-                _ParseRANGE_Chars(word, ref start, ref end, ref frontier);
+                _EXT_ParseRANGE_Chars(word, ref start, ref end, ref frontier);
 
                 _escaped = false;
             }

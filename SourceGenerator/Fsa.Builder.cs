@@ -137,7 +137,7 @@ public partial class Fsa
 
             if (word[end] == '{')
             {
-                _ParsePLUS_Bounded(word, ref start, ref end, ref frontier);
+                _EXT_ParsePLUS_Bounded(word, ref start, ref end, ref frontier);
 
                 return;
             }
@@ -181,7 +181,7 @@ public partial class Fsa
                 return;
 
             case '[' when !escaped:
-                _ParseRANGE(word, start, out end, out frontier);
+                _EXT_ParseRANGE(word, start, out end, out frontier);
                 return;
         }
 
