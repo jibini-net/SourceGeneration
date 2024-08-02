@@ -41,7 +41,10 @@ public partial class Fsa
         // Visited set for cycles and already-deterministic nodes
         var replace = new Dictionary<HashSet<Fsa>, Fsa>(HashSet<Fsa>.CreateSetComparer());
 
-        queue.Enqueue((result, EpsilonClosure().Distinct().ToList()));
+        var initialClosure = EpsilonClosure().Distinct().ToList();
+        result.Accepts.AddRange(initialClosure.SelectMany((it) => it.Accepts).Distinct());
+
+        queue.Enqueue((result, initialClosure));
         do
         {
             var (node, oldClosure) = queue.Dequeue();

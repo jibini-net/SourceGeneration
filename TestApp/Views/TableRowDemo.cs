@@ -1,6 +1,6 @@
-﻿using Generated;
+﻿namespace TestApp.Views;
 
-namespace TestApp.Views;
+using Generated;
 
 public class TableRowDemo : TableRowDemoBase
 {

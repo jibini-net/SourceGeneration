@@ -1,9 +1,9 @@
-﻿using Generated;
+﻿namespace TestApp.Extensions;
+
+using Generated;
 using Microsoft.Extensions.DependencyInjection;
 using TestApp.Services;
 using TestApp.Views;
-
-namespace TestApp.Extensions;
 
 public static class ServiceCollectionExtensions
 {

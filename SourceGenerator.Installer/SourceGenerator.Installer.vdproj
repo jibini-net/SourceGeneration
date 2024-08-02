@@ -15,7 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_318225F1FE8649B283F3071F12AB9332"
+        "MsmKey" = "8:_39A0C1F1EC504549947BF064E7761570"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F9254A54309C40BC81CEF2D12A73CB71"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -37,6 +43,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -53,6 +75,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -84,6 +122,46 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_39A0C1F1EC504549947BF064E7761570"
+            {
+            "SourcePath" = "8:..\\SourceGenerator\\bin\\publish\\SourceGenerator.exe"
+            "TargetName" = "8:SourceGenerator.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_828E8DCC62FC4B4C8E7A9EA09EF4634C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F9254A54309C40BC81CEF2D12A73CB71"
+            {
+            "SourcePath" = "8:..\\SourceGenerator\\bin\\publish\\SourceGenerator.pdb"
+            "TargetName" = "8:SourceGenerator.pdb"
+            "Tag" = "8:"
+            "Folder" = "8:_828E8DCC62FC4B4C8E7A9EA09EF4634C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -114,7 +192,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_828E8DCC62FC4B4C8E7A9EA09EF4634C"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -139,22 +217,22 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:SourceGenerator.Installer"
+        "ProductName" = "8:Source Generator"
         "ProductCode" = "8:{E8A0C25B-AFF9-45F1-A73F-7B0B00E3B754}"
-        "PackageCode" = "8:{6A87B4E9-8131-425B-A177-6F2FBB4B37F2}"
+        "PackageCode" = "8:{EBE2B6AC-57B8-4CAF-8C0D-DEC457EF8545}"
         "UpgradeCode" = "8:{9D203359-91CF-4D19-AE2B-D3FD6B7101F7}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Default Company Name"
+        "Manufacturer" = "8:Jibini"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:SourceGenerator.Installer"
+        "Title" = "8:Source Generator"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Default Company Name"
+        "ARPCONTACT" = "8:Zach Goethel"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
@@ -162,7 +240,7 @@
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
-        "TargetPlatform" = "3:0"
+        "TargetPlatform" = "3:1"
         "PreBuildEvent" = "8:"
         "PostBuildEvent" = "8:"
         "RunPostBuildEvent" = "3:0"
@@ -261,30 +339,30 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_464FC55C02FD4BF5BA0DC7FC89D41FBE"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8F861AD3D3B943A988B9A48D2457BF46"
             {
-            "Name" = "8:SourceGenerator"
+            "Name" = "8:Source Generator"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_318225F1FE8649B283F3071F12AB9332"
-            "Folder" = "8:_014FDD40795C4883BAF18828016EC9C5"
+            "Target" = "8:_39A0C1F1EC504549947BF064E7761570"
+            "Folder" = "8:_79FB068A60BC4A8B9B6EFA58FF93A1D8"
             "WorkingFolder" = "8:_828E8DCC62FC4B4C8E7A9EA09EF4634C"
             "Icon" = "8:"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F0C6B6A4FBFE4CD8AACE895D156CEFD8"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D007BF2AE029489899C29A110E0AC7AF"
             {
-            "Name" = "8:SourceGenerator"
+            "Name" = "8:Source Generator"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_318225F1FE8649B283F3071F12AB9332"
-            "Folder" = "8:_79FB068A60BC4A8B9B6EFA58FF93A1D8"
+            "Target" = "8:_39A0C1F1EC504549947BF064E7761570"
+            "Folder" = "8:_014FDD40795C4883BAF18828016EC9C5"
             "WorkingFolder" = "8:_828E8DCC62FC4B4C8E7A9EA09EF4634C"
             "Icon" = "8:"
             "Feature" = "8:"
@@ -688,34 +766,6 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_318225F1FE8649B283F3071F12AB9332"
-            {
-            "SourcePath" = "8:..\\SourceGenerator\\obj\\Debug\\net8.0\\apphost.exe"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_828E8DCC62FC4B4C8E7A9EA09EF4634C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:"
-            "OutputGroupCanonicalName" = "8:PublishItems"
-            "OutputProjectGuid" = "8:{10F42F30-10AA-42E6-BA24-2165FCC01DAE}"
-            "ShowKeyOutput" = "11:TRUE"
-                "ExcludeFilters"
-                {
-                }
-            }
         }
     }
 }

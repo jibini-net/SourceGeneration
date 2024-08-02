@@ -1,11 +1,11 @@
-﻿using Generated;
+﻿namespace TestApp.Services;
+
+using Generated;
 using Microsoft.Extensions.Logging;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
-
-namespace TestApp.Services;
 
 public class AccountService : Account.IBackendService
 {

@@ -1,6 +1,6 @@
-﻿using Generated;
+﻿namespace TestApp.Services;
 
-namespace TestApp.Services;
+using Generated;
 
 public class ModelDbWrapper : IModelDbWrapper
 {

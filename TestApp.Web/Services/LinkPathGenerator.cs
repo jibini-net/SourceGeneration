@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿namespace TestApp.Services;
 
-namespace TestApp.Services;
+using System.Text;
 
 public class LinkPathGenerator : ILinkPathGenerator
 {

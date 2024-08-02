@@ -1,6 +1,6 @@
-﻿using Generated;
+﻿namespace TestApp.Views;
 
-namespace TestApp.Views;
+using Generated;
 
 public class TechnologyList : TechnologyListBase
 {
@@ -55,6 +55,12 @@ public class TechnologyList : TechnologyListBase
                 Name = "State Machines and Parsers",
                 IconClass = "fa fa-indent",
                 Description = "Custom built language parsing frameworks with <a target='_blank' href='https://apps.jibini.net/Fsa'>custom lexer</a>/parser generators"
+            },
+            new()
+            {
+                Name = "Containerization and Docker",
+                IconClass = "fab fa-docker",
+                Description = "Resiliant and maintainable deployment workflows using Docker and Docker Compose"
             },
             new()
             {

@@ -1,10 +1,10 @@
-﻿using Generated;
+﻿namespace TestApp.Services;
+
+using Generated;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Text;
 using TestApp.Extensions;
-
-namespace TestApp.Services;
 
 public class ModelDbAdapter : IModelDbAdapter
 {

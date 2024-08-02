@@ -1,6 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿namespace TestApp.Services;
 
-namespace TestApp.Services;
+using System.Collections.Concurrent;
 
 public class ResourceInliner : IResourceInliner
 {
