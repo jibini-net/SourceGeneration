@@ -1,11 +1,11 @@
-﻿using Generated;
+﻿namespace TestApp.Services;
+
+using Generated;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TestApp.Extensions;
-
-namespace TestApp.Services;
 
 public class JwtAuthService : IJwtAuthService
 {

@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace SourceGenerator;
+﻿namespace SourceGenerator;
 
 public class TrackedConsoleLine
 {

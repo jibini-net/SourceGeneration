@@ -11,9 +11,6 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Linq;
 
-using static SourceGenerator.VsEditor.SourceGeneratorClassificationDefinition;
-using Microsoft.SqlServer.Server;
-
 namespace SourceGenerator.VsEditor
 {
     internal class SourceGeneratorClassifier : IClassifier

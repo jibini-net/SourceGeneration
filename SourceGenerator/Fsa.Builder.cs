@@ -117,32 +117,49 @@ public partial class Fsa
 
     protected void _ParsePLUS(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
     {
-        if (!escaped && (word[start] == '+' || word[start] == '{'))
+        if (!escaped && (word[start] == '+' || word[start] == '{' || word[start] == '*'))
         {
             end = start;
             goto infinite_loop_detected;
+        }
+        if (!escaped && word[start] == '?')
+        {
+            end = start;
+            throw new ApplicationException($"Expected optional expression before offset {end}");
         }
 
         var epsState = new Fsa();
         epsState._ParseLETTER(word, start, out end, out frontier, escaped: escaped);
 
-        if (end < word.Length && (word[end] == '+' || word[end] == '{'))
+        if (end < word.Length
+            && (word[end] == '+' || word[end] == '{' || word[end] == '?' || word[end] == '*'))
         {
-            // Detect any paths from this state directly to the frontier--
-            // creating a cycle here would cause infinite loops
-            if (frontier.Contains(epsState) || frontier.Intersect(epsState.EpsilonClosure()).Any())
+            if (word[end] != '?'
+                // Detect any paths from this state directly to the frontier--
+                // creating a cycle here would cause infinite loops
+                && (frontier.Contains(epsState) || frontier.Intersect(epsState.EpsilonClosure()).Any()))
             {
                 goto infinite_loop_detected;
             }
 
-            if (word[end] == '{')
+            switch (word[end])
             {
-                _EXT_ParsePLUS_Bounded(word, ref start, ref end, ref frontier);
+                case '+':
+                    end++;
+                    break;
 
-                return;
+                case '{':
+                    _EXT_ParsePLUS_Bounded(word, ref start, ref end, ref frontier, escaped: escaped);
+                    return;
+
+                case '?':
+                    _EXT_ParsePLUS_Optional(word, ref start, ref end, ref frontier, escaped: escaped);
+                    return;
+
+                case '*':
+                    _EXT_ParsePLUS_Star(word, ref start, ref end, ref frontier, escaped: escaped);
+                    return;
             }
-
-            end++;
 
             // Keep loop as sub-state to avoid unintended transitions
             Epsilon.Add(epsState);
@@ -163,7 +180,7 @@ public partial class Fsa
         return;
 
     infinite_loop_detected:
-        throw new ApplicationException($"Cannot use '+' or '{{}}' (at offset {end}) on the empty string");
+        throw new ApplicationException($"Cannot use '+', '{{}}', or '*' (at offset {end}) on the empty string");
     }
 
     protected void _ParseLETTER(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)

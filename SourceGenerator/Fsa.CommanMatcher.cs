@@ -19,7 +19,7 @@ public partial class Fsa
                 var commonMatcher = new Fsa();
                 commonMatcher.Build("[0-9]+", (int)CommonMatch.Numbers);
                 commonMatcher.Build("[a-zA-Z]+", (int)CommonMatch.Letters);
-                commonMatcher.Build("[ \n\r\t]+", (int)CommonMatch.Whitespace);
+                commonMatcher.Build("[ \n\r\t\v\f]+", (int)CommonMatch.Whitespace);
 
                 _CommonMatcher = commonMatcher.ConvertToDfa().MinimizeDfa();
             }

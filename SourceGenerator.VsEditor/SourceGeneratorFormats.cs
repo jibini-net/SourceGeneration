@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
-using System.Windows.Documents;
 using System.Windows.Media;
 
 using static SourceGenerator.VsEditor.SourceGeneratorClassificationDefinition;

@@ -1,11 +1,11 @@
-﻿using SourceGenerator.Grammar;
+﻿namespace SourceGenerator;
+
+using SourceGenerator.Grammar;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-
-namespace SourceGenerator;
 
 using static Token;
 
@@ -130,7 +130,7 @@ internal class Program
         nfa.Build("state", (int)State);
         nfa.Build("interface", (int)Interface);
         nfa.Build("dto", (int)Dto);
-        nfa.Build("[a-zA-Z_]([a-zA-Z0-9_\\<\\>\\[\\]\\.\\?]+|)", (int)Ident);
+        nfa.Build("[a-zA-Z_]([a-zA-Z0-9_\\<\\>\\[\\]\\.\\?]+)?", (int)Ident);
         nfa.Build("\\{", (int)LCurly);
         nfa.Build("\\}", (int)RCurly);
         nfa.Build("\\(", (int)LParen);
@@ -325,7 +325,7 @@ internal class Program
         consoleLine.Write($" [] HIGHLIGHTED IN {millis}ms", true, ConsoleColor.Magenta);
 
         return spanLists.Remove(ThreadId, out var _v)
-            ? JsonSerializer.Serialize(_v.spanList)
+            ? JsonSerializer.Serialize(_v.spanList, MatchSpanJsonContext.Default.ListMatchSpan)
             : throw new Exception("Match spans missing from dictionary");
     }
 }

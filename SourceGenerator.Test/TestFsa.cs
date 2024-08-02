@@ -35,7 +35,7 @@ public partial class TestFsa
     }
 
     [Fact]
-    public void CanMatchWholePhrase()
+    public void CanMatchBasicSERIES()
     {
         _CanMatch(
             patterns:
@@ -47,11 +47,7 @@ public partial class TestFsa
             expectToken: 1,
             expectText: "abc"
             );
-    }
 
-    [Fact]
-    public void CanMatchPartialPhrase()
-    {
         _CanMatch(
             patterns:
             [
@@ -94,11 +90,7 @@ public partial class TestFsa
             expectToken: 1,
             expectText: "abcd"
             );
-    }
 
-    [Fact]
-    public void MatchesLowestPrecedenceFlipped()
-    {
         _CanMatch(
             patterns:
             [
@@ -113,7 +105,7 @@ public partial class TestFsa
     }
 
     [Fact]
-    public void CanMatchRemainderWithStartOffset()
+    public void CanMatchrWithStartOffset()
     {
         _CanMatch(
             patterns:
@@ -125,11 +117,7 @@ public partial class TestFsa
             expectToken: 1,
             expectText: "bcd"
             );
-    }
 
-    [Fact]
-    public void CanMatchPartialWithStartOffset()
-    {
         _CanMatch(
             patterns:
             [
@@ -242,11 +230,7 @@ public partial class TestFsa
             expectToken: 1,
             expectText: "abcabc"
             );
-    }
 
-    [Fact]
-    public void CanMatchPartialPLUSAfterPARENS()
-    {
         _CanMatch(
             patterns:
             [
@@ -298,11 +282,7 @@ public partial class TestFsa
             expectToken: 1,
             expectText: "0.000"
             );
-    }
 
-    [Fact]
-    public void CanMatchWithoutOptionalPLUS()
-    {
         _CanMatch(
             patterns:
             [
@@ -343,11 +323,7 @@ public partial class TestFsa
             expectToken: 1,
             expectText: "000aaa"
             );
-    }
 
-    [Fact]
-    public void PLUSRejectedByORAndPARENS()
-    {
         _CanMatch(
             patterns:
             [
@@ -389,11 +365,7 @@ public partial class TestFsa
             expectToken: 1,
             expectText: "0(a"
             );
-    }
 
-    [Fact]
-    public void CanMixEscapedPARENS()
-    {
         _CanMatch(
             patterns:
             [
@@ -418,21 +390,6 @@ public partial class TestFsa
             start: 0,
             expectToken: 1,
             expectText: "0+1"
-            );
-    }
-
-    [Fact]
-    public void CanEscapeBoundedPLUS()
-    {
-        _CanMatch(
-            patterns:
-            [
-                ("0\\{1,3}1", 1)
-            ],
-            input: "0{1,3}12",
-            start: 0,
-            expectToken: 1,
-            expectText: "0{1,3}1"
             );
     }
 

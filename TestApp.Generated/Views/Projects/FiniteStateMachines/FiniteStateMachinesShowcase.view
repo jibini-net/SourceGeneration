@@ -72,9 +72,9 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Finite State Au
 	c(
 		pre(| class = {"code-preview"} |
 <">var nfa = new Fsa();
-nfa.Build("(a|b|c)+",   (int)Token1);
-nfa.Build("int|long",   (int)Token2);
-nfa.Build("{|}",        (int)Token3);
+nfa.Build("(a|b|c){1,3}", (int)Token1);
+nfa.Build("int|long",     (int)Token2);
+nfa.Build("[A-Za-z0-9]+", (int)Token3);
 ...</">
 		)
 	)
@@ -131,13 +131,13 @@ var (token, match) = dfa.Search(source, offset);</">
 		div(| class = {"alert alert-info mb-2"} |
 			i(| class = {"fa fa-file me-2"} |)
 			a(|
-				href = {links.GetNamed("Fsa.cs")},
+				href = {links.GetNamed("Fsa.*.cs")},
 				target = {"_blank"}
 				|
-				<">Fsa.cs</">
+				<">Fsa.*.cs</">
 			)
 			unsafe({"&mdash;"})
-			<">Implementation of regular expression and lexing</">
+			<">Implementation of regular expression, minimization, and lexing</">
 		)
 
 		div(| class = {"alert alert-info mb-2"} |

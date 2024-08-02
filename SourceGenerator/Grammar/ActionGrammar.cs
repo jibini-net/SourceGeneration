@@ -23,7 +23,7 @@ public class ActionGrammar
         var result = new Dto()
         {
             ReturnType = "void",
-            Params = new()
+            Params = []
         };
 
         // {SQL proc name} "("

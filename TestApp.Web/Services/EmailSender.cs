@@ -1,7 +1,7 @@
-﻿using MailKit.Net.Smtp;
-using MimeKit;
+﻿namespace TestApp.Services;
 
-namespace TestApp.Services;
+using MailKit.Net.Smtp;
+using MimeKit;
 
 public class EmailSender : IEmailSender
 {

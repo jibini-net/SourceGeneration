@@ -1,7 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
+﻿namespace SourceGenerator;
 
-namespace SourceGenerator;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Implements a naive Finite State Automaton which supports nondeterminism
@@ -119,4 +119,9 @@ public partial class Fsa
             return [.. visited];
         }
     }
+}
+
+[JsonSerializable(typeof(Fsa), GenerationMode = JsonSourceGenerationMode.Serialization)]
+public partial class FsaJsonContext : JsonSerializerContext
+{
 }

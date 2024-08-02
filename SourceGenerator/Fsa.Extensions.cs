@@ -2,17 +2,20 @@
 
 public partial class Fsa
 {
-    protected void _EXT_ParsePLUS_Bounded(string word, ref int start, ref int end, ref List<Fsa> frontier)
+    protected void _EXT_ParsePLUS_Bounded(string word, ref int start, ref int end, ref List<Fsa> frontier, bool escaped = false)
     {
         frontier = [];
-        var expr = word[start..end];
+        start -= escaped ? 1 : 0;
 
-        int startNum;
+        var expr = word[start..end];
+        int startNum, endNum;
+        var canHaveMore = false;
+
         {
             var (token, match) = CommonMatcher.Search(word, ++end);
             if (token != (int)CommonMatch.Numbers)
             {
-                throw new ApplicationException($"Expected numeric value at offset {end}");
+                goto expected_numeric;
             }
             startNum = int.Parse(match);
 
@@ -23,15 +26,14 @@ public partial class Fsa
         {
             goto expected_operator;
         }
-        switch (word[end++])
+        switch (word[end])
         {
             case ',':
-                int endNum;
                 {
-                    var (token, match) = CommonMatcher.Search(word, end);
+                    var (token, match) = CommonMatcher.Search(word, ++end);
                     if (token != (int)CommonMatch.Numbers)
                     {
-                        throw new ApplicationException($"Expected numeric value at offset {end}");
+                        goto expected_numeric;
                     }
                     endNum = int.Parse(match);
 
@@ -42,32 +44,37 @@ public partial class Fsa
                     throw new ApplicationException("Loop upper bound must be greater than or equal to lower bound");
                 }
 
-                for (var c = startNum; c <= endNum; c++)
-                {
-                    if (c > 0)
-                    {
-                        var builtExpr = string.Join("", Enumerable.Range(0, c).Select((_) => expr));
-                        _ParseSERIES(builtExpr, 0, out _, out var _frontier);
-                        frontier.AddRange(_frontier);
-                    } else
-                    {
-                        frontier.Add(this);
-                    }
-                }
-
                 break;
 
             case '+':
-                throw new NotImplementedException("Bounded loop with '+'");
-                //end++;
-                //break;
+                end++;
+                endNum = startNum;
+                canHaveMore = true;
+                break;
+
+            case '}':
+                endNum = startNum;
+                break;
 
             default:
                 goto expected_operator;
         }
 
+        for (var c = startNum; c <= endNum; c++)
+        {
+            var builtExpr = string.Join("", Enumerable.Range(0, c).Select((_) => expr));
+            _ParseSERIES(builtExpr, 0, out _, out var _frontier);
+
+            frontier.AddRange(_frontier);
+        }
+
         // Combine possible set of states down to one with epsilon
         frontier = frontier.MergeFrontier();
+
+        if (canHaveMore)
+        {
+            frontier.Single()._ParsePARENS($"({expr}+|)", 0, out _, out frontier);
+        }
 
         if (end >= word.Length || word[end] != '}')
         {
@@ -79,6 +86,28 @@ public partial class Fsa
 
     expected_operator:
         throw new ApplicationException($"Expected ',' or '+' at offset {end}");
+    expected_numeric:
+        throw new ApplicationException($"Expected numeric value at offset {end}");
+    }
+
+    protected void _EXT_ParsePLUS_Optional(string word, ref int start, ref int end, ref List<Fsa> frontier, bool escaped = false)
+    {
+        start -= escaped ? 1 : 0;
+        var expr = word[start..end];
+
+        _ParsePARENS($"({expr}|)", 0, out _, out frontier);
+        
+        end++;
+    }
+
+    protected void _EXT_ParsePLUS_Star(string word, ref int start, ref int end, ref List<Fsa> frontier, bool escaped = false)
+    {
+        start -= escaped ? 1 : 0;
+        var expr = word[start..end];
+
+        _ParsePARENS($"({expr}+|)", 0, out _, out frontier);
+
+        end++;
     }
 
     protected void _EXT_ParseRANGE_Chars(string word, ref int start, ref int end, ref List<Fsa> frontier)

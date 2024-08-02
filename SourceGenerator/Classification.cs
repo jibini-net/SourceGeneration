@@ -1,5 +1,7 @@
 ﻿namespace SourceGenerator;
 
+using System.Text.Json.Serialization;
+
 public enum ClassType
 {
     PlainText = 1,
@@ -21,4 +23,10 @@ public class MatchSpan
     // Classification
     public ClassType c { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
+}
+
+[JsonSerializable(typeof(MatchSpan), GenerationMode = JsonSourceGenerationMode.Serialization)]
+[JsonSerializable(typeof(List<MatchSpan>), GenerationMode = JsonSourceGenerationMode.Serialization)]
+public partial class MatchSpanJsonContext : JsonSerializerContext
+{
 }
