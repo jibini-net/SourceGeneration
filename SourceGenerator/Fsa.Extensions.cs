@@ -4,6 +4,7 @@ public partial class Fsa
 {
     protected void _EXT_ParsePLUS_Bounded(string word, ref int start, ref int end, ref List<Fsa> frontier)
     {
+        var expr = word[start..end];
         throw new NotImplementedException("Bounded loops ('{}')");
     }
 
@@ -40,43 +41,37 @@ public partial class Fsa
         }
     }
 
-    protected void _EXT_ParseRANGE(string word, int start, out int end, out List<Fsa> frontier, bool escaped = false)
+    protected void _EXT_ParseRANGE(string word, int start, out int end, out List<Fsa> frontier)
     {
-        if (!escaped && word[start] == '[')
+        end = start + 1;
+        frontier = [];
+
+        for (var _escaped = false;
+            end < word.Length && (_escaped || word[end] != ']');
+            end++)
         {
-            end = start + 1;
-            frontier = [];
-
-            for (var _escaped = false;
-                end < word.Length && (_escaped || word[end] != ']');
-                end++)
+            switch (word[end])
             {
-                switch (word[end])
-                {
-                    case '\\' when !_escaped:
-                        _escaped = true;
-                        continue;
+                case '\\' when !_escaped:
+                    _escaped = true;
+                    continue;
 
-                    case '-' when !_escaped:
-                        throw new ApplicationException($"Unexpected '-' at offset {end}");
-                }
-
-                _EXT_ParseRANGE_Chars(word, ref start, ref end, ref frontier);
-
-                _escaped = false;
+                case '-' when !_escaped:
+                    throw new ApplicationException($"Unexpected '-' at offset {end}");
             }
 
-            // Combine possible set of states down to one with epsilon
-            frontier = frontier.MergeFrontier();
+            _EXT_ParseRANGE_Chars(word, ref start, ref end, ref frontier);
 
-            if (end >= word.Length || word[end] != ']')
-            {
-                throw new ApplicationException($"Expected ']' at offset {end}");
-            }
-            end++;
-        } else
-        {
-            _ParseLETTER(word, start, out end, out frontier, escaped: escaped);
+            _escaped = false;
         }
+
+        // Combine possible set of states down to one with epsilon
+        frontier = frontier.MergeFrontier();
+
+        if (end >= word.Length || word[end] != ']')
+        {
+            throw new ApplicationException($"Expected ']' at offset {end}");
+        }
+        end++;
     }
 }

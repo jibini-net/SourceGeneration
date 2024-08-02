@@ -2,7 +2,7 @@ namespace SourceGenerator.Test;
 
 public partial class TestFsa
 {
-    private void _CanMatch(
+    private static void _CanMatch(
         List<(string, int)> patterns,
         string input, int start,
         int expectToken, string expectText)
