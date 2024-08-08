@@ -4,14 +4,10 @@ using Generated;
 using Microsoft.AspNetCore.Mvc;
 
 [Controller]
-public class ProjectsController : Controller
+public class ProjectsController(
+    ProjectsPageBase.IView projects
+    ) : Controller
 {
-    private readonly ProjectsPageBase.IView projects;
-    public ProjectsController(ProjectsPageBase.IView projects)
-    {
-        this.projects = projects;
-    }
-
     [HttpGet("/projects")]
     public async Task<IActionResult> Index()
     {

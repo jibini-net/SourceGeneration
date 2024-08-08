@@ -2,12 +2,10 @@
 
 using Generated;
 
-public class Drawer : DrawerBase
+public class Drawer(
+    IServiceProvider sp
+    ) : DrawerBase(sp)
 {
-    public Drawer(IServiceProvider sp) : base(sp)
-    {
-    }
-
     public override void Toggle()
     {
         open = !(open ?? startOpen);

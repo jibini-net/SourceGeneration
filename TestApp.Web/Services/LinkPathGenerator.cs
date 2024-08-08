@@ -2,16 +2,11 @@
 
 using System.Text;
 
-public class LinkPathGenerator : ILinkPathGenerator
+public class LinkPathGenerator(
+    IConfiguration config,
+    IHttpContextAccessor httpContext
+    ) : ILinkPathGenerator
 {
-    private IConfiguration config;
-    private IHttpContextAccessor httpContext;
-    public LinkPathGenerator(IConfiguration config, IHttpContextAccessor httpContext)
-    {
-        this.config = config;
-        this.httpContext = httpContext;
-    }
-
     public string GenerateActionPath(params string[] pieces)
     {
         var path = new StringBuilder();

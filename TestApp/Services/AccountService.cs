@@ -7,32 +7,24 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 
-public class AccountService : Account.IBackendService
+public class AccountService(
+    ILogger<AccountService> logger,
+    Account.Repository repo,
+    IEmailSender emailSender,
+    ILinkPathGenerator linkPathGen,
+    IJwtAuthService jwtAuth
+    ) : Account.IBackendService
 {
-    private readonly ILogger<AccountService> logger;
-    private readonly Account.Repository repo;
-    private readonly IEmailSender emailSender;
-    private readonly ILinkPathGenerator linkPathGen;
-    private readonly IJwtAuthService jwtAuth;
-    public AccountService(ILogger<AccountService> logger, Account.Repository repo, IEmailSender emailSender, ILinkPathGenerator linkPathGen, IJwtAuthService jwtAuth)
-    {
-        this.logger = logger;
-        this.repo = repo;
-        this.emailSender = emailSender;
-        this.linkPathGen = linkPathGen;
-        this.jwtAuth = jwtAuth;
-    }
-
     public const string CURRENT_PASSWORD_SCHEME = nameof(SaltedPbkdf2);
 
-    private string CreateSalt()
+    private static string CreateSalt()
     {
         int keySize = 64;
         var salt = RandomNumberGenerator.GetBytes(keySize);
         return Convert.ToBase64String(salt);
     }
 
-    private string SaltedPbkdf2(string password, string salt)
+    private static string SaltedPbkdf2(string password, string salt)
     {
         int keySize = 64, iterations = 350000;
         var hashAlgorithm = HashAlgorithmName.SHA512;
@@ -67,10 +59,10 @@ public class AccountService : Account.IBackendService
             var hash = CalculateHash(verify.PasswordScheme, password, verify.PasswordSalt);
             if (hash == verify.PasswordHash)
             {
-                logger.LogInformation("User '{0}' has provided valid login credentials", email);
+                logger.LogInformation("User '{}' has provided valid login credentials", email);
             } else
             {
-                logger.LogWarning("User '{0}' attempted log in with invalid password", email);
+                logger.LogWarning("User '{}' attempted log in with invalid password", email);
                 return null;
             }
 
@@ -79,7 +71,7 @@ public class AccountService : Account.IBackendService
             return result;
         } catch (Exception ex)
         {
-            logger.LogError(ex, "User '{0}' encountered an error during login", email);
+            logger.LogError(ex, "User '{}' encountered an error during login", email);
             return null;
         }
     }
@@ -141,7 +133,7 @@ public class AccountService : Account.IBackendService
             logger.LogWarning("Ignored password reset for invalid email '{email}'", email);
         } else
         {
-            logger.LogInformation("User '{0}' requested password reset", email);
+            logger.LogInformation("User '{}' requested password reset", email);
 
             var concatName = $"{account.FirstName} {account.LastName}".Trim();
             var hexKey = Convert.ToHexString(keyBytes);
@@ -194,7 +186,7 @@ public class AccountService : Account.IBackendService
             logger.LogWarning("User attempted to reset password with invalid token");
         } else
         {
-            logger.LogInformation("User '{0}' successfully reset password", account.Email);
+            logger.LogInformation("User '{}' successfully reset password", account.Email);
         }
     }
 }

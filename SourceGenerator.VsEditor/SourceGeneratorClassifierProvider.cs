@@ -21,7 +21,9 @@ namespace SourceGenerator.VsEditor
         /// to the custom classification type later.
         /// </summary>
         [Import]
+#pragma warning disable IDE0044 // Add readonly modifier
         private IClassificationTypeRegistryService classificationRegistry;
+#pragma warning restore IDE0044 // Add readonly modifier
 
 #pragma warning restore 649
 

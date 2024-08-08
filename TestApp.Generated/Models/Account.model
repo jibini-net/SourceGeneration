@@ -55,11 +55,21 @@ repo {
 }
 
 service {
-	AttemptLogin(
-		string email,
-		string password)
+	api(
+		{1}
+		{Test endpoint for API controller generation}
+		{
+			[AllowAnonymous]
+			//TODO Specify default scheme
+			//[Authorize(Roles = "TEST")]
+			[ProducesResponseType(StatusCodes.Status200OK)]
+			[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+			[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		}
+	)
+	AttemptLogin(string email, string password)
 		=> Account.WithSession,
-
+		
 	LogOut(),
 
 	Refresh(

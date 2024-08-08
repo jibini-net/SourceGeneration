@@ -9,8 +9,8 @@ public class StateDump
     [JsonIgnore]
     public StateDump Parent { get; private set; }
     public string Tag { get; set; }
-    public Dictionary<string, object> State { get; set; } = new();
-    public List<StateDump> Children { get; set; } = new();
+    public Dictionary<string, object> State { get; set; } = [];
+    public List<StateDump> Children { get; set; } = [];
 
     public StateDump GetOrAddChild(string tag, int indexByTag)
     {
@@ -54,7 +54,7 @@ public class StateDump
     public T? GetNullable<T>(string name) where T : struct
     {
         return (State.TryGetValue(name, out var _v)
-                ? (State[name] = (_v is null ? null : _v.ParseIfNot<T>()))
+                ? (State[name] = (_v?.ParseIfNot<T>()))
                 : null)
             as T?;
     }

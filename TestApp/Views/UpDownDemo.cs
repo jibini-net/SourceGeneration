@@ -2,12 +2,10 @@
 
 using Generated;
 
-public class UpDownDemo : UpDownDemoBase
+public class UpDownDemo(
+    IServiceProvider sp
+    ) : UpDownDemoBase(sp)
 {
-    public UpDownDemo(IServiceProvider sp) : base(sp)
-    {
-    }
-
     public override void Decrement()
     {
         count--;

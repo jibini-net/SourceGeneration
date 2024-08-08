@@ -110,7 +110,7 @@ public partial class Fsa
         end++;
     }
 
-    protected void _EXT_ParseRANGE_Chars(string word, ref int start, ref int end, ref List<Fsa> frontier)
+    protected void _EXT_ParseRANGE_Chars(string word, ref int end, ref List<Fsa> frontier)
     {
         var letter = word[end];
 
@@ -162,7 +162,7 @@ public partial class Fsa
                     throw new ApplicationException($"Unexpected '-' at offset {end}");
             }
 
-            _EXT_ParseRANGE_Chars(word, ref start, ref end, ref frontier);
+            _EXT_ParseRANGE_Chars(word, ref end, ref frontier);
 
             _escaped = false;
         }

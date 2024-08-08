@@ -2,12 +2,10 @@
 
 using Generated;
 
-public class TableRowDemo : TableRowDemoBase
+public class TableRowDemo(
+    IServiceProvider sp
+    ) : TableRowDemoBase(sp)
 {
-    public TableRowDemo(IServiceProvider sp) : base(sp)
-    {
-    }
-
     public override void Add(string row)
     {
         if (rows.Count < 5)
@@ -22,9 +20,7 @@ public class TableRowDemo : TableRowDemoBase
         {
             return;
         }
-        var temp = rows[index];
-        rows[index] = rows[index + 1];
-        rows[index + 1] = temp;
+        (rows[index + 1], rows[index]) = (rows[index], rows[index + 1]);
     }
 
     public override void MoveUp(int index)
@@ -33,9 +29,7 @@ public class TableRowDemo : TableRowDemoBase
         {
             return;
         }
-        var temp = rows[index];
-        rows[index] = rows[index - 1];
-        rows[index - 1] = temp;
+        (rows[index - 1], rows[index]) = (rows[index], rows[index - 1]);
     }
 
     public override void Remove(int index)

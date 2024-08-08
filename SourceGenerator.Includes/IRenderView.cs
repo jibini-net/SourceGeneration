@@ -55,7 +55,7 @@ public static class RenderViewExtensions
             {
                 // Do not replace an existing dependent node with
                 // this one; have to go all the way up the chain
-                parentState = parentState ?? subState;
+                parentState ??= subState;
             } else
             {
                 parentState = null;

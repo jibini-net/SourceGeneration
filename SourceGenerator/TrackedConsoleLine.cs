@@ -4,7 +4,7 @@ public class TrackedConsoleLine
 {
     private static bool consumedFirst;
     private int top = -1, left;
-    private static SemaphoreSlim consoleMutex = new(1, 1);
+    private static readonly SemaphoreSlim consoleMutex = new(1, 1);
 
     static TrackedConsoleLine()
     {
@@ -60,7 +60,7 @@ public class TrackedConsoleLine
         });
     }
 
-    public void Write(string msg, bool resolved = false, ConsoleColor? color = null)
+    public void Write(string msg, ConsoleColor? color = null)
     {
         consoleMutex.Wait();
         var returnTop = Console.CursorTop;
@@ -104,7 +104,7 @@ public class TrackedConsoleLine
             {
                 Console.ForegroundColor = color.Value;
             }
-            Console.Write(msg.Substring(0, Math.Min(msg.Length, Console.WindowWidth - left)));
+            Console.Write(msg[..Math.Min(msg.Length, Console.WindowWidth - left)]);
             Console.ForegroundColor = returnColor;
 
             left = Console.CursorLeft;

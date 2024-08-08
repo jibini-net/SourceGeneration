@@ -6,14 +6,10 @@ using System.Data;
 using System.Text;
 using TestApp.Extensions;
 
-public class ModelDbAdapter : IModelDbAdapter
+public class ModelDbAdapter(
+    IConfiguration config
+    ) : IModelDbAdapter
 {
-    private readonly IConfiguration config;
-    public ModelDbAdapter(IConfiguration config)
-    {
-        this.config = config;
-    }
-
     private async Task ExecuteUsingResultsAsync(string procName, object args, Action<SqlDataReader> consume, string connName = "DefaultConnection")
     {
         using var conn = new SqlConnection(config.GetConnectionString(connName));
@@ -38,11 +34,11 @@ public class ModelDbAdapter : IModelDbAdapter
         });
     }
 
-    private object BuildRow(Type type, SqlDataReader reader)
+    private static object BuildRow(Type type, SqlDataReader reader)
     {
         var instance = type
-            .GetConstructor(Array.Empty<Type>())
-            .Invoke(Array.Empty<object>());
+            .GetConstructor([])
+            .Invoke([]);
         foreach (var value in reader.GetColumnSchema())
         {
             var prop = type.GetProperty(value.ColumnName);
@@ -59,7 +55,7 @@ public class ModelDbAdapter : IModelDbAdapter
         return instance;
     }
 
-    private bool IsSingle(Type type, out Type modelType)
+    private static bool IsSingle(Type type, out Type modelType)
     {
         modelType = type.GetGenericArguments().FirstOrDefault();
         var listType = typeof(List<>);
@@ -92,13 +88,13 @@ public class ModelDbAdapter : IModelDbAdapter
             {
                 var listType = typeof(List<>).MakeGenericType(modelType);
                 _return = (T)listType
-                    .GetConstructor(Array.Empty<Type>())
-                    .Invoke(Array.Empty<object>());
+                    .GetConstructor([])
+                    .Invoke([]);
 
                 while (reader.Read())
                 {
-                    var add = listType.GetMethod("Add", new[] { modelType });
-                    add.Invoke(_return, new[] { BuildRow(modelType, reader) });
+                    var add = listType.GetMethod("Add", [modelType]);
+                    add.Invoke(_return, [BuildRow(modelType, reader)]);
                 }
             }
         });
@@ -137,7 +133,7 @@ public class ModelDbAdapter : IModelDbAdapter
                         && it.GetParameters().Length == 1)
                     .Single()
                     .MakeGenericMethod(modelType);
-                _return = (T)firstOrDefault.Invoke(null, new[] { list });
+                _return = (T)firstOrDefault.Invoke(null, [list]);
             } else
             {
                 _return = jsonBuilder.ToString().FromJson<T>();

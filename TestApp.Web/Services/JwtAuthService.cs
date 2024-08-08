@@ -7,14 +7,10 @@ using System.Security.Claims;
 using System.Text;
 using TestApp.Extensions;
 
-public class JwtAuthService : IJwtAuthService
+public class JwtAuthService(
+    IConfiguration config
+    ) : IJwtAuthService
 {
-    private readonly IConfiguration config;
-    public JwtAuthService(IConfiguration config)
-    {
-        this.config = config;
-    }
-
     public (string, DateTime) GenerateToken(string signingKey, int seconds, List<Claim> claims)
     {
         var expires = DateTime.UtcNow.AddSeconds(seconds);

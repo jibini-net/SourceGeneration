@@ -2,6 +2,7 @@
 
 using static Token;
 using static ClassType;
+using System;
 
 /*
  * Implementation of source generation and semantic evaluation. The parser
@@ -18,7 +19,7 @@ public class RepoGrammar
     {
         var result = new Dto()
         {
-            Procs = new()
+            Procs = []
         };
 
         // "repo" "{"
@@ -34,6 +35,10 @@ public class RepoGrammar
         {
             // {dbo} "." {name} "(" {parameter list} ")" ["=>" {return type}]
             var proc = ActionGrammar.Match(stream, splats);
+            if (proc.Api.Count > 0)
+            {
+                throw new Exception("API descriptors are not valid for stored procedures");
+            }
             result.Procs.Add(proc);
 
             // ","

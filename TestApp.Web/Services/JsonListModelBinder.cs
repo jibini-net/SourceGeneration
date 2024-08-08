@@ -40,12 +40,12 @@ public class JsonListModelBinder : IModelBinder
             {
                 if (type == typeof(string))
                 {
-                    add.Invoke(list, new[] { values[i] });
+                    add.Invoke(list, [values[i]]);
                     continue;
                 }
 
                 var item = values[i].FromJson(type);
-                add.Invoke(list, new[] { item });
+                add.Invoke(list, [item]);
             }
 
             bindingContext.Result = ModelBindingResult.Success(list);

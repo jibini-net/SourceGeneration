@@ -18,7 +18,7 @@ public class SchemaGrammar
     {
         var result = new Dto()
         {
-            Fields = new()
+            Fields = []
         };
 
         // "schema" "{"
@@ -69,7 +69,7 @@ public class SchemaGrammar
         }
     }
 
-    public static void WriteStateDump(Dto dto, string modelName)
+    public static void WriteStateDump(Dto dto)
     {
         string member(string name) => $"            [\"{name}\"] = {name},";
         var members = dto.Fields.Select((it) => member(it.Name));

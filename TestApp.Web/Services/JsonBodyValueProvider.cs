@@ -3,14 +3,10 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Text.Json.Nodes;
 
-public class JsonBodyValueProvider : IValueProvider
+public class JsonBodyValueProvider(
+    JsonObject json
+    ) : IValueProvider
 {
-    private readonly JsonObject json;
-    public JsonBodyValueProvider(JsonObject json)
-    {
-        this.json = json;
-    }
-
     public bool ContainsPrefix(string prefix)
     {
         return true;

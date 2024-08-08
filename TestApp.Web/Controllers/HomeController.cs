@@ -4,14 +4,10 @@ using Generated;
 using Microsoft.AspNetCore.Mvc;
 
 [Controller]
-public class HomeController : Controller
+public class HomeController(
+    HomePageBase.IView home
+    ) : Controller
 {
-    private readonly HomePageBase.IView home;
-    public HomeController(HomePageBase.IView home)
-    {
-        this.home = home;
-    }
-
     [HttpGet("/")]
     public async Task<IActionResult> Index()
     {
