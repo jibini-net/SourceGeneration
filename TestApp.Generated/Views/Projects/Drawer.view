@@ -7,6 +7,8 @@ interface {
 	Toggle()
 }
 
+inject({TestApp.Services.IResourceInliner} {inliner})
+
 div(| class = {"_Drawer"} |
 	child({0})
 )
@@ -14,7 +16,8 @@ div(| class = {"_Drawer"} |
 div(|
 	class = {"d-flex flex-row"},
 	style = {"width: 100%;cursor: pointer;"},
-	onclick = {"dispatch(this, 'Toggle');"}
+	onclick = {$"Drawer.toggle(this);"},
+	{data-state} = {(open ?? startOpen) ? "open" : "closed"}
 	|
 
 	h3(| class = {"mx-auto"} |
