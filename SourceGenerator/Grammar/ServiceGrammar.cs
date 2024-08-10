@@ -208,7 +208,6 @@ public class ServiceGrammar
 
         foreach (var version in versions)
         {
-            //TODO Return support for WASM frontends
             Program.AppendLine("[ApiController]");
             Program.AppendLine("[Authorize]");
             //TODO Validate version names
@@ -363,7 +362,6 @@ public class ServiceGrammar
 
     public static void WriteViewController(Dto dto)
     {
-        //TODO Return support for WASM frontends
         Program.AppendLine("[Controller]");
         Program.AppendLine("[Route(\"view/{0}\")]",
             dto.ModelName);
