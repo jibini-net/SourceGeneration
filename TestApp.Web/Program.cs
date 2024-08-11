@@ -6,7 +6,6 @@ using Microsoft.OpenApi.Models;
 using System.IO.Compression;
 using TestApp.Extensions;
 using TestApp.Services;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -133,11 +132,18 @@ app.UseSwaggerUI((options) =>
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
+    app.UseWebAssemblyDebugging();
+} else
+{
+    //TODO Server error pages
+    //app.UseExceptionHandler("/Error");
+    app.UseHsts();
     app.UseResponseCompression();
 }
 app.MapControllers();
+app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.Run();
