@@ -7,8 +7,6 @@ interface {
 	Toggle()
 }
 
-inject({TestApp.Services.IResourceInliner} {inliner})
-
 div(| class = {"_Drawer"} |
 	child({0})
 )
@@ -21,8 +19,7 @@ div(|
 	|
 
 	h3(| class = {"mx-auto"} |
-		i(| class = {
-			$"fa fa-chevron-{((open ?? startOpen) ? "up" : "down")}"} |)
+		i(| class = {$"fa fa-chevron-{((open ?? startOpen) ? "up" : "down")}"} |)
 	)
 
 )
