@@ -64,7 +64,7 @@ if({open}
 
 		a(|
 			class = {"flex-grow-1 flex-shrink-1 d-flex"},
-			style = {"max-width: 100%;max-height: 100%;"},
+			style = {"max-width: 100%;max-height: 100%;max-height: calc(100% - 90px);"},
 			href = {UseOutsideLink},
 			target = {"_blank"},
 			title = {"Open image in new tab"}
@@ -74,7 +74,8 @@ if({open}
 				src = {UseImage},
 				alt = {alt},
 				class = {"m-auto"},
-				style = {"max-width: 100%;max-width: calc(100% - 2px);max-height: 100%;"}
+				style = {"max-width: 100%;max-width: calc(100% - 80px);"
+							 + "max-height: 100%;max-height: calc(100% - 80px);"}
 				|)
 
 		)

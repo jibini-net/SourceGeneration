@@ -81,11 +81,29 @@ CascadingState cascade(
 		div(| class = {"col-12 col-md-4"} |
 
 			div(| class = {"bg-light p-4 text-dark pb-5 ms-0 ms-md-2"} |
-				ThisSiteShowcase()
+			
+				if({string.IsNullOrEmpty(page.Get<string>("openDrawer"))}
+
+					ThisSiteShowcase()
+
+					SeoExclude(
+						ThisSiteShowcase()
+					)
+				)
+
 			)
 			
 			div(| class = {"p-4 ms-0 ms-md-2 border border-light bg-secondary"} |
-				RecentGists()
+
+				if({string.IsNullOrEmpty(page.Get<string>("openDrawer"))}
+
+					RecentGists()
+
+					SeoExclude(
+						RecentGists()
+					)
+				)
+
 			)
 
 		)
