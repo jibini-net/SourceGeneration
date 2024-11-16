@@ -83,7 +83,7 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 	)
 	p(| class = {"mb-1"} |
 		<">
-		Some custom, interactive systems I've built:
+		Some custom, interactive systems I've helped build:
 		</">
 	)
 	ul(

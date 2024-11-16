@@ -21,7 +21,7 @@ img(|
 	alt = {alt},
 	width = {width},
 	height = {height},
-	class = {"_ImageView"},
+	class = {"_ImageView " + clazz},
 	style = {"cursor: pointer;" + style},
 	onclick = {"dispatch(this, 'Toggle');"}
 	|)
@@ -41,7 +41,7 @@ if({open}
 		|
 
 		div(|
-			class = {"d-flex flex-row p-4 gap-3 align-items-center"},
+			class = {"d-flex flex-row p-4 gap-5 align-items-center"},
 			style = {"background: black;border-bottom: 1px solid white;"}
 			|
 
@@ -55,7 +55,7 @@ if({open}
 				|
 
 				i(|
-					class = {"fas fa-times me-3"}
+					class = {"fas fa-times ms-6 me-3"}
 					|)
 
 			)
@@ -74,7 +74,7 @@ if({open}
 				src = {UseImage},
 				alt = {alt},
 				class = {"m-auto"},
-				style = {"max-width: 100%;max-height: 100%;"}
+				style = {"max-width: 100%;max-width: calc(100% - 2px);max-height: 100%;"}
 				|)
 
 		)

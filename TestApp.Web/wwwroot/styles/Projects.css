@@ -30,7 +30,7 @@
         right: 10px;
     }
 
-.check-engine img {
+.check-engine img, .turtle-control img {
     border: 1px dotted white;
 }
 

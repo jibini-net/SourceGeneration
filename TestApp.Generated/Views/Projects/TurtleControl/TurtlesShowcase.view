@@ -47,8 +47,139 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Turtle Portal"}
 
 	p(
 		<">
-		Hello, world!
+		Shortly after graduating, I lived with two other CS majors who were completing
+		their respective degrees. Naturally, nonsense and Minecraft followed.
 		</">
+	)
+	p(
+		<">
+		At that time, I was also working on a source generation tool and wanted
+		a low-stakes opportunity to test its features. After acquiring ComputerCraft
+		turtle minions to do our bidding, I immediately attempted to attach them to
+		Microsoft SQL Server.
+		</">
+	)
+
+	div(| class = {"d-flex flex-column align-items-center"} |
+
+		div(|
+			class = {"d-flex flex-column flex-sm-row gap-3"},
+			style = {"width: 610px;max-width: 100%;"}
+			|
+
+			div(|
+				class = {"mb-4"},
+				style = {"flex: 1.13;"}
+				|
+				ImageView(|
+					src = {"images/turtles/in-game-1.png"},
+					style = {"max-width: 100%;"},
+					alt = {"One of our turtle minions; damned to stare for eternity"}
+					|)
+			)
+			
+			div(|
+				class = {"mb-4"},
+				style = {"flex: 1;"}
+				|
+				ImageView(|
+					src = {"images/turtles/turtles-dashboard.png"},
+					style = {"max-width: 100%;"},
+					alt = {"Turtle statistics dashboard, leaderboard, and event log"}
+					|)
+			)
+
+		)
+				
+		ImageView(|
+			src = {"images/turtles/data-row.png"},
+			clazz = {"mb-2"},
+			style = {"width: 650px;max-width: 100%;height: auto;"},
+			alt = {"Data reported by a turtle worker"}
+			|)
+
+		i(<">Data reported by a turtle worker</">)
+
+	)
+
+	p(| class = {"mt-3 mb-1"} |
+		<">The system consists of three components,</">
+	)
+	ul(| class = {"mb-3"} |
+		li(<">Turtle controls written in Lua with HTTP connectivity</">)
+		li(<">Intranet-only control API serving the turtle workers</">)
+		li(
+			<">Read-only </">
+			a(|
+				class = {"text-light"},
+				href = {links.GetNamed("Turtles")},
+				target = {"_blank"}
+				|
+				<">public frontend</">
+			)
+			<"> for turtle statistics and admin configuration</">
+		)
+	)
+
+	if({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
+
+		center(| class = {"mt-4"} |
+
+			h6(<">More in-game, showing the API-connected leaderboard screen</">)
+
+			ImageView(|
+				src = {"images/turtles/in-game-2.png"},
+				clazz = {"mb-2"},
+				style = {"width: 650px;max-width: 100%;height: auto;"},
+				alt = {"Turtle worker in a faulted state"}
+				|)
+
+			ImageView(|
+				src = {"images/turtles/in-game-3.png"},
+				clazz = {"mb-2"},
+				style = {"width: 650px;max-width: 100%;height: auto;"},
+				alt = {"API-connected leaderboard ComputerCraft screen"}
+				|)
+
+			h6(<">Protected admin interface with shared and private ComputerCraft devices</">)
+
+			ImageView(|
+				src = {"images/turtles/admin-turtle-list.png"},
+				clazz = {"mb-2"},
+				style = {"width: 650px;max-width: 100%;height: auto;"},
+				alt = {"Admin interface turtle list"}
+				|)
+
+			h6(<">Pairing process, initiated online and completed in-game with a command</">)
+
+			ImageView(|
+				src = {"images/turtles/pairing-new-turtle.png"},
+				clazz = {"mb-2"},
+				style = {"width: 650px;max-width: 100%;height: auto;"},
+				alt = {"Pairing process has been initiated online"}
+				|)
+
+			h6(<">File browser enabled via a server-to-server SSH connection</">)
+
+			ImageView(|
+				src = {"images/turtles/turtle-file-browser.png"},
+				clazz = {"mb-2"},
+				style = {"width: 280px;max-width: 100%;height: auto;"},
+				alt = {"Turtle file list (\\"browser\\" is generous)"}
+				|)
+
+			ImageView(|
+				src = {"images/turtles/turtle-file-viewer.png"},
+				clazz = {"mb-2"},
+				style = {"width: 650px;max-width: 100%;height: auto;"},
+				alt = {"Rudimentary text file viewer loaded over SSH"}
+				|)
+			
+		)
+
+		center(
+			h5(<">Expand for more screenshots</">)
+		)
 	)
 
 	</>
