@@ -1,0 +1,89 @@
+state {
+	{List<GistItem>} items = {[
+		new()
+		{
+			Path = "https://gist.github.com/zgoethel/a6c8470384e5ab54db7cf04c71c45fe4",
+			Name = "JS drag-and-drop polyfill",
+			Description = "Enables dragging and dropping relying on fewer browser events"
+		},
+		new()
+		{
+			Path = "https://gist.github.com/zgoethel/97d0c4dd73a54a9a5c8a31c657f5aa75",
+			Name = "RAID 5 and 6 calculations in C#",
+			Description = "Demonstrates the algorithms use to calculate the parities P and Q used in RAID"
+		},
+		new()
+		{
+			Path = "https://gist.github.com/zgoethel/0f963ebd934f3040ef452bacc06bb305",
+			Name = "Simple implementation of regex",
+			Description = "Single-file FSA builder, token search, NFA to DFA algorithm, and state minimizer"
+		},
+		new()
+		{
+			Path = "https://gist.github.com/zgoethel/38e7b2eb1d1f4308c55cbe98cb36d386",
+			Name = "String buffer writer in C",
+			Description = "Allows efficient concatenation of numerous strings (e.g., to build a source file)"
+		},
+		new()
+		{
+			Path = "https://gist.github.com/zgoethel/c456a58d540b0f2f77d22d07793697d9",
+			Name = "Least bottlenecked route finder",
+			Description = "Brute-force search for the least bottlenecked path through a graph"
+		},
+		new()
+		{
+			Path = "https://gist.github.com/zgoethel/ac3a1b78799582e1c5dd129b9545ea30",
+			Name = "Centrifugal Sort joke algorithm",
+			Description = "\\"Sorts\\" items based on \\"weights\\" and loosely simulated inertia"
+		}
+	]}
+}
+
+{
+	public class GistItem
+	{
+		public string Path { get; set; }
+		public string Name { get; set; }
+		public string Description { get; set; }
+	}
+}
+
+interface {
+}
+
+inject({TestApp.Services.ILinkPathGenerator} {links})
+inject({TestApp.Services.IResourceInliner} {inliner})
+
+h4(<">Recent Gists</">)
+div(| style = {"width: 100%;height: 22rem;overflow-y: scroll;"} |
+
+	foreach({var gist in items}
+		<>
+
+			div(|
+				class = {"d-flex flex-column w-100 gap-2 p-2"},
+				style = {"background: #00000069;"}
+				|
+
+				a(|
+					class = {"d-flex flex-row w-100 gap-2 align-items-center text-light"},
+					href = {gist.Path},
+					target = {"_blank"}
+					|
+
+					i(| class = {"fas fa-file"} |)
+
+					span({gist.Name})
+
+				)
+
+				span(| class = {"fw-lighter"} |
+					{gist.Description}
+				)
+
+			)
+
+		</>
+	)
+
+)
