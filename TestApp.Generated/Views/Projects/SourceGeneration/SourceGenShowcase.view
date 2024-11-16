@@ -64,11 +64,11 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 
 		h5(<">Language Server with Visual Studio integration</">)
 		center(
-			img(|
+			ImageView(|
 				src = {"images/sg/language-server.png"},
 				alt = {"Language server and Visual Studio 2022"},
 				style = {"max-width: 100%;height: auto;"},
-				class = {"mt-4 mb-2"}
+				clazz = {"mt-4 mb-2"}
 				|)
 			br()
 			i(| class = {"mb-5"} |
@@ -79,11 +79,11 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 
 		h5(<">Syntax highlighting and validation</">)
 		center(
-			img(|
+			ImageView(|
 				src = {"images/sg/vs-view-highlighting.png"},
 				alt = {"Custom syntax highlighting"},
 				style = {"max-width: 100%;height: auto;"},
-				class = {"mt-4 mb-2"}
+				clazz = {"mt-4 mb-2"}
 				|)
 			br()
 			i(| class = {"mb-5"} |
@@ -91,11 +91,11 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Source Generati
 			)
 		)
 		center(
-			img(|
+			ImageView(|
 				src = {"images/sg/syntax-invalid.png"},
 				alt = {"Rudimentary syntax error messages"},
 				style = {"max-width: 100%;height: auto;"},
-				class = {"mt-4 mb-2"}
+				clazz = {"mt-4 mb-2"}
 				|)
 			br()
 			i(| class = {"mb-5"} |

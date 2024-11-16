@@ -22,8 +22,8 @@ div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 			img(|
 				src = {links.GetNamed("CheckEngineIcon")},
 				alt = {"Check Engine Icon"},
-				width = {24},
-				height = {24},
+				width = {"24"},
+				height = {"24"},
 				style = {"transform: translateY(-3px);border: none !important;"}
 				|)
 			unsafe({"&nbsp;"})
@@ -58,16 +58,11 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 	div(| class = {"d-flex flex-row flex-wrap"} |
 		div(| class = {"col-12 col-md-5 pe-3 mb-1"} |
 
-			a(|
-				href = {links.GetNamed("CheckEngineTopPhoto")},
-				target = {"_blank"}
-				|
-				img(|
-					src = {links.GetNamed("CheckEngineTopPhoto")},
-					style = {"max-width: 100%;height: auto;"},
-					alt = {"Lighting and Game Mode Demo"}
-					|)
-			)
+			ImageView(|
+				src = {links.GetNamed("CheckEngineTopPhoto")},
+				style = {"max-width: 100%;height: auto;"},
+				alt = {"Lighting and Game Mode Demo"}
+				|)
 			i(<">(above: top-down and platformer game world stages)</">)
 		)
 
@@ -144,7 +139,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 		div(| style = {"clear: both;margin-top: 32px;"
 				+ ((drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")) ? "" : "max-height: 11rem;overflow-y: hidden;")} |
 
-			img(|
+			ImageView(|
 				src = {"images/checkengine/pathtracing.png"},
 				style = {"float: left;width: 400px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
 				alt = {"Pathtraced 2D Lighting"}
@@ -173,7 +168,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 			<>
 			div(| style = {"clear: both;margin-top: 38px;"} |
 
-				img(|
+				ImageView(|
 					src = {"images/checkengine/pathfinding.png"},
 					style = {"float: right;width: 360px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"},
 					alt = {"Non-player Character With Behavior"}
@@ -220,7 +215,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
 
-				img(|
+				ImageView(|
 					src = {"images/checkengine/injection.png"},
 					style = {"float: left;width: 440px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
 					alt = {"Dependency Injection Code Example"}
@@ -242,7 +237,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
 
-				img(|
+				ImageView(|
 					src = {"images/checkengine/aabbfriction.png"},
 					style = {"float: right;width: 385px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"},
 					alt = {"AABB Physics, Friction, and Momentum"}
@@ -265,7 +260,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 			)
 			div(| style = {"clear: both;margin-top: 38px;"} |
 
-				img(|
+				ImageView(|
 					src = {"images/checkengine/imgui.png"},
 					style = {"float: left;width: 380px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
 					alt = {"Imgui Integration Example"}
@@ -314,7 +309,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 				)
 
 				center(
-					img(|
+					ImageView(|
 						src = {"images/checkengine/loadgif.png"},
 						style = {"max-width: 100%;"},
 						alt = {"Code to Load a GIF in the Engine"}
@@ -325,7 +320,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					div(| class = {"col-6"} |
 
 						center(
-							img(|
+							ImageView(|
 								src = {"images/checkengine/gendreau_yell_right.gif"},
 								style = {"max-width: 100%;"},
 								alt = {"Character Yelling Right Animation"}
@@ -335,7 +330,7 @@ div(| class = {"bg-dark border border-light border-top-0 p-3 mb-4"} |
 					)
 					div(| class = {"col-6"} |
 
-						img(|
+						ImageView(|
 							src = {"images/checkengine/gendreau_yell_right.gif"},
 							style = {"max-width: 100%;transform: scaleX(-1);"},
 							alt = {"Character Yelling Left Animation"}

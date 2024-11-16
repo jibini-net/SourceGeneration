@@ -28,7 +28,10 @@ html, body {
     box-sizing: border-box;
     min-width: 100%;
     overflow-x: hidden;
-    overflow-y: auto;
+}
+
+html {
+    overflow-y: scroll;
 }
 
 html, body, .content {

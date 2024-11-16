@@ -33,3 +33,7 @@
 .check-engine img {
     border: 1px dotted white;
 }
+
+._ImageView:hover {
+    border: 1px solid white;
+}

@@ -1,0 +1,85 @@
+state {
+	string src = {""},
+	string highResSrc = {""},
+	string outsideLink = {""},
+
+	string alt = {""},
+	string width = {"auto"},
+	string height = {"auto"},
+	string clazz = {""},
+	string style = {""},
+
+	bool open = {false}
+}
+
+interface {
+	Toggle()
+}
+
+img(|
+	src = {src},
+	alt = {alt},
+	width = {width},
+	height = {height},
+	class = {"_ImageView"},
+	style = {"cursor: pointer;" + style},
+	onclick = {"dispatch(this, 'Toggle');"}
+	|)
+
+{
+	string UseImage => string.IsNullOrEmpty(highResSrc) ? src : highResSrc;
+	string UseOutsideLink => string.IsNullOrEmpty(outsideLink) ? UseImage : outsideLink;
+}
+
+if({open}
+
+	<>
+
+	div(|
+		class = {"d-flex flex-column"},
+		style = {"position: fixed;left: 0;top: 0;width: 100vw;height: 100vh;z-index: 1000;background: #000000c0;"}
+		|
+
+		div(|
+			class = {"d-flex flex-row p-4 gap-3 align-items-center"},
+			style = {"background: black;border-bottom: 1px solid white;"}
+			|
+
+			strong({string.IsNullOrEmpty(alt) ? "Image" : alt})
+
+			div(|
+				class = {"ms-auto p-1 me-2"},
+				style = {"cursor: pointer;"},
+				onclick = {"dispatch(this, 'Toggle');"},
+				title = {"Close"}
+				|
+
+				i(|
+					class = {"fas fa-times me-3"}
+					|)
+
+			)
+
+		)
+
+		a(|
+			class = {"flex-grow-1 flex-shrink-1 d-flex"},
+			style = {"max-width: 100%;max-height: 100%;"},
+			href = {UseOutsideLink},
+			target = {"_blank"},
+			title = {"Open image in new tab"}
+			|
+
+			img(|
+				src = {UseImage},
+				alt = {alt},
+				class = {"m-auto"},
+				style = {"max-width: 100%;max-height: 100%;"}
+				|)
+
+		)
+
+	)
+
+	</>
+)

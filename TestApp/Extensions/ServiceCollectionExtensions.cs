@@ -43,5 +43,6 @@ public static class ServiceCollectionExtensions
         services.AddDemoTabsView<DemoTabsBase.Default>();
         services.AddUpDownDemoView<UpDownDemo>();
         services.AddTableRowDemoView<TableRowDemo>();
+        services.AddImageViewView<ImageView>();
     }
 }
