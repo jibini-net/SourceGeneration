@@ -44,5 +44,6 @@ public static class ServiceCollectionExtensions
         services.AddUpDownDemoView<UpDownDemo>();
         services.AddTableRowDemoView<TableRowDemo>();
         services.AddImageViewView<ImageView>();
+        services.AddTurtlesShowcaseView<TurtlesShowcaseBase.Default>();
     }
 }

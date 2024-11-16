@@ -64,6 +64,19 @@ CascadingState cascade(
 
 			)
 
+			div(| class = {"bg-dark border border-light p-4 mb-4"} |
+
+				if({page.Get<string>("openDrawer") == "Turtle Portal"}
+
+					TurtlesShowcase()
+
+					SeoExclude(
+						TurtlesShowcase()
+					)
+				)
+
+			)
+
 		)
 		div(| class = {"col-12 col-md-4"} |
 

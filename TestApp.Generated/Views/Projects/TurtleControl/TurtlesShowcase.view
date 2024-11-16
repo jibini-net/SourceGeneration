@@ -1,0 +1,55 @@
+state {
+}
+
+interface {
+}
+
+inject({TestApp.Services.ILinkPathGenerator} {links})
+parent({ProjectsPage} {page})
+
+AnchorHeading(|
+	name = {"Turtle Portal"},
+	id = {"turtle-control"}
+	|)
+
+Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Turtle Portal"} |
+	<>
+	div(|
+		class = {"d-flex flex-row"},
+		style = {"width: 100%;"}
+		|
+		h4(| class = {"my-auto"} |
+			a(|
+				class = {"text-light d-flex flex-row gap-2 align-items-center"},
+				href = {links.GetNamed("Turtles")},
+				target = {"_blank"}
+				|
+
+				<">Turtle Portal</">
+
+				i(| class = {"fas fa-external-link-alt"} |)
+
+			)
+		)
+		a(|
+			href = {links.GetNamed("TurtleControlRepo")},
+			target = {"_blank"},
+			class = {"btn btn-outline-light ms-auto"}
+			|
+			h5(| class = {"mb-0"} |
+				i(| class = {"fab fa-github me-2"} |)
+				<">Repo</">
+			)
+		)
+	)
+
+	hr()
+
+	p(
+		<">
+		Hello, world!
+		</">
+	)
+
+	</>
+)

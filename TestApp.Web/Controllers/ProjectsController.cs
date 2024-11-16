@@ -51,4 +51,15 @@ public class ProjectsController : Controller
         var html = await projects.RenderPageAsync();
         return Content(html, "text/html");
     }
+
+    [HttpGet("/projects/turtle-control")]
+    public async Task<IActionResult> TurtleControl()
+    {
+        projects.LoadState(new()
+        {
+            ["openDrawer"] = "Turtle Portal"
+        });
+        var html = await projects.RenderPageAsync();
+        return Content(html, "text/html");
+    }
 }
