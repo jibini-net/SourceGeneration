@@ -68,7 +68,7 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 	)
 	p(
 		<">
-		I pushed to incorporate new tools, including adopting
+		I've pushed to incorporate new tools, including adopting
 		</">
 		a(|
 			href = {links.GetNamed("Blazor")},
@@ -77,11 +77,36 @@ div(| class = {"bg-light text-dark p-3 mt-5"} |
 			<">Blazor</">
 		)
 		<">
-		as a frontend technology. We built new libraries shared across our
+		as a frontend technology. We maintain libraries shared across our
 		projects to increase code reuse and reduce redundant effort.
 		</">
 	)
-
+	p(| class = {"mb-1"} |
+		<">
+		Some custom, interactive systems I've built:
+		</">
+	)
+	ul(
+		li(<">employee time-tracking, reporting, and estimation tools</">)
+		li(<">an interactive Google Maps polygon annotation editor</">)
+		li(<">an Outlook calendar clone</">)
+		li(<">interactive forms for public sector budgeting and reimbursement</">)
+		li(<">sophisticated interactive reports using Chart.js</">)
+		li(<">a drag-n-drop, WYSIWYG survey builder with logic sub-system</">)
+		li(<">MLS-enabled home listing viewer</">)
+	)
+	p(
+		<">
+		I approach every project with the assumption it
+		</">
+		i(<">can</">)
+		<">
+		be done.
+		</">
+	)
+	i(| class = {"text-muted fw-light"} |
+		<">Last updated 2024-11-16</">
+	)
 )
 
 div(|

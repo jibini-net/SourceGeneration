@@ -28,6 +28,12 @@ public class TechnologyList : TechnologyListBase
             },
             new()
             {
+                Name = "PostgreSQL",
+                IconClass = "fa fa-database",
+                Description = "Multi- or hybrid-database systems hosted on permissive license SQL distributions"
+            },
+            new()
+            {
                 Name = "Source Generation",
                 IconClass = "oi oi-project",
                 Description = "Custom <a target='_blank' href='https://github.com/jibini-net/SourceGeneration'>descriptor languages and datalayer generators</a> for accelerated development"
