@@ -1,7 +1,7 @@
-﻿namespace Generated;
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+
+namespace Generated;
 
 //TODO Key field
 public class StateDump

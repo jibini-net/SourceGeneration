@@ -1,6 +1,6 @@
-﻿namespace TestApp.Services;
+﻿using System.Text;
 
-using System.Text;
+namespace TestApp.Services;
 
 public class LinkPathGenerator(
     IConfiguration config,

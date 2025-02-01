@@ -1,10 +1,10 @@
-﻿namespace TestApp.Services;
-
-using Generated;
+﻿using Generated;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Text;
 using TestApp.Extensions;
+
+namespace TestApp.Services;
 
 public class ModelDbAdapter(
     IConfiguration config

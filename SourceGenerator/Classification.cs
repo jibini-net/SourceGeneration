@@ -1,6 +1,6 @@
-﻿namespace SourceGenerator;
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+namespace SourceGenerator;
 
 public enum ClassType
 {

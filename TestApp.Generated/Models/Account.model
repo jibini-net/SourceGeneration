@@ -65,6 +65,16 @@ service {
 			[ProducesResponseType(StatusCodes.Status200OK)]
 			[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 			[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		},
+		{2}
+		{Test endpoint for API controller generation (V2)}
+		{
+			[AllowAnonymous]
+			//TODO Specify default scheme
+			//[Authorize(Roles = "TEST")]
+			[ProducesResponseType(StatusCodes.Status200OK)]
+			[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+			[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		}
 	)
 	AttemptLogin(string email, string password)

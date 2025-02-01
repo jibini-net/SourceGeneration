@@ -1,7 +1,7 @@
-﻿namespace TestApp.Services;
-
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Text.Json.Nodes;
+
+namespace TestApp.Services;
 
 public class JsonBodyValueProvider(
     JsonObject json

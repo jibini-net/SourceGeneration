@@ -1,7 +1,7 @@
-﻿namespace TestApp.Controllers;
-
-using Generated;
+﻿using Generated;
 using Microsoft.AspNetCore.Mvc;
+
+namespace TestApp.Controllers;
 
 [Controller]
 public class ProjectsController(

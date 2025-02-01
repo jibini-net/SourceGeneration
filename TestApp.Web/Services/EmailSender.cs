@@ -1,7 +1,7 @@
-﻿namespace TestApp.Services;
-
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MimeKit;
+
+namespace TestApp.Services;
 
 public class EmailSender(
     IConfiguration config

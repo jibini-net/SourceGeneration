@@ -2,7 +2,6 @@
 
 using static Token;
 using static ClassType;
-using System;
 
 /*
  * Implementation of source generation and semantic evaluation. The parser

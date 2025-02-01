@@ -1,6 +1,6 @@
-﻿namespace SourceGenerator.Grammar;
+﻿using System.Web;
 
-using System.Web;
+namespace SourceGenerator.Grammar;
 
 using static Token;
 using static ClassType;

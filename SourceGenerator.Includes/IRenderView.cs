@@ -1,7 +1,7 @@
-﻿namespace Generated;
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Web;
+
+namespace Generated;
 
 public delegate Task RenderDelegate(StateDump state, Dictionary<string, int> tagCounts, StringWriter writer);
 

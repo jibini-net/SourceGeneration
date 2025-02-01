@@ -1,11 +1,11 @@
-﻿namespace SourceGenerator;
-
-using SourceGenerator.Grammar;
+﻿using SourceGenerator.Grammar;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+
+namespace SourceGenerator;
 
 using static Token;
 

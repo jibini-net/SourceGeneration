@@ -1,7 +1,7 @@
-﻿namespace SourceGenerator.Grammar;
-
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
+
+namespace SourceGenerator.Grammar;
 
 using static Token;
 using static ClassType;

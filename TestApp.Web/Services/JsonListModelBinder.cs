@@ -1,10 +1,10 @@
-﻿namespace TestApp.Services;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TestApp.Extensions;
+
+namespace TestApp.Services;
 
 public class JsonListModelBinder : IModelBinder
 {
