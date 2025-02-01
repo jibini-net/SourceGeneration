@@ -30,10 +30,10 @@
         right: 10px;
     }
 
-.check-engine img, .turtle-control img {
+._ImageView, ._ImageView-max {
     border: 1px dotted white;
 }
 
-._ImageView:hover {
-    border: 1px solid white;
-}
+    ._ImageView:hover {
+        border: 1px solid white;
+    }

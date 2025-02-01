@@ -73,7 +73,7 @@ if({open}
 			img(|
 				src = {UseImage},
 				alt = {alt},
-				class = {"m-auto"},
+				class = {"m-auto _ImageView-max"},
 				style = {"max-width: 100%;max-width: calc(100% - 80px);"
 							 + "max-height: 100%;max-height: calc(100% - 80px);"}
 				|)

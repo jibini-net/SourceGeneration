@@ -31,13 +31,17 @@ CascadingState cascade(
 
 			div(| class = {"bg-dark border border-light p-4 mb-4"} |
 
-				if({page.Get<string>("openDrawer") == "Source Generation"}
+				div(| class = {"source-gen"} |
 
-					SourceGenShowcase()
+					if({page.Get<string>("openDrawer") == "Source Generation"}
 
-					SeoExclude(
 						SourceGenShowcase()
+
+						SeoExclude(
+							SourceGenShowcase()
+						)
 					)
+
 				)
 
 				if({page.Get<string>("openDrawer") == "Finite State Automata"}
