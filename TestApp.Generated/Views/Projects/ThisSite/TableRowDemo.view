@@ -9,7 +9,10 @@ interface {
 	MoveDown(int index)
 }
 
-table(| class = {"table table-striped table-bordered"} |
+table(|
+	class = {"table table-striped table-bordered"},
+	style = {"user-select: none;"}
+	|
 	colgroup(
 		col(| style = {"width: 70%;"} |)
 		col(| style = {"width: 30%;"} |)
@@ -28,7 +31,8 @@ table(| class = {"table table-striped table-bordered"} |
 					id = {"table-add"},
 					class = {"form-control"},
 					value = {rows.Count >= 5 ? "Max 5 rows" : ""},
-					disabled = {rows.Count >= 5}
+					disabled = {rows.Count >= 5},
+					autocomplete = {"off"}
 					|)
 			)
 			td(

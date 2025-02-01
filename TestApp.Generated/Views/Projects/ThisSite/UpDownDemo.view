@@ -7,18 +7,18 @@ interface {
 	Decrement()
 }
 
-div(| class = {"d-flex flex-row"} |
+div(| class = {"d-flex flex-row gap-2"} |
 	div(| class = {"my-auto"} |
 		{"Count: " + count}
 	)
 	button(|
-		class = {"btn btn-danger ms-2"},
+		class = {"btn btn-danger"},
 		onclick = {"dispatch(this, 'Decrement');"}
 		|
 		<">-</">
 	)
 	button(|
-		class = {"btn btn-success ms-2"},
+		class = {"btn btn-success"},
 		onclick = {"dispatch(this, 'Increment');"}
 		|
 		<">+</">
