@@ -64,12 +64,11 @@ p(
 )
 
 c(
-	pre(| class = {"code-preview"} |
-		<">div(</">
-		{(await inliner.PreLoad(links.GetNamed("UpDownDemo.view"), true))
-			.Split("div(", 2)
-			.Skip(1)
-			.FirstOrDefault() ?? ""}
+	pre(|
+		class = {"code-preview"},
+		style = {"font-size: 11pt;"}
+		|
+		unsafe({await inliner.PreLoad(links.GetNamed("UpDownDemo.view.html"))})
 	)
 )
 
@@ -78,13 +77,13 @@ p(
 	Business logic and event handlers are written in C# running in the backend.
 	HTML content is automatically swapped out by the </">
 	code({"dispatch(el, action, args)"})
-	<"> function written in JS
+	<"> function written in JS.
 	</">
 )
 
 center(
 	div(|
-		class = {"card mb-3 border-dark shadow"},
+		class = {"card my-3 border-dark shadow"},
 		style = {"width: fit-content;"}
 		|
 		div(| class = {"card-header"} |
