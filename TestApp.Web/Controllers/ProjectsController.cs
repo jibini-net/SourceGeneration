@@ -1,17 +1,13 @@
-﻿namespace TestApp.Controllers;
-
-using Generated;
+﻿using Generated;
 using Microsoft.AspNetCore.Mvc;
 
-[Controller]
-public class ProjectsController : Controller
-{
-    private readonly ProjectsPageBase.IView projects;
-    public ProjectsController(ProjectsPageBase.IView projects)
-    {
-        this.projects = projects;
-    }
+namespace TestApp.Controllers;
 
+[Controller]
+public class ProjectsController(
+    ProjectsPageBase.IView projects
+    ) : Controller
+{
     [HttpGet("/projects")]
     public async Task<IActionResult> Index()
     {

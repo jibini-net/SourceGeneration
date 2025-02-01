@@ -1,6 +1,6 @@
-﻿namespace TestApp.Extensions;
+﻿using System.Text.Json;
 
-using System.Text.Json;
+namespace TestApp.Extensions;
 
 public static class ObjectTypeExtensions
 {

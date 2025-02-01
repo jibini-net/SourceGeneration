@@ -1,13 +1,11 @@
-﻿namespace TestApp.Views;
+﻿using Generated;
 
-using Generated;
+namespace TestApp.Views;
 
-public class UpDownDemo : UpDownDemoBase
+public class UpDownDemo(
+    IServiceProvider sp
+    ) : UpDownDemoBase(sp)
 {
-    public UpDownDemo(IServiceProvider sp) : base(sp)
-    {
-    }
-
     public override void Decrement()
     {
         count--;

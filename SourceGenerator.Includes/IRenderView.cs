@@ -1,7 +1,7 @@
-﻿namespace Generated;
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Web;
+
+namespace Generated;
 
 public delegate Task RenderDelegate(StateDump state, Dictionary<string, int> tagCounts, StringWriter writer);
 
@@ -55,7 +55,7 @@ public static class RenderViewExtensions
             {
                 // Do not replace an existing dependent node with
                 // this one; have to go all the way up the chain
-                parentState = parentState ?? subState;
+                parentState ??= subState;
             } else
             {
                 parentState = null;

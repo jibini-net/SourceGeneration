@@ -1,7 +1,7 @@
-﻿namespace SourceGenerator.Grammar;
-
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
+
+namespace SourceGenerator.Grammar;
 
 using static Token;
 using static ClassType;
@@ -14,14 +14,23 @@ public partial class TopLevelGrammar
 {
     public static void MatchModel(TokenStream stream, string modelName, bool meta = false)
     {
-        Dictionary<string, List<FieldGrammar.Dto>> splats = new();
+        Dictionary<string, List<FieldGrammar.Dto>> splats = [];
         if (!meta)
         {
+            Program.AppendLine("using Asp.Versioning;");
+            Program.AppendLine("using Microsoft.AspNetCore.Authorization;");
+            Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
+            Program.AppendLine("using Microsoft.AspNetCore.Http;");
+
             Program.AppendLine("public partial class {0}",
                 modelName);
             Program.AppendLine("{{");
         }
 
+        ServiceGrammar.Dto services = new()
+        {
+            Actions = []
+        };
         while (stream.Next > 0)
         {
             switch (stream.Next)
@@ -30,9 +39,7 @@ public partial class TopLevelGrammar
                     var cSharp = MatchCSharp(stream);
                     if (!meta)
                     {
-                        Program.AppendLine(cSharp
-                            .Replace("{", "{{")
-                            .Replace("}", "}}"));
+                        Program.AppendLine("{0}", cSharp);
                     }
                     break;
 
@@ -69,13 +76,7 @@ public partial class TopLevelGrammar
                     break;
 
                 case (int)Service:
-                    var services = ServiceGrammar.Match(stream, modelName, splats);
-                    if (!meta)
-                    {
-                        ServiceGrammar.WriteServiceInterface(services);
-                        ServiceGrammar.WriteDbService(services);
-                        ServiceGrammar.WriteApiService(services);
-                    }
+                    services = ServiceGrammar.Match(stream, modelName, splats);
                     break;
                     
                 default:
@@ -85,13 +86,20 @@ public partial class TopLevelGrammar
 
         if (!meta)
         {
+            ServiceGrammar.WriteServiceInterface(services);
+            ServiceGrammar.WriteDbService(services);
+            ServiceGrammar.WriteApiService(services);
+
             Program.AppendLine("}}");
+
+            //TODO Support emitting multiple files
+            ServiceGrammar.WriteApiControllers(services);
         }
     }
 
     public static void MatchView(TokenStream stream, string modelName, bool meta = false)
     {
-        Dictionary<string, List<FieldGrammar.Dto>> splats = new();
+        Dictionary<string, List<FieldGrammar.Dto>> splats = [];
         if (!meta)
         {
             Program.AppendLine("using Microsoft.AspNetCore.Mvc;");
@@ -130,7 +138,7 @@ public partial class TopLevelGrammar
 
         ServiceGrammar.Dto actions = new()
         {
-            Actions = new()
+            Actions = []
         };
         while (stream.Next > 0)
         {
@@ -140,9 +148,7 @@ public partial class TopLevelGrammar
                     var cSharp = MatchCSharp(stream);
                     if (!meta)
                     {
-                        Program.AppendLine(cSharp
-                            .Replace("{", "{{")
-                            .Replace("}", "}}"));
+                        Program.AppendLine("{0}", cSharp);
                     }
                     break;
 
@@ -152,7 +158,7 @@ public partial class TopLevelGrammar
                     {
                         //TODO Make protected
                         SchemaGrammar.Write(schema, accessLevel: "public");
-                        SchemaGrammar.WriteStateDump(schema, modelName);
+                        SchemaGrammar.WriteStateDump(schema);
                     }
                     break;
 
@@ -187,6 +193,10 @@ public partial class TopLevelGrammar
             buildDom($"$\"<!--_{{((Children.Count > 0) ? '!' : null)}}close-{modelName}({{indexByTag}})-->\"");
 
             ServiceGrammar.WriteViewRenderer(renderBuilder.ToString(), modelName);
+
+            Program.AppendLine("}}");
+
+            //TODO Support emitting multiple files
             ServiceGrammar.WriteViewController(actions);
         }
     }

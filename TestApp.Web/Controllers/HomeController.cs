@@ -1,17 +1,13 @@
-﻿namespace TestApp.Controllers;
-
-using Generated;
+﻿using Generated;
 using Microsoft.AspNetCore.Mvc;
 
-[Controller]
-public class HomeController : Controller
-{
-    private readonly HomePageBase.IView home;
-    public HomeController(HomePageBase.IView home)
-    {
-        this.home = home;
-    }
+namespace TestApp.Controllers;
 
+[Controller]
+public class HomeController(
+    HomePageBase.IView home
+    ) : Controller
+{
     [HttpGet("/")]
     public async Task<IActionResult> Index()
     {

@@ -1,13 +1,13 @@
-﻿namespace TestApp.Views;
+﻿using Generated;
 
-using Generated;
+namespace TestApp.Views;
 
 public class TechnologyList : TechnologyListBase
 {
     public TechnologyList(IServiceProvider sp) : base(sp)
     {
-        technologyList = new()
-        {
+        technologyList =
+        [
             new()
             {
                 Name = "ASP.NET Core (MVC/Blazor)",
@@ -92,6 +92,6 @@ public class TechnologyList : TechnologyListBase
                 IconClass = "fab fa-git",
                 Description = "Promoting general code cleanliness and trackability with point-in-time restore"
             }
-        };
+        ];
     }
 }

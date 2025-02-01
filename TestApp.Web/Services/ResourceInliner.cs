@@ -1,19 +1,18 @@
-﻿namespace TestApp.Services;
+﻿using System.Collections.Concurrent;
 
-using System.Collections.Concurrent;
+namespace TestApp.Services;
 
 public class ResourceInliner : IResourceInliner
 {
-
     public class CachedResource
     {
-        public static TimeSpan LIFE = TimeSpan.FromHours(1);
-        public string Content {  get; set; }
+        public static readonly TimeSpan LIFE = TimeSpan.FromHours(1);
+        public string Content { get; set; }
         public DateTime Loaded { get; set; } = DateTime.Now;
     }
 
-    private ConcurrentDictionary<string, CachedResource> loadedInternal = new();
-    private ConcurrentDictionary<string, CachedResource> loadedExternal = new();
+    private readonly ConcurrentDictionary<string, CachedResource> loadedInternal = new();
+    private readonly ConcurrentDictionary<string, CachedResource> loadedExternal = new();
 
     private async Task<string> LoadInternal(string path)
     {
@@ -37,8 +36,8 @@ public class ResourceInliner : IResourceInliner
         return content;
     }
 
-    private async Task<string> GetOrLoad(string path,
-        IDictionary<string, CachedResource> cache,
+    private static async Task<string> GetOrLoad(string path,
+        ConcurrentDictionary<string, CachedResource> cache,
         Func<string, Task<string>> loader)
     {
         var cached = cache.TryGetValue(path, out var content);

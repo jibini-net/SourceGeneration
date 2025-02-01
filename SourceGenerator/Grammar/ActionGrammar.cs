@@ -16,6 +16,60 @@ public class ActionGrammar
         public string SplatFrom { get; set; }
         public List<(string type, string name)> Params { get; set; }
         public bool IsJson { get; set; }
+        public List<ApiDto> Api { get; set; }
+    }
+
+    public struct ApiDto
+    {
+        public string VersionName { get; set; }
+        public string Summary { get; set; }
+        public string Annotations { get; set; }
+    }
+
+    public static List<ApiDto> MatchApi(TokenStream stream)
+    {
+        List<ApiDto> result = [];
+
+        // "api" "("
+        Program.StartSpan(ClassType.Assign);
+        stream.Poll();
+        if (stream.Poll() != (int)LParen)
+        {
+            throw new ApplicationException("Expected left parens");
+        }
+        Program.EndSpan();
+
+        while (stream.Next != (int)RParen)
+        {
+            // "{" {API version} "}" "{" {Description} "}"
+            ApiDto entry = new()
+            {
+                VersionName = TopLevelGrammar.MatchCSharp(stream),
+                Summary = TopLevelGrammar.MatchCSharp(stream)
+            };
+            // [ "{" {Annotations} "}" ]
+            if (stream.Next == (int)LCurly)
+            {
+                entry.Annotations = TopLevelGrammar.MatchCSharp(stream);
+            }
+
+            // ","
+            Program.StartSpan(ClassType.Assign);
+            if (stream.Next != (int)RParen && stream.Poll() != (int)Comma)
+            {
+                throw new Exception("Expected annotations, comma, or ')'");
+            }
+            Program.EndSpan();
+
+            result.Add(entry);
+        }
+
+        // ")"
+        Program.StartSpan(ClassType.Assign);
+        stream.Poll();
+        Program.EndSpan();
+
+        return result;
     }
 
     public static Dto Match(TokenStream stream, Dictionary<string, List<FieldGrammar.Dto>> splats)
@@ -25,6 +79,15 @@ public class ActionGrammar
             ReturnType = "void",
             Params = []
         };
+
+        if (stream.Next == (int)Api)
+        {
+            // "api" "(" {descriptor} [, ...] ")"
+            result.Api = MatchApi(stream);
+        } else
+        {
+            result.Api = [];
+        }
 
         // {SQL proc name} "("
         Program.StartSpan(Delimiter);

@@ -1,7 +1,6 @@
-﻿namespace SourceGenerator;
+﻿using System.Text.Json.Serialization;
 
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
+namespace SourceGenerator;
 
 /// <summary>
 /// Implements a naive Finite State Automaton which supports nondeterminism
@@ -23,7 +22,6 @@ public partial class Fsa
     public char Letter { get; private set; } = '\0';
 
     // Enables (de-)serialization
-    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Field for JSON serialization only")]
     public Dictionary<string, Fsa> n
     {
         get => Next.ToDictionary((it) => it.Key + "", (it) => it.Value);
@@ -43,7 +41,6 @@ public partial class Fsa
     public Dictionary<char, Fsa> Next { get; private set; } = [];
 
     // Enables (de-)serialization
-    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Field for JSON serialization only")]
     public List<string> a
     {
         get => Accepts.Select((it) => it.ToString()).ToList();

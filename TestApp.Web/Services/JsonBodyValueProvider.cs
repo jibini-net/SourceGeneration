@@ -1,16 +1,12 @@
-﻿namespace TestApp.Services;
-
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Text.Json.Nodes;
 
-public class JsonBodyValueProvider : IValueProvider
-{
-    private readonly JsonObject json;
-    public JsonBodyValueProvider(JsonObject json)
-    {
-        this.json = json;
-    }
+namespace TestApp.Services;
 
+public class JsonBodyValueProvider(
+    JsonObject json
+    ) : IValueProvider
+{
     public bool ContainsPrefix(string prefix)
     {
         return true;

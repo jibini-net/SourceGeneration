@@ -9,4 +9,12 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;IDE1006;IDE0130</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;IDE1006;IDE0130</NoWarn>
+  </PropertyGroup>
+
 </Project>

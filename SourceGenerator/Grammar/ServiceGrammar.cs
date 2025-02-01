@@ -1,4 +1,6 @@
-﻿namespace SourceGenerator.Grammar;
+﻿using System.Web;
+
+namespace SourceGenerator.Grammar;
 
 using static Token;
 using static ClassType;
@@ -20,7 +22,7 @@ public class ServiceGrammar
         var result = new Dto()
         {
             ModelName = modelName,
-            Actions = new()
+            Actions = []
         };
 
         // "service" "{"
@@ -127,7 +129,7 @@ public class ServiceGrammar
                 }
             } else
             {
-                Program.Append("splat");
+                Program.Append("                splat");
             }
             Program.AppendLine("\n                ));");
             Program.AppendLine("        }}");
@@ -154,8 +156,11 @@ public class ServiceGrammar
             Program.AppendLine("        public async {0} {1}({2})",
                 action.ReturnType == "void" ? "Task" : $"Task<{action.ReturnType}>",
                 action.Name,
-                string.Join(',', args));
+                args);
             Program.AppendLine("        {{");
+
+            //if (action.Api.Count > 0)
+            //{
 
             if (action.ReturnType == "void")
             {
@@ -169,9 +174,9 @@ public class ServiceGrammar
                     dto.ModelName,
                     action.Name);
             }
-            foreach (var par in action.Params.Select((it) => it.name))
+            foreach (var (par, i) in action.Params.Select((it, i) => (it.name, i)))
             {
-                if (par != action.Params.First().name)
+                if (i != 0)
                 {
                     Program.AppendLine(",");
                 }
@@ -183,10 +188,121 @@ public class ServiceGrammar
                 Program.Append(par);
             }
             Program.AppendLine("\n            }});");
+
+            //} else
+            //{
+            //    Program.AppendLine($"            throw new NotImplementedException(\"'{action.Name}' is not exposed via the API\");");
+            //}
+
             Program.AppendLine("        }}");
         }
 
         Program.AppendLine("    }}");
+    }
+
+    public static void WriteApiControllers(Dto dto)
+    {
+        var versions = dto.Actions
+            .SelectMany((it) => it.Api.Select((_it) => (action: it, api: _it)))
+            .GroupBy(it => it.api.VersionName);
+
+        foreach (var version in versions)
+        {
+            Program.AppendLine("[ApiController]");
+            Program.AppendLine("[Authorize]");
+            //TODO Validate version names
+            Program.AppendLine("[Route(\"api/v{{version:apiVersion}}/{0}/[action]\")]",
+                dto.ModelName);
+            Program.AppendLine("[ControllerName(\"{0}\")]",
+                dto.ModelName);
+            Program.AppendLine("[ApiVersion(\"{0}\")]",
+                version.Key);
+            Program.AppendLine("public partial class {0}Controller_v{1} : ControllerBase",
+                dto.ModelName,
+                version.Key);
+            Program.AppendLine("{{");
+
+            Program.AppendLine("    private readonly {0}.IService service;",
+                dto.ModelName);
+            Program.AppendLine("    public {0}Controller_v{1}({0}.IService service)\n    {{",
+                dto.ModelName,
+                version.Key);
+            Program.AppendLine("        this.service = service;");
+            Program.AppendLine("    }}");
+
+            foreach (var (action, api) in version)
+            {
+                Program.AppendLine("    ///<summary>{0}</summary>",
+                    HttpUtility.HtmlEncode(api.Summary));
+                Program.AppendLine("    [HttpPost]");
+                if (action.ReturnType != "void")
+                {
+                    Program.AppendLine("    [Produces(typeof({0}))]",
+                        action.ReturnType);
+                }
+                Program.AppendLine("    {0}",
+                    api.Annotations);
+
+                var args = string.Join(',', action.Params.Select((it) => $"{it.type} {it.name}"));
+                Program.AppendLine("    public async Task<IActionResult> {0}({1})\n    {{",
+                    action.Name,
+                    args);
+
+                Program.AppendLine("        try\n        {{");
+
+                if (action.ReturnType == "void")
+                {
+                    Program.Append("            await service.{0}(",
+                        action.Name);
+                } else
+                {
+                    Program.Append("            var result = await service.{0}(", 
+                        action.Name);
+                }
+                if (!string.IsNullOrEmpty(action.SplatFrom))
+                {
+                    Program.AppendLine("new {0}()\n            {{",
+                        action.SplatFrom);
+                } else if (action.Params.Count > 0)
+                {
+                    Program.AppendLine("");
+                }
+                foreach (var (par, i) in action.Params.Select((it, i) => (it.name, i)))
+                {
+                    if (i != 0)
+                    {
+                        Program.AppendLine(",");
+                    }
+                    Program.Append("                ");
+                    if (!string.IsNullOrEmpty(action.SplatFrom))
+                    {
+                        Program.Append("{0} = ",
+                            par);
+                    }
+                    Program.Append(par);
+                }
+                if (!string.IsNullOrEmpty(action.SplatFrom))
+                {
+                    Program.Append("\n            }}");
+                }
+                Program.AppendLine(");");
+
+                if (action.ReturnType == "void")
+                {
+                    Program.AppendLine("            return Ok();");
+                } else
+                {
+                    Program.AppendLine("            return Ok(result);");
+                }
+                Program.AppendLine("        }} catch (Exception ex)");
+                Program.AppendLine("        {{");
+                Program.AppendLine("            return Problem(ex.Message);");
+                Program.AppendLine("        }}");
+                Program.AppendLine("    }}");
+            }
+
+            Program.AppendLine("}}");
+        }
     }
 
     public static void WriteViewInterface(Dto dto)
@@ -236,22 +352,20 @@ public class ServiceGrammar
         Program.AppendLine("        state.State = GetState();");
         Program.AppendLine("        using var writer = new StringWriter(build);");
 
-        Program.Append(renderContent
-            .Replace("{", "{{")
-            .Replace("}", "}}"));
+        Program.Append("{0}", renderContent);
 
         Program.AppendLine("        state.Trim(tagCounts);");
 
         Program.AppendLine("        return build.ToString();");
         Program.AppendLine("    }}");
-
-        Program.AppendLine("}}");
     }
 
     public static void WriteViewController(Dto dto)
     {
-        Program.AppendLine("[Controller]\n[Route(\"/view/{0}\")]\n[ApiExplorerSettings(IgnoreApi = true)]",
+        Program.AppendLine("[Controller]");
+        Program.AppendLine("[Route(\"view/{0}\")]",
             dto.ModelName);
+        Program.AppendLine("[ApiExplorerSettings(IgnoreApi = true)]");
         Program.AppendLine("public class {0}ViewController : ControllerBase",
             dto.ModelName);
         Program.AppendLine("{{");
@@ -274,7 +388,7 @@ public class ServiceGrammar
 
         foreach (var action in dto.Actions)
         {
-            string attr((string type, string name) it) => $"public {it.type} {it.name} {{ get; set; }}";
+            static string attr((string type, string name) it) => $"public {it.type} {it.name} {{ get; set; }}";
             var attrs = action.Params.Select(attr);
             var attributes = string.Join("\n        ", attrs);
 

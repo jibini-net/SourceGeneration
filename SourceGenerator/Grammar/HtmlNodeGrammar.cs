@@ -54,7 +54,7 @@ public class HtmlNodeGrammar
     {
         var result = new Dto()
         {
-            Children = new()
+            Children = []
         };
 
         // "<>"
@@ -83,7 +83,7 @@ public class HtmlNodeGrammar
     //TODO Escaping?
     public static Dto MatchStringSegment(TokenStream stream)
     {
-        string escStr(string s) => s
+        static string escStr(string s) => s
             .Replace("\\", "\\\\")
             .Replace("\"", "\\\"")
             .Replace("\r", "")
@@ -154,8 +154,8 @@ public class HtmlNodeGrammar
         var result = new Dto()
         {
             Tag = stream.Text,
-            Attribs = new(),
-            Children = new()
+            Attribs = [],
+            Children = []
         };
         var special = SpecialTags.TryGetValue(result.Tag ?? "", out var specialKv);
         Program.StartSpan((special || (result.Tag[0] >= 'A' && result.Tag[0] <= 'Z'))
@@ -270,7 +270,7 @@ public class HtmlNodeGrammar
         };
     }
 
-    public static Dictionary<string, (SpecialValidator, SpecialRenderBuilder)> SpecialTags = new()
+    public static readonly Dictionary<string, (SpecialValidator, SpecialRenderBuilder)> SpecialTags = new()
     {
         ["unsafe"] = (
             (dto) =>
@@ -369,7 +369,7 @@ public class HtmlNodeGrammar
         ["br"] = (
             (dto) =>
             {
-                if (dto.Children.Any() || dto.Attribs.Any())
+                if (dto.Children.Count > 0 || dto.Attribs.Count > 0)
                 {
                     throw new Exception("Breaks do not have parameters nor accept children");
                 }

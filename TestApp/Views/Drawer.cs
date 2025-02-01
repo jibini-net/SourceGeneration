@@ -1,13 +1,11 @@
-﻿namespace TestApp.Views;
+﻿using Generated;
 
-using Generated;
+namespace TestApp.Views;
 
-public class Drawer : DrawerBase
+public class Drawer(
+    IServiceProvider sp
+    ) : DrawerBase(sp)
 {
-    public Drawer(IServiceProvider sp) : base(sp)
-    {
-    }
-
     public override void Toggle()
     {
         open = !(open ?? startOpen);

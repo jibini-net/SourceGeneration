@@ -18,12 +18,12 @@ namespace SourceGenerator.VsEditor
         public const string SERVER_IP = "127.0.0.1";
         public const int PORT = 58994;
 
-        private ITextBuffer text;
-        private string filePath;
+        private readonly ITextBuffer text;
+        private readonly string filePath;
         private readonly Dictionary<string, IClassificationType> types = new Dictionary<string, IClassificationType>();
 
         private CancellationTokenSource cancel;
-        private SemaphoreSlim cancelMutex = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim cancelMutex = new SemaphoreSlim(1, 1);
 
         private List<MatchSpan> spans = null;
 
@@ -35,8 +35,7 @@ namespace SourceGenerator.VsEditor
                     (it) => it,
                     (it) => registry.GetClassificationType(it));
 
-            ITextDocument textDocument;
-            if (text.Properties.TryGetProperty(typeof(ITextDocument), out textDocument))
+            if (text.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument textDocument))
             {
                 filePath = textDocument.FilePath;
             } else

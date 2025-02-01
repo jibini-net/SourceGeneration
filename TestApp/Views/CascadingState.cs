@@ -1,6 +1,6 @@
-﻿namespace TestApp.Views;
+﻿using Generated;
 
-using Generated;
+namespace TestApp.Views;
 
 public class CascadingState : CascadingStateBase
 {

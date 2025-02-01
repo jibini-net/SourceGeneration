@@ -1,11 +1,11 @@
-﻿namespace SourceGenerator;
-
-using SourceGenerator.Grammar;
+﻿using SourceGenerator.Grammar;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+
+namespace SourceGenerator;
 
 using static Token;
 
@@ -130,6 +130,7 @@ internal class Program
         nfa.Build("state", (int)State);
         nfa.Build("interface", (int)Interface);
         nfa.Build("dto", (int)Dto);
+        nfa.Build("api", (int)Api);
         nfa.Build("[a-zA-Z_]([a-zA-Z0-9_\\<\\>\\[\\]\\.\\?]+)?", (int)Ident);
         nfa.Build("\\{", (int)LCurly);
         nfa.Build("\\}", (int)RCurly);
@@ -201,7 +202,7 @@ internal class Program
 
         var millis = (DateTime.Now - startTime).TotalMilliseconds;
         AppendLine($"// GENERATED IN {millis}ms");
-        consoleLine.Write($" [] GENERATED IN {millis}ms", true, ConsoleColor.Green);
+        consoleLine.Write($" [] GENERATED IN {millis}ms", ConsoleColor.Green);
 
         return sourceBuilders.Remove(ThreadId, out var _v)
             ? _v.ToString()
@@ -322,7 +323,7 @@ internal class Program
         }
 
         var millis = (DateTime.Now - startTime).TotalMilliseconds;
-        consoleLine.Write($" [] HIGHLIGHTED IN {millis}ms", true, ConsoleColor.Magenta);
+        consoleLine.Write($" [] HIGHLIGHTED IN {millis}ms", ConsoleColor.Magenta);
 
         return spanLists.Remove(ThreadId, out var _v)
             ? JsonSerializer.Serialize(_v.spanList, MatchSpanJsonContext.Default.ListMatchSpan)

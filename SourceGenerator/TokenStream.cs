@@ -29,7 +29,7 @@ public class TokenStream
     /*
      * Allows inspection of the current source position in the debugger.
      */
-    public string Remaining => Source.Substring(Offset);
+    public string Remaining => Source[Offset..];
 
     // Cached "next token" value re-evaluated when peeking
     private int? nextToken;

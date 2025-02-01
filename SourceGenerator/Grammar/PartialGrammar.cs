@@ -20,7 +20,7 @@ public class PartialGrammar
     {
         var result = new Dto()
         {
-            Fields = new()
+            Fields = []
         };
 
         // "partial" {type name} "{"
@@ -65,7 +65,7 @@ public class PartialGrammar
 
         //TODO Enforce 'schema' occurs before 'partial'
         splats[$"{modelName}.{result.Name}"] = result.Fields
-            .Union(splats.GetValueOrDefault(result.SuperClass, new()))
+            .Union(splats.GetValueOrDefault(result.SuperClass, []))
             .ToList();
         return result;
     }

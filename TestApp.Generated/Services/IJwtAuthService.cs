@@ -1,7 +1,7 @@
-﻿namespace TestApp.Services;
-
-using Generated;
+﻿using Generated;
 using System.Security.Claims;
+
+namespace TestApp.Services;
 
 public interface IJwtAuthService
 {
