@@ -1,0 +1,62 @@
+state {
+}
+
+interface {
+}
+
+inject({TestApp.Services.ILinkPathGenerator} {links})
+parent({ProjectsPage} {page})
+
+AnchorHeading(|
+	name = {"Photo Guestbook"},
+	id = {"guestbook"}
+	|)
+
+div(|
+	class = {"d-flex flex-row"},
+	style = {"width: 100%;"}
+	|
+	h4(| class = {"my-auto"} |
+		<">Photo Guestbook</">
+	)
+	a(|
+		href = {links.GetNamed("GuestbookRepo")},
+		target = {"_blank"},
+		class = {"btn btn-outline-light ms-auto"}
+		|
+		h5(| class = {"mb-0"} |
+			i(| class = {"fab fa-github me-2"} |)
+			<">Repo</">
+		)
+	)
+)
+
+hr()
+
+p(
+	<">
+	This is a guestbook application whipped up quick for my sister's baby
+	shower. The primary goal was to create a location where everybody can upload
+	their photos of the party. Using the file </">
+	code(<"><input></">)
+	<"> tag's </">
+	code(<">capture</">)
+	<"> attribute, it offers a fairly seamless experience on smartphones with
+	cameras.
+	</">
+)
+p(
+	<">
+	Attendees can leave notes and attach pictures they took. Copies are uploaded
+	to an open OwnCloud share on a linked server.
+	</">
+)
+
+center(
+	ImageView(|
+		src = {links.GetNamed("GuestbookScreenshot")},
+		clazz = {"my-3"},
+		style = {"width: 200px;max-width: 100%;"},
+		alt = {"Form allowing attendees to leave notes and photos"}
+		|)
+)

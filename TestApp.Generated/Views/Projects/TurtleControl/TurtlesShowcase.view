@@ -57,7 +57,7 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Turtle Portal"}
 		</">
 	)
 
-	div(| class = {"d-flex flex-column align-items-center"} |
+	div(| class = {"d-flex flex-column align-items-center my-3"} |
 
 		div(|
 			class = {"d-flex flex-column flex-sm-row gap-3"},
@@ -90,7 +90,7 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Turtle Portal"}
 				
 		ImageView(|
 			src = {"images/turtles/data-row.png"},
-			clazz = {"mb-2"},
+			clazz = {"my-2"},
 			style = {"width: 650px;max-width: 100%;height: auto;"},
 			alt = {"Data reported by a turtle worker"}
 			|)

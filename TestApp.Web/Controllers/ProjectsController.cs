@@ -48,6 +48,17 @@ public class ProjectsController(
         return Content(html, "text/html");
     }
 
+    [HttpGet("/projects/guestbook")]
+    public async Task<IActionResult> Guestbook()
+    {
+        projects.LoadState(new()
+        {
+            ["openDrawer"] = "Photo Guestbook"
+        });
+        var html = await projects.RenderPageAsync();
+        return Content(html, "text/html");
+    }
+
     [HttpGet("/projects/turtle-control")]
     public async Task<IActionResult> TurtleControl()
     {

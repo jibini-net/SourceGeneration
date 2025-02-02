@@ -5,7 +5,7 @@
 	</url>
 	<url>
 		<loc>https://jibini.net/projects</loc>
-		<lastmod>2024-02-09</lastmod>
+		<lastmod>2025-02-01</lastmod>
 	</url>
 	<url>
 		<loc>https://jibini.net/projects/check-engine</loc>
@@ -13,14 +13,18 @@
 	</url>
 	<url>
 		<loc>https://jibini.net/projects/source-gen</loc>
-		<lastmod>2024-02-09</lastmod>
+		<lastmod>2025-02-01</lastmod>
 	</url>
 	<url>
 		<loc>https://jibini.net/projects/fsas</loc>
 		<lastmod>2024-02-09</lastmod>
 	</url>
 	<url>
+		<loc>https://jibini.net/projects/guestbook</loc>
+		<lastmod>2025-02-01</lastmod>
+	</url>
+	<url>
 		<loc>https://jibini.net/projects/turtle-control</loc>
-		<lastmod>2024-11-16</lastmod>
+		<lastmod>2025-02-01</lastmod>
 	</url>
 </urlset>

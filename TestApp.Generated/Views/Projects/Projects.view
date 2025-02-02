@@ -68,6 +68,19 @@ CascadingState cascade(
 
 			)
 
+			div(| class = {"bg-dark border border-light p-4 mb-4 guestbook"} |
+
+				if({page.Get<string>("openDrawer") == "Photo Guestbook"}
+
+					GuestbookShowcase()
+
+					SeoExclude(
+						GuestbookShowcase()
+					)
+				)
+
+			)
+
 			div(| class = {"bg-dark border border-light p-4 mb-4 turtle-control"} |
 
 				if({page.Get<string>("openDrawer") == "Turtle Portal"}
