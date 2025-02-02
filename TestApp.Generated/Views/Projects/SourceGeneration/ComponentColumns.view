@@ -9,11 +9,35 @@ inject({TestApp.Services.IResourceInliner} {inliner})
 
 p(| class = {"mt-2"} |
 	<">
-	Declarative, reactive components are defined in ".view" files. They are
-	descriptions of HTML segments which can be reused, nested, and composed to
-	create larger complex views. As the user interacts with a web page, the
-	browser makes calls to the backend to render new HTML and react to user
-	actions.
+	Declarative, reactive components are defined in ".view" files.
+	</">
+)
+
+center(
+	div(|
+		class = {"card my-3 border-dark shadow"},
+		style = {"width: fit-content;"}
+		|
+		div(| class = {"card-header"} |
+
+			<">UpDownDemo.view</">
+
+		)
+		div(| class = {"card-body px-5"} |
+
+			UpDownDemo()
+
+		)
+	)
+)
+
+
+p(| class = {"mt-2"} |
+	<">
+	They are descriptions of HTML segments which can be reused, nested, and
+	composed to create larger complex views. As the user interacts with a web
+	page, the browser makes calls to the backend to render new HTML and react to
+	user actions.
 	</">
 )
 p(
@@ -79,22 +103,4 @@ p(
 	code({"dispatch(el, action, args)"})
 	<"> function written in JS.
 	</">
-)
-
-center(
-	div(|
-		class = {"card my-3 border-dark shadow"},
-		style = {"width: fit-content;"}
-		|
-		div(| class = {"card-header"} |
-
-			<">UpDownDemo.view</">
-
-		)
-		div(| class = {"card-body px-5"} |
-
-			UpDownDemo()
-
-		)
-	)
 )

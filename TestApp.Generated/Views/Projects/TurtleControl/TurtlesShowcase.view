@@ -47,16 +47,13 @@ Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Turtle Portal"}
 
 	p(
 		<">
-		Shortly after graduating, I lived with two other CS majors who were completing
-		their respective degrees. Naturally, nonsense and Minecraft followed.
+		I needed a low-stakes opportunity to test my datalayer descriptor language.
 		</">
 	)
 	p(
 		<">
-		At that time, I was also working on a source generation tool and wanted
-		a low-stakes opportunity to test its features. After acquiring ComputerCraft
-		turtle minions to do our bidding, I immediately attempted to attach them to
-		Microsoft SQL Server.
+		After acquiring ComputerCraft turtle minions on the roommate ATM server,
+		I immediately attempted to attach them to Microsoft SQL Server.
 		</">
 	)
 
