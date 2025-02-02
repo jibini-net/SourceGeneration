@@ -35,5 +35,8 @@ Host(
 	script(
 		unsafe({await inliner.PreLoad("js/Drawer.js")})
 	)
+	script(
+		unsafe({await inliner.PreLoad("js/NeverHitCorner.js")})
+	)
 	</>
 )

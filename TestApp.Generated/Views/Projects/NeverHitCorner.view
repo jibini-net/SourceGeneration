@@ -1,0 +1,26 @@
+state {
+}
+
+interface {
+}
+
+div(|
+	class = {"p-4 ms-0 ms-md-2 border-secondary border-top-0 border-bottom-0"},
+	style = {"""
+					 top: 0;height: 200px;
+					 max-height: 100vh;
+					 position: relative;
+					 overflow: hidden;
+					 border: 4px double;
+					 opacity: 0.8;
+"""},
+	id = {"vcrContainer"}
+	|
+
+	div(|
+		class = {"p-3 rounded border border-light"},
+		style = {"position: absolute;cursor: pointer;"},
+		id = {"vcrLogo"}
+		|)
+
+)

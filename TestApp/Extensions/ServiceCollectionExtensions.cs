@@ -47,5 +47,6 @@ public static class ServiceCollectionExtensions
         services.AddTurtlesShowcaseView<TurtlesShowcaseBase.Default>();
         services.AddGuestbookShowcaseView<GuestbookShowcaseBase.Default>();
         services.AddRecentGistsView<RecentGistsBase.Default>();
+        services.AddNeverHitCornerView<NeverHitCornerBase.Default>();
     }
 }

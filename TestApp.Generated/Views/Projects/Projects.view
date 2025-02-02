@@ -123,6 +123,10 @@ CascadingState cascade(
 
 			)
 
+			div(| class = {"d-none d-md-block"} |
+				NeverHitCorner()
+			)
+
 		)
 	)
 
