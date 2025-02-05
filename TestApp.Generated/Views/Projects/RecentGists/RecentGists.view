@@ -10,7 +10,7 @@ state {
 		{
 			Path = "https://gist.github.com/zgoethel/97d0c4dd73a54a9a5c8a31c657f5aa75",
 			Name = "RAID 5 and 6 calculations in C#",
-			Description = "Demonstrates the algorithms use to calculate the parities P and Q used in RAID"
+			Description = "Demonstrates the algorithms used to calculate the parities P and Q in RAID"
 		},
 		new()
 		{
