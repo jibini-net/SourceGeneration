@@ -2,6 +2,12 @@ state {
 	{List<GistItem>} items = {[
 		new()
 		{
+			Path = "https://gist.github.com/zgoethel/e65a2a34aa0de619fa919db0044610a0",
+			Name = "Quad-tree spatial index of regions",
+			Description = "Quad-tree index for spatial queries and closest-neighbor searches (C++/C#)"
+		},
+		new()
+		{
 			Path = "https://gist.github.com/zgoethel/a6c8470384e5ab54db7cf04c71c45fe4",
 			Name = "JS drag-and-drop polyfill",
 			Description = "Enables dragging and dropping relying on fewer browser events"
