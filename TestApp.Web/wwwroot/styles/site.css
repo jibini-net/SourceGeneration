@@ -59,6 +59,7 @@ body {
     margin-top: 2rem;
     border-top: 2px solid var(--bg-light-purple);
     border-bottom: 2px solid var(--bg-light-purple);
+    border-radius: 10px;
 }
 
     .content .top-bar .brand {

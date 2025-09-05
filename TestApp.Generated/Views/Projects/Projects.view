@@ -26,10 +26,10 @@ CascadingState cascade(
 
 	)
 
-	div(| class = {"d-flex flex-row flex-wrap"} |
+	div(| class = {"row gx-4"} |
 		div(| class = {"col-12 col-md-8"} |
 
-			div(| class = {"bg-dark border border-light p-4 mb-4"} |
+			div(| class = {"bg-dark border border-light p-4 mb-5"} |
 
 				div(| class = {"source-gen"} |
 
@@ -55,7 +55,7 @@ CascadingState cascade(
 
 			)
 
-			div(| class = {"check-engine"} |
+			div(| class = {"check-engine mb-5"} |
 
 				if({page.Get<string>("openDrawer") == "Check Engine"}
 
@@ -68,7 +68,7 @@ CascadingState cascade(
 
 			)
 
-			div(| class = {"bg-dark border border-light p-4 mb-4 guestbook"} |
+			div(| class = {"bg-dark border border-light p-4 mb-5 guestbook"} |
 
 				if({page.Get<string>("openDrawer") == "Photo Guestbook"}
 
@@ -81,7 +81,7 @@ CascadingState cascade(
 
 			)
 
-			div(| class = {"bg-dark border border-light p-4 mb-4 turtle-control"} |
+			div(| class = {"bg-dark border border-light p-4 mb-5 turtle-control"} |
 
 				if({page.Get<string>("openDrawer") == "Turtle Portal"}
 
@@ -97,7 +97,10 @@ CascadingState cascade(
 		)
 		div(| class = {"col-12 col-md-4"} |
 
-			div(| class = {"bg-light p-4 text-dark pb-5 ms-0 ms-md-2"} |
+			div(|
+				class = {"p-4 text-dark pb-5 ms-0 ms-md-2"},
+				style = {"background: #f3f1ec !important;"}
+				|
 			
 				if({string.IsNullOrEmpty(page.Get<string>("openDrawer"))}
 

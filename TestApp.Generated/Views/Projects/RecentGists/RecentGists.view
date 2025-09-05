@@ -2,15 +2,15 @@ state {
 	{List<GistItem>} items = {[
 		new()
 		{
-			Path = "https://gist.github.com/zgoethel/e65a2a34aa0de619fa919db0044610a0",
-			Name = "Quad-tree spatial index of regions",
-			Description = "Quad-tree index for spatial queries and closest-neighbor searches (C++/C#)"
+			Path = "https://gist.github.com/zgoethel/50cec72887a3a381563ead9d2abec8bb",
+			Name = "Parser for Base64 and plaintext data URIs",
+			Description = "An implementation of parsing the data URI scheme as specified by MDN"
 		},
 		new()
 		{
-			Path = "https://gist.github.com/zgoethel/a6c8470384e5ab54db7cf04c71c45fe4",
-			Name = "JS drag-and-drop polyfill",
-			Description = "Enables dragging and dropping relying on fewer browser events"
+			Path = "https://gist.github.com/zgoethel/e65a2a34aa0de619fa919db0044610a0",
+			Name = "Quad-tree spatial index of regions",
+			Description = "Quad-tree index for spatial queries and closest-neighbor searches (C++/C#)"
 		},
 		new()
 		{
@@ -29,6 +29,12 @@ state {
 			Path = "https://gist.github.com/zgoethel/38e7b2eb1d1f4308c55cbe98cb36d386",
 			Name = "String buffer writer in C",
 			Description = "Allows efficient concatenation of numerous strings (e.g., to build a source file)"
+		},
+		new()
+		{
+			Path = "https://gist.github.com/zgoethel/a6c8470384e5ab54db7cf04c71c45fe4",
+			Name = "JS drag-and-drop polyfill",
+			Description = "Enables dragging and dropping relying on fewer browser events"
 		},
 		new()
 		{
@@ -61,7 +67,7 @@ inject({TestApp.Services.ILinkPathGenerator} {links})
 inject({TestApp.Services.IResourceInliner} {inliner})
 
 h4(<">Recent Gists</">)
-div(| style = {"width: 100%;height: 22rem;overflow-y: scroll;"} |
+div(| style = {"width: 100%;height: 25rem;overflow-y: scroll;"} |
 
 	foreach({var gist in items}
 		<>
