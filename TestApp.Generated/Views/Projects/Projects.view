@@ -25,7 +25,7 @@ CascadingState cascade(
 	div(| class = {"row gx-4"} |
 		div(| class = {"col-12 col-md-8"} |
 
-			div(| class = {"bg-dark bg-opacity-50 bg-opacity-25 p-4 mb-5 shadow"} |
+			div(| class = {"bg-dark bg-opacity-50 bg-opacity-25 py-4 px-2 px-md-4 mb-5 shadow"} |
 
 				div(| class = {"source-gen"} |
 
@@ -64,7 +64,7 @@ CascadingState cascade(
 
 			)
 
-			div(| class = {"bg-dark bg-opacity-50 p-4 mb-5 guestbook shadow"} |
+			div(| class = {"bg-dark bg-opacity-50 py-4 px-2 px-md-4 mb-5 guestbook shadow"} |
 
 				if({page.Get<string>("openDrawer") == "Photo Guestbook"}
 
@@ -77,7 +77,7 @@ CascadingState cascade(
 
 			)
 
-			div(| class = {"bg-dark bg-opacity-50 p-4 mb-5 turtle-control shadow"} |
+			div(| class = {"bg-dark bg-opacity-50 py-4 px-2 px-md-4 mb-5 turtle-control shadow"} |
 
 				if({page.Get<string>("openDrawer") == "Turtle Portal"}
 

@@ -53,7 +53,7 @@ div(| class = {"banner blue-banner d-flex flex-row mx-n3 mb-0 px-3"} |
 	)
 )
 
-div(| class = {"bg-dark bg-opacity-50 p-3 mb-4"} |
+div(| class = {"bg-dark bg-opacity-50 py-4 px-2 px-md-3 mb-4"} |
 
 	div(| class = {"d-flex flex-row flex-wrap"} |
 		div(| class = {"col-12 col-md-5 pe-3 mb-1"} |
@@ -136,213 +136,215 @@ div(| class = {"bg-dark bg-opacity-50 p-3 mb-4"} |
 
 	Drawer drawer(| startOpen = {page?.Get<string>("openDrawer") == "Check Engine"} |
 		<>
-		div(| style = {"clear: both;margin-top: 32px;"
-				+ ((drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")) ? "" : "max-height: 11rem;overflow-y: hidden;")} |
-
-			ImageView(|
-				src = {"images/checkengine/pathtracing.png"},
-				style = {"float: left;width: 400px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
-				alt = {"Pathtraced 2D Lighting"}
-				|)
-
-			h6(<">Pathtraced Lighting</">)
-			p(
-				<">
-				Lighting is performed by generating a vector of distance measurements
-				organized in a radial pattern. A path can be drawn along each vector
-				to determine which areas of the screen are in light, and which are cast
-				in shadow.
-				</">
-			)
-			p(
-				<">
-				The result is a hard-edged shadow effect, several of which can be
-				blended to account for multiply-lit scenes.
-				</">
-			)
-
-		)
-
-		if({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
-
-			<>
-			div(| style = {"clear: both;margin-top: 38px;"} |
+		div(| style = {"line-height: 1.8;"} |
+			div(| style = {"clear: both;margin-top: 32px;"
+					+ ((drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")) ? "" : "max-height: 11rem;overflow-y: hidden;")} |
 
 				ImageView(|
-					src = {"images/checkengine/pathfinding.png"},
-					style = {"float: right;width: 360px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"},
-					alt = {"Non-player Character With Behavior"}
+					src = {"images/checkengine/pathtracing.png"},
+					style = {"float: left;width: 390px;max-width: 100%;height: auto;margin: 0 1rem 3rem 0;"},
+					alt = {"Pathtraced 2D Lighting"}
 					|)
 
-				h6(<">Behavior System</">)
+				h6(<">Pathtraced Lighting</">)
 				p(
 					<">
-					Non-player characters can be assigned behaviors which update each frame
-					and re-calculate the entity's goal within the game.
+					Lighting is performed by generating a vector of distance measurements
+					organized in a radial pattern. A path can be drawn along each vector
+					to determine which areas of the screen are in light, and which are cast
+					in shadow.
 					</">
 				)
 				p(
 					<">
-					Complex behaviors, such as player-following and random wandering algorithms,
-					are implemented in the provided test game.
-					</">
-				)
-
-				ul(
-
-					li(
-						a(|
-							href = {links.GetNamed("WanderingBehavior")},
-							target = {"_blank"}
-							|
-							i(| class = {"fa fa-file me-2"} |)
-							<">WanderingBehavior.kt</">
-						)
-					)
-
-					li(
-						a(|
-							href = {links.GetNamed("PlayerTargetingBehavior")},
-							target = {"_blank"}
-							|
-							i(| class = {"fa fa-file me-2"} |)
-							<">PlayerTargetingBehavior.kt</">
-						)
-					)
-
-				)
-
-			)
-			div(| style = {"clear: both;margin-top: 38px;"} |
-
-				ImageView(|
-					src = {"images/checkengine/injection.png"},
-					style = {"float: left;width: 440px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
-					alt = {"Dependency Injection Code Example"}
-					|)
-
-				h6(<">Dependency Injection</">)
-				p(
-					<">
-					The engine provides automatic injection of singleton types called "engine objects." Types are
-					scanned from the classpath based on annotations.
-					</">
-				)
-				p(
-					<">
-					Engine objects can rely on other singletons to access and affect game state.
+					The result is a hard-edged shadow effect, several of which can be
+					blended to account for multiply-lit scenes.
 					</">
 				)
 
 			)
-			div(| style = {"clear: both;margin-top: 38px;"} |
 
-				ImageView(|
-					src = {"images/checkengine/aabbfriction.png"},
-					style = {"float: right;width: 385px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"},
-					alt = {"AABB Physics, Friction, and Momentum"}
-					|)
+			if({drawer.GetNullable<bool>("open") ?? drawer.Get<bool>("startOpen")}
 
-				h6(<">AABB Collision, Friction, and Platforming</">)
-				p(
-					<">
-					Limited physics calculations are supported by the engine, including resolving
-					collisions between dynamic and static entities. 
-					</">
-				)
-				p(
-					<">
-					Entities which are not affected by gravity (such as platforms) are able to support
-					and carry players, and also give them momentum if they jump off.
-					</">
-				)
+				<>
+				div(| style = {"clear: both;margin-top: 38px;"} |
 
-			)
-			div(| style = {"clear: both;margin-top: 38px;"} |
-
-				ImageView(|
-					src = {"images/checkengine/imgui.png"},
-					style = {"float: left;width: 380px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
-					alt = {"Imgui Integration Example"}
-					|)
-
-				h6(<">Included Imgui bindings</">)
-				p(
-					<">
-					In order to guarantee compatibility with Raspberry Pi and the engine's own rendering,
-					the Java bindings for Imgui were adapted to support OpenGL ES and ARM platforms.
-					</">
-				)
-				p(
-					<">
-					The game engine includes special native libraries and Java bindings which
-					have been specifically verified to work on the Raspberry Pi 4 with OpenGL ES 3.0.
-					</">
-				)
-				p(
-					a(|
-						href = {links.GetNamed("ImguiFork")},
-						target = {"_blank"}
-						|
-						i(| class = {"fab fa-github me-2"} |)
-						<">My Fork</">
-					)
-				)
-
-			)
-			div(| style = {"clear: both;margin-top: 38px;"} |
-
-				h6(<">Animation and Resource Loading</">)
-				p(
-					<">
-					The engine supports loading several common image formats, and also supports
-					loading animations as GIFs. GIF images are automatically converted into
-					a knit spritesheet; animation frames are automatically swapped in and out by
-					the engine according to the GIF's animation speed.
-					</">
-				)
-				p(
-					<">
-					Programmers are able to load GIFs just like any other texture due to
-					abstraction layers in the process of creating and binding textures.
-					</">
-				)
-
-				center(
 					ImageView(|
-						src = {"images/checkengine/loadgif.png"},
-						style = {"max-width: 100%;"},
-						alt = {"Code to Load a GIF in the Engine"}
+						src = {"images/checkengine/pathfinding.png"},
+						style = {"float: right;width: 360px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"},
+						alt = {"Non-player Character With Behavior"}
 						|)
+
+					h6(<">Behavior System</">)
+					p(
+						<">
+						Non-player characters can be assigned behaviors which update each frame
+						and re-calculate the entity's goal within the game.
+						</">
+					)
+					p(
+						<">
+						Complex behaviors, such as player-following and random wandering algorithms,
+						are implemented in the provided test game.
+						</">
+					)
+
+					ul(
+
+						li(
+							a(|
+								href = {links.GetNamed("WanderingBehavior")},
+								target = {"_blank"}
+								|
+								i(| class = {"fa fa-file me-2"} |)
+								<">WanderingBehavior.kt</">
+							)
+						)
+
+						li(
+							a(|
+								href = {links.GetNamed("PlayerTargetingBehavior")},
+								target = {"_blank"}
+								|
+								i(| class = {"fa fa-file me-2"} |)
+								<">PlayerTargetingBehavior.kt</">
+							)
+						)
+
+					)
+
 				)
+				div(| style = {"clear: both;margin-top: 38px;"} |
 
-				div(| class = {"row my-4"} |
-					div(| class = {"col-6"} |
+					ImageView(|
+						src = {"images/checkengine/injection.png"},
+						style = {"float: left;width: 440px;max-width: 100%;height: auto;margin: 0 1rem 1rem 0;"},
+						alt = {"Dependency Injection Code Example"}
+						|)
 
-						center(
+					h6(<">Dependency Injection</">)
+					p(
+						<">
+						The engine provides automatic injection of singleton types called "engine objects." Types are
+						scanned from the classpath based on annotations.
+						</">
+					)
+					p(
+						<">
+						Engine objects can rely on other singletons to access and affect game state.
+						</">
+					)
+
+				)
+				div(| style = {"clear: both;margin-top: 38px;"} |
+
+					ImageView(|
+						src = {"images/checkengine/aabbfriction.png"},
+						style = {"float: right;width: 385px;max-width: 100%;height: auto;margin: 0 0 1rem 1rem;"},
+						alt = {"AABB Physics, Friction, and Momentum"}
+						|)
+
+					h6(<">AABB Collision, Friction, and Platforming</">)
+					p(
+						<">
+						Limited physics calculations are supported by the engine, including resolving
+						collisions between dynamic and static entities. 
+						</">
+					)
+					p(
+						<">
+						Entities which are not affected by gravity (such as platforms) are able to support
+						and carry players, and also give them momentum if they jump off.
+						</">
+					)
+
+				)
+				div(| style = {"clear: both;margin-top: 38px;"} |
+
+					ImageView(|
+						src = {"images/checkengine/imgui.png"},
+						style = {"float: left;width: 380px;max-width: 100%;height: auto;margin: 0 1rem 3rem 0;"},
+						alt = {"Imgui Integration Example"}
+						|)
+
+					h6(<">Included Imgui bindings</">)
+					p(
+						<">
+						In order to guarantee compatibility with Raspberry Pi and the engine's own rendering,
+						the Java bindings for Imgui were adapted to support OpenGL ES and ARM platforms.
+						</">
+					)
+					p(
+						<">
+						The game engine includes special native libraries and Java bindings which
+						have been specifically verified to work on the Raspberry Pi 4 with OpenGL ES 3.0.
+						</">
+					)
+					p(
+						a(|
+							href = {links.GetNamed("ImguiFork")},
+							target = {"_blank"}
+							|
+							i(| class = {"fab fa-github me-2"} |)
+							<">My Fork</">
+						)
+					)
+
+				)
+				div(| style = {"clear: both;margin-top: 38px;"} |
+
+					h6(<">Animation and Resource Loading</">)
+					p(
+						<">
+						The engine supports loading several common image formats, and also supports
+						loading animations as GIFs. GIF images are automatically converted into
+						a knit spritesheet; animation frames are automatically swapped in and out by
+						the engine according to the GIF's animation speed.
+						</">
+					)
+					p(
+						<">
+						Programmers are able to load GIFs just like any other texture due to
+						abstraction layers in the process of creating and binding textures.
+						</">
+					)
+
+					center(
+						ImageView(|
+							src = {"images/checkengine/loadgif.png"},
+							style = {"max-width: 100%;"},
+							alt = {"Code to Load a GIF in the Engine"}
+							|)
+					)
+
+					div(| class = {"row my-4"} |
+						div(| class = {"col-6"} |
+
+							center(
+								ImageView(|
+									src = {"images/checkengine/gendreau_yell_right.gif"},
+									style = {"max-width: 100%;"},
+									alt = {"Character Yelling Right Animation"}
+									|)
+							)
+
+						)
+						div(| class = {"col-6"} |
+
 							ImageView(|
 								src = {"images/checkengine/gendreau_yell_right.gif"},
-								style = {"max-width: 100%;"},
-								alt = {"Character Yelling Right Animation"}
+								style = {"max-width: 100%;transform: scaleX(-1);"},
+								alt = {"Character Yelling Left Animation"}
 								|)
+
 						)
-
 					)
-					div(| class = {"col-6"} |
 
-						ImageView(|
-							src = {"images/checkengine/gendreau_yell_right.gif"},
-							style = {"max-width: 100%;transform: scaleX(-1);"},
-							alt = {"Character Yelling Left Animation"}
-							|)
-
-					)
 				)
 
+				div(| style = {"clear: both;"} |)
+				</>
 			)
-
-			div(| style = {"clear: both;"} |)
-			</>
 		)
 		</>
 	)

@@ -2,6 +2,10 @@
     background-color: #0e1818 !important;
 }
 
+a {
+    color: var(--bg-purple);
+}
+
 #shout {
     width: 650px;
     max-width: 100%;
