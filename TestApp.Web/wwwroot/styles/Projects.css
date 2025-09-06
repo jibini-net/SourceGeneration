@@ -1,4 +1,8 @@
-﻿#fsa-preview {
+﻿body {
+    background-color: #18161a !important;
+}
+
+#fsa-preview {
     width: 400px;
     height: 350px;
     height: calc(300px + 3rem);

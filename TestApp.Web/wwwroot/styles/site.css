@@ -6,10 +6,12 @@
 
     .banner.green-banner {
         background: url("images/banner_green.svg") no-repeat;
+        box-shadow: 0 0 4rem 3rem #198e5d14;
     }
 
     .banner.orange-banner {
         background: url("images/banner_orange.svg") no-repeat;
+        box-shadow: 0 0 4rem 3rem #be7c2317;
     }
 
     .banner.blue-banner {
@@ -35,7 +37,7 @@ html {
 }
 
 html, body, .content {
-    font-family: system-ui, sans-serif;
+    font-family: "Nunito", sans-serif;
     color: white;
     width: 100%;
     min-height: 100%;
@@ -59,7 +61,6 @@ body {
     margin-top: 2rem;
     border-top: 2px solid var(--bg-light-purple);
     border-bottom: 2px solid var(--bg-light-purple);
-    border-radius: 10px;
 }
 
     .content .top-bar .brand {

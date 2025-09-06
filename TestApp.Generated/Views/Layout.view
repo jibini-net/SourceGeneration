@@ -56,7 +56,7 @@ div(| class = {"content"} |
 		child({0})
 
 	)
-	div(| class = {"bottom-bar bg-dark"} |
+	div(| class = {"bottom-bar"} |
 
 		div(| class = {"credit"} |
 			i(

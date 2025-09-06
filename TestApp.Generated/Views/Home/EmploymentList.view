@@ -7,13 +7,8 @@ interface {
 inject({TestApp.Services.ILinkPathGenerator} {links})
 
 div(|
-	class = {"bg-dark"},
-	id = {"top-bg-blocker"}
-	|)
-
-div(|
 	class = {"text-dark p-3 mt-5"},
-	style = {"background: #ecf3f2;box-shadow: 0 0 1rem 1rem #ffffff0d;"}
+	style = {"background: #ecf3f2;"}
 	|
 
 	h5(
@@ -228,10 +223,3 @@ div(| class = {"bg-white text-dark p-3 mt-3 bg-opacity-75"} |
 	)
 
 )
-
-img(|
-	id = {"swirlies"},
-	class = {"d-none d-md-block"},
-	src = {"images/swirlies.svg"},
-	alt = {"Background Image"}
-	|)

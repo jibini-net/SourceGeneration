@@ -20,7 +20,8 @@ div(| class = {"text-white-50"} |
 
 	h4(|
 		id = {"fixed-clone"},
-		class = {"bg-dark pb-4 pt-5"}
+		class = {"pb-4 pt-5"},
+		style = {"background-color: #0e1818 !important;"}
 		|
 		<">Technologies</">
 	)
@@ -31,7 +32,10 @@ div(| class = {"text-white-50"} |
 		<">Technologies</">
 	)
 
-	div(| class = {"techs-container bg-dark"} |
+	div(|
+		class = {"techs-container bg-white shadow pb-4"},
+		style = {"--bs-bg-opacity: 0.04;"}
+		|
 		foreach({var tech in technologyList}
 		
 			div(| class = {"techs-item d-flex flex-row mt-4 pt-4"} |
@@ -42,7 +46,7 @@ div(| class = {"text-white-50"} |
 					)
 
 				)
-				div(| class = {"flex-grow-1"} |
+				div(| class = {"flex-grow-1 px-2"} |
 
 					h5(| class = {"text-light " + tech.NameClass} |
 						{tech.Name}

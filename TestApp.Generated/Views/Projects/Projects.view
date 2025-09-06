@@ -9,19 +9,15 @@ parent({ProjectsPage} {page})
 CascadingState cascade(
 	<>
 
-	div(|
-		class = {"banner orange-banner d-flex flex-column mb-5"},
-		style = {"text-align: center;"}
-		|
+	div(| class = {"banner orange-banner d-flex flex-column flex-md-row gap-4 align-items-md-center mb-5 py-5 ps-md-5 text-center"} |
 
-		h4(| class = {"mx-auto"} |
-			<">Project Portfolio</">
-		)
-		h5(|
-			class = {"mb-0 mx-auto"},
-			style = {"max-width: 30rem;font-weight: normal;"}
+		a(| href = {""}, class = {"btn btn-lg btn-light ms-md-4"} | unsafe({"&#10094;&nbsp;&nbsp;&nbsp;Home"}))
+
+		span(|
+			class = {"fw-lighter"},
+			style = {"font-size: 2rem;color: #fbf0d5;"}
 			|
-			<">A variety of open source software projects I've been working on.</">
+			<">Project Portfolio</">
 		)
 
 	)
@@ -29,7 +25,7 @@ CascadingState cascade(
 	div(| class = {"row gx-4"} |
 		div(| class = {"col-12 col-md-8"} |
 
-			div(| class = {"bg-dark border border-light p-4 mb-5"} |
+			div(| class = {"bg-dark bg-opacity-50 bg-opacity-25 p-4 mb-5 shadow"} |
 
 				div(| class = {"source-gen"} |
 
@@ -55,7 +51,7 @@ CascadingState cascade(
 
 			)
 
-			div(| class = {"check-engine mb-5"} |
+			div(| class = {"check-engine mb-5 shadow"} |
 
 				if({page.Get<string>("openDrawer") == "Check Engine"}
 
@@ -68,7 +64,7 @@ CascadingState cascade(
 
 			)
 
-			div(| class = {"bg-dark border border-light p-4 mb-5 guestbook"} |
+			div(| class = {"bg-dark bg-opacity-50 p-4 mb-5 guestbook shadow"} |
 
 				if({page.Get<string>("openDrawer") == "Photo Guestbook"}
 
@@ -81,7 +77,7 @@ CascadingState cascade(
 
 			)
 
-			div(| class = {"bg-dark border border-light p-4 mb-5 turtle-control"} |
+			div(| class = {"bg-dark bg-opacity-50 p-4 mb-5 turtle-control shadow"} |
 
 				if({page.Get<string>("openDrawer") == "Turtle Portal"}
 

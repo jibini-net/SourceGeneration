@@ -36,9 +36,17 @@ html(| lang = {"en"} |
 			unsafe({await inliner.PreLoad("styles/site.css")})
 		)
 
+		unsafe({
+			"""
+			<link rel="preconnect" href="https://fonts.googleapis.com">
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+			<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+			"""
+		})
+
 		child({1})
 	)
-	body(| class = {"bg-dark"} |
+	body(
 
 		script(
 			unsafe({await inliner.PreLoad("https://code.jquery.com/jquery-3.7.1.min.js", true)})

@@ -1,22 +1,30 @@
-﻿.banner-brace {
-    color: rgba(255, 255, 255, 0.6);
-    font-family: monospace;
-    font-size: 2rem;
-    font-weight: bold;
+﻿body {
+    background-color: #0e1818 !important;
 }
 
 #shout {
-    max-width: 30rem;
+    width: 650px;
+    max-width: 100%;
+    padding: 2rem 0;
 }
 
-    #shout h4 {
+    #shout div.title {
+        font-size: 280%;
         font-family: monospace;
-        font-weight: bold;
+        line-height: 1;
     }
 
     #shout p {
-        font-size: 1.2rem;
-        color: rgba(255, 255, 255, 0.75);
+        font-size: 1.5rem;
+        color: #c2fbbf;
+        line-height: 1.8;
+    }
+
+    #shout .btn {
+        --bs-btn-color: #c2fbbf;
+        --bs-btn-border-color: #c2fbbf;
+        --bs-btn-hover-bg: #c2fbbf;
+        --bs-btn-hover-border-color: #c2fbbf;
     }
 
 .techs-item {
@@ -51,15 +59,4 @@ h4 .smaller {
     width: 40%;
     max-width: 100%;
     max-width: min(100%, 725px);
-}
-
-#top-bg-blocker {
-    width: 40%;
-    max-width: 100%;
-    z-index: -1;
-    position: absolute;
-    margin-top: -10000px;
-    margin-top: calc(-10000px + 3rem);
-    height: 10000px;
-    margin-bottom: -3rem;
 }
