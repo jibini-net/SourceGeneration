@@ -6,7 +6,7 @@ public partial class Fsa
     {
         Numbers = 1,
         Letters,
-        Whitespace
+        Whitespace = 9999
     }
 
     private static Fsa _CommonMatcher;
