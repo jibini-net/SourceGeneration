@@ -192,9 +192,10 @@ public static partial class FsaExtensions
                 // {to index}
                 var index = parseIndexValue();
 
+                var nextNode = getOrAddState(index);
                 foreach (var c in cInts)
                 {
-                    node.Next[(char)c] = getOrAddState(index);
+                    node.Next[(char)c] = nextNode;
                 }
             }
         }
