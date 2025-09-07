@@ -42,15 +42,15 @@ public static partial class FsaExtensions
                             remaining?.FirstOrDefault().Value is not null;)
                         {
                             var prev = -1;
-                            var sequential = remaining.TakeWhile((it) => prev == -1 | prev + 1 == (prev = it.Key)).ToList();
+                            var sequential = remaining.TakeWhile((it) => prev == -1 | prev + 1 == (prev = it.Key)).Count();
 
-                            await writer.WriteAsync($"{(int)sequential.First().Key} ");
-                            if (sequential.Count > 1)
+                            await writer.WriteAsync($"{(int)remaining.First().Key} ");
+                            if (sequential > 1)
                             {
-                                await writer.WriteAsync($"to {(int)sequential.Last().Key} ");
+                                await writer.WriteAsync($"to {(int)remaining.Skip(sequential - 1).First().Key} ");
                             }
 
-                            remaining = remaining.Skip(sequential.Count);
+                            remaining = remaining.Skip(sequential);
                         }
 
                         await writer.WriteAsync("e ");
