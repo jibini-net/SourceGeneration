@@ -2,9 +2,9 @@
 
 public partial class Fsa
 {
-    protected void _EXT_ParsePLUS_Bounded(string word, ref int start, ref int end, ref List<Fsa> frontier, bool escaped = false)
+    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Bounded(string word, int start, int end, Func<int, Task> cb, bool escaped = false)
     {
-        frontier = [];
+        List<Fsa> frontier = [];
         start -= escaped ? 1 : 0;
 
         var expr = word[start..end];
@@ -63,7 +63,8 @@ public partial class Fsa
         for (var c = startNum; c <= endNum; c++)
         {
             var builtExpr = string.Join("", Enumerable.Range(0, c).Select((_) => expr));
-            _ParseSERIES(builtExpr, 0, out _, out var _frontier);
+            List<Fsa> _frontier;
+            (_, _frontier) = await _ParseSERIES(builtExpr, 0, (_) => Task.CompletedTask);
 
             frontier.AddRange(_frontier);
         }
@@ -73,7 +74,7 @@ public partial class Fsa
 
         if (canHaveMore)
         {
-            frontier.Single()._ParsePARENS($"({expr}+|)", 0, out _, out frontier);
+            (_, frontier) = await frontier.Single()._ParsePARENS($"({expr}+|)", 0, (_) => Task.CompletedTask);
         }
 
         if (end >= word.Length || word[end] != '}')
@@ -82,7 +83,7 @@ public partial class Fsa
         }
         end++;
 
-        return;
+        return (start, end, frontier);
 
     expected_operator:
         throw new ApplicationException($"Expected ',' or '+' at offset {end}");
@@ -90,32 +91,38 @@ public partial class Fsa
         throw new ApplicationException($"Expected numeric value at offset {end}");
     }
 
-    protected void _EXT_ParsePLUS_Optional(string word, ref int start, ref int end, ref List<Fsa> frontier, bool escaped = false)
+    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Optional(string word, int start, int end, Func<int, Task> cb, bool escaped = false)
     {
         start -= escaped ? 1 : 0;
         var expr = word[start..end];
 
-        _ParsePARENS($"({expr}|)", 0, out _, out frontier);
+        List<Fsa> frontier;
+        (_, frontier) = await _ParsePARENS($"({expr}|)", 0, (_) => Task.CompletedTask);
         
         end++;
+
+        return (start, end, frontier);
     }
 
-    protected void _EXT_ParsePLUS_Star(string word, ref int start, ref int end, ref List<Fsa> frontier, bool escaped = false)
+    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Star(string word, int start, int end, Func<int, Task> cb, bool escaped = false)
     {
         start -= escaped ? 1 : 0;
         var expr = word[start..end];
 
-        _ParsePARENS($"({expr}+|)", 0, out _, out frontier);
+        List<Fsa> frontier;
+        (_, frontier) = await _ParsePARENS($"({expr}+|)", 0, (_) => Task.CompletedTask);
 
         end++;
+
+        return (start, end, frontier);
     }
 
-    protected void _EXT_ParseRANGE_Chars(string word, ref int end, ref List<Fsa> frontier)
+    protected async Task<(int end, List<Fsa> frontier)> _EXT_ParseRANGE_Chars(string word, int end, List<Fsa> frontier, Func<int, Task> cb)
     {
         var letter = word[end];
 
         var newState = new Fsa(letter);
-        _AddTransition(letter, newState);
+        await _AddTransition(letter, newState, cb, end);
 
         frontier.Add(newState);
 
@@ -136,17 +143,19 @@ public partial class Fsa
             for (char c = (char)(letter + 1); c <= endLetter; c++)
             {
                 var _newState = new Fsa(c);
-                _AddTransition(c, _newState);
+                await _AddTransition(c, _newState, cb, end);
 
                 frontier.Add(_newState);
             }
         }
+
+        return (end, frontier);
     }
 
-    protected void _EXT_ParseRANGE(string word, int start, out int end, out List<Fsa> frontier)
+    protected async Task<(int end, List<Fsa> frontier)> _EXT_ParseRANGE(string word, int start, Func<int, Task> cb)
     {
-        end = start + 1;
-        frontier = [];
+        var end = start + 1;
+        List<Fsa> frontier = [];
 
         for (var _escaped = false;
             end < word.Length && (_escaped || word[end] != ']');
@@ -162,7 +171,7 @@ public partial class Fsa
                     throw new ApplicationException($"Unexpected '-' at offset {end}");
             }
 
-            _EXT_ParseRANGE_Chars(word, ref end, ref frontier);
+            (end, frontier) = await _EXT_ParseRANGE_Chars(word, end, frontier, cb);
 
             _escaped = false;
         }
@@ -175,5 +184,7 @@ public partial class Fsa
             throw new ApplicationException($"Expected ']' at offset {end}");
         }
         end++;
+
+        return (end, frontier);
     }
 }

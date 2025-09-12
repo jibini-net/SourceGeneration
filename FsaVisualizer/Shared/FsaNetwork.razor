@@ -1,4 +1,5 @@
-﻿@using SourceGenerator
+﻿@using Jibini.CommonUtil.Algorithms
+@using Jibini.CommonUtil.DataStructures
 
 @{
     visited.Clear();
@@ -10,7 +11,7 @@
     height = _height;
 
     <div class="d-block">
-        <svg style="width: @(width)px;height: @(height)px;filter: drop-shadow(1px 2px 3px grey);">
+        <svg style="width: @(width)px;height: @(height)px;filter: drop-shadow(1px 2px 3px grey);position: relative;z-index: 2;">
             <defs>
                 <marker id="triangleBlack"
                         viewBox="0 0 10 10"
@@ -27,7 +28,7 @@
             @svg(0, 0)
         </svg>
 
-        <div style="width: @(width)px;height: @(height)px;z-index: -1;display: block;position: absolute;margin-top: -@(height)px;">
+        <div style="width: @(width)px;height: @(height)px;z-index: 1;display: block;position: absolute;margin-top: -@(height)px;">
             <svg style="width: 100%;height: 100%;filter: drop-shadow(1px 2px 3px grey);">
                 <marker id="triangleBlue"
                         viewBox="0 0 10 10"
@@ -48,7 +49,7 @@
                           y1="@(fromY + 25)" y2="@(toY + 25)"
                           stroke="blue"
                           stroke-dasharray="5,5"
-                          stroke-width="3"
+                          stroke-width="2.4"
                           marker-end="url(#triangleBlue)" />
                 }
             </svg>
@@ -187,16 +188,10 @@
         double offsetPerPart = period / _partitions.Count;
 
         return _partitions
-            .Select((_, i) =>
+            .AssignColors(alternatePhases: false, washOut: true)
+            .Select((it) =>
             {
-                var r = Math.Sin(offsetPerRgb * 0 + offsetPerPart * i);
-                var g = Math.Sin(offsetPerRgb * 1 + offsetPerPart * i);
-                var b = Math.Sin(offsetPerRgb * 2 + offsetPerPart * i);
-                if (i % 2 == 0)
-                {
-                    r = 1.0 - r;
-                }
-                return $"rgba({r * 200:0.000}, {g * 230:0.000}, {b * 230:0.000}, 1.0)";
+                return $"rgba({it.color.R}, {it.color.G}, {it.color.B}, 1.0)";
             })
             .ToList();
     }

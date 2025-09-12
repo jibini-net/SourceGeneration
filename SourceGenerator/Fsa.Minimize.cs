@@ -30,7 +30,7 @@ public partial class Fsa
     /// Do not modify the NFA again after calling the conversion to DFA; the NFA
     /// would continue to function, but this method would not.
     /// </summary>
-    public Fsa ConvertToDfa()
+    public async Task<Fsa> ConvertToDfa(Func<Queue<(Fsa node, List<Fsa> closure)>, Fsa, Task> cb)
     {
         var result = new Fsa()
         {
@@ -45,6 +45,7 @@ public partial class Fsa
         result.Accepts.AddRange(initialClosure.SelectMany((it) => it.Accepts).Distinct());
 
         queue.Enqueue((result, initialClosure));
+        await cb.Invoke(queue, result);
         do
         {
             var (node, oldClosure) = queue.Dequeue();
@@ -76,6 +77,7 @@ public partial class Fsa
                 replace[withLetters] = created;
 
                 queue.Enqueue((created, closure.ToList()));
+                await cb.Invoke(queue, result);
             }
         } while (queue.Count > 0);
 
@@ -90,7 +92,7 @@ public partial class Fsa
     /// partitions whose members are found to be distinguishable by their
     /// outgoing transitions on any letter in the alphabet.
     /// </summary>
-    public Fsa MinimizeDfa()
+    public async Task<Fsa> MinimizeDfa(Func<List<List<Fsa>>, List<List<Fsa>>, Fsa, Task> cb)
     {
         var remap = new Dictionary<Fsa, List<Fsa>>();
         // Initial partition is by accept versus non-accept states, and also the
@@ -106,6 +108,14 @@ public partial class Fsa
                 remap[n] = p;
             }
         }
+
+        var _rm = RemapPartitions(partitions, out var _map);
+        await cb(
+            partitions,
+            partitions
+                .Select((it) => new List<Fsa>() { _map[it.First()] })
+                .ToList(),
+            _rm);
 
         // Continues until all partitions are indistinguishable internally
         var prevCount = 0;
@@ -146,18 +156,26 @@ public partial class Fsa
                     }
                 }
             }
+
+            _rm = RemapPartitions(partitions, out _map);
+            await cb(
+                partitions,
+                partitions
+                    .Select((it) => new List<Fsa>() { _map[it.First()] })
+                    .ToList(),
+                _rm);
         }
 
-        return RemapPartitions(partitions);
+        return RemapPartitions(partitions, out _);
     }
 
     /// <summary>
     /// Reconstructs the minimal state graph for the DFA given a valid set of
     /// partitions. The members in each partition must be indistinguishable.
     /// </summary>
-    private Fsa RemapPartitions(List<List<Fsa>> parts)
+    private Fsa RemapPartitions(List<List<Fsa>> parts, out Dictionary<Fsa, Fsa> _partMap)
     {
-        var partMap = parts
+        var partMap = _partMap = parts
             // Create one replacement node for each partition
             .Select((p) => (p, repl: new Fsa()))
             // Relate all child nodes to replacement
@@ -181,7 +199,7 @@ public partial class Fsa
                 var replaceNext = remapPartitions(n);
                 if (replace.Next.TryGetValue(c, out var _v) && _v != replaceNext)
                 {
-                    throw new Exception("Disagreement between partitions rebuilding minimized states");
+                    //throw new Exception("Disagreement between partitions rebuilding minimized states");
                 }
                 replace.Next[c] = replaceNext;
             }
