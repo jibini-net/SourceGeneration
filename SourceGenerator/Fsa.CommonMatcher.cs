@@ -17,9 +17,9 @@ public partial class Fsa
             if (_CommonMatcher is null)
             {
                 var commonMatcher = new Fsa();
-                commonMatcher.Build("[0-9]+", (int)CommonMatch.Numbers, (_) => Task.CompletedTask).Wait();
-                commonMatcher.Build("[a-zA-Z]+", (int)CommonMatch.Letters, (_) => Task.CompletedTask).Wait();
-                commonMatcher.Build("[ \n\r\t\v\f]+", (int)CommonMatch.Whitespace, (_) => Task.CompletedTask).Wait();
+                commonMatcher.Build("[0-9]+", (int)CommonMatch.Numbers, (_, _, _) => Task.CompletedTask, (_) => { }).Wait();
+                commonMatcher.Build("[a-zA-Z]+", (int)CommonMatch.Letters, (_, _, _) => Task.CompletedTask, (_) => { }).Wait();
+                commonMatcher.Build("[ \n\r\t\v\f]+", (int)CommonMatch.Whitespace, (_, _, _) => Task.CompletedTask, (_) => { }).Wait();
 
                 _CommonMatcher = commonMatcher.ConvertToDfa((_, _) => Task.CompletedTask).Result.MinimizeDfa((_, _, _) => Task.CompletedTask).Result;
             }

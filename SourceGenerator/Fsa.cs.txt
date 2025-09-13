@@ -51,7 +51,7 @@ public class Fsa
      * Paths are not reused nor optimized at this stage. If a letter is already
      * in the "next" list of a state, it is added as an epsilon transition.
      */
-    public Task Build(string word, int accept, out List<Fsa> frontier, Func<int, Task> cb)
+    public Task Build(string word, int accept, out List<Fsa> frontier, Func<int, Fsa, Fsa, Task> cb)
     {
         var _f = frontier = new() { this };
         return Task.Run(async () =>
@@ -183,7 +183,7 @@ public class Fsa
      * Paths are not reused nor optimized at this stage. If a letter is already
      * in the "next" list of a state, it is added as an epsilon transition.
      */
-    public async Task Build(string word, int accept, Func<int, Task> cb)
+    public async Task Build(string word, int accept, Func<int, Fsa, Fsa, Task> cb)
     {
         await Build(word, accept, out var _, cb);
     }

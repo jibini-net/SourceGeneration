@@ -23,9 +23,9 @@ public partial class Fsa
     /// Paths are not reused nor optimized at this stage. If a letter is already
     /// in the "next" list of a state, it is added as an epsilon transition.
     /// </summary>
-    public async Task<List<Fsa>> Build(string word, int accept, Func<int, Task> cb)
+    public async Task<List<Fsa>> Build(string word, int accept, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill)
     {
-        var (end, frontier) = await _ParseOR(word, 0, cb);
+        var (end, frontier) = await _ParseOR(word, 0, cb, kill);
 
         if (end < word.Length)
         {
@@ -44,7 +44,7 @@ public partial class Fsa
         return frontier;
     }
 
-    protected async Task _AddTransition(char on, Fsa to, Func<int, Task> cb, int index)
+    protected async Task _AddTransition(char on, Fsa to, Func<int, Fsa, Fsa, Task> cb, int index)
     {
         if (Next.ContainsKey(on))
         {
@@ -58,13 +58,13 @@ public partial class Fsa
             Next[on] = to;
         }
 
-        await cb.Invoke(index);
+        await cb.Invoke(index, this, to);
     }
 
-    protected async Task<(int end, List<Fsa> frontier)> _ParsePARENS(string word, int start, Func<int, Task> cb)
+    protected async Task<(int end, List<Fsa> frontier)> _ParsePARENS(string word, int start, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill)
     {
         // Revert to top of parsing hierarchy
-        var (end, frontier) = await _ParseOR(word, start + 1, cb);
+        var (end, frontier) = await _ParseOR(word, start + 1, cb, kill);
 
         // Combine possible set of states down to one with epsilon
         frontier = frontier.MergeFrontier();
@@ -78,7 +78,7 @@ public partial class Fsa
         return (end, frontier);
     }
 
-    protected async Task<(int end, List<Fsa> frontier)> _ParseOR(string word, int start, Func<int, Task> cb)
+    protected async Task<(int end, List<Fsa> frontier)> _ParseOR(string word, int start, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill)
     {
         // "- 1" to counteract the initial "++end"
         var end = start - 1;
@@ -87,7 +87,7 @@ public partial class Fsa
         do
         {
             List<Fsa> _frontier;
-            (end, _frontier) = await _ParseSERIES(word, ++end, cb);
+            (end, _frontier) = await _ParseSERIES(word, ++end, cb, kill);
 
             frontier.AddRange(_frontier);
         } while (end < word.Length && word[end] == '|');
@@ -95,7 +95,7 @@ public partial class Fsa
         return (end, frontier);
     }
 
-    protected async Task<(int end, List<Fsa> frontier)> _ParseSERIES(string word, int start, Func<int, Task> cb, bool escaped = false)
+    protected async Task<(int end, List<Fsa> frontier)> _ParseSERIES(string word, int start, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill, bool escaped = false)
     {
         if (start >= word.Length
             || (!escaped && (word[start] == ')' || word[start] == '|')))
@@ -103,14 +103,14 @@ public partial class Fsa
             return (start, [this]);
         }
 
-        var (end, frontier) = await _ParsePLUS(word, start, cb, escaped: escaped);
+        var (end, frontier) = await _ParsePLUS(word, start, cb, kill, escaped: escaped);
 
-        (end, frontier) = await frontier.Single()._ParseSERIES(word, end, cb);
+        (end, frontier) = await frontier.Single()._ParseSERIES(word, end, cb, kill);
 
         return (end, frontier);
     }
 
-    protected async Task<(int end, List<Fsa> frontier)> _ParsePLUS(string word, int start, Func<int, Task> cb, bool escaped = false)
+    protected async Task<(int end, List<Fsa> frontier)> _ParsePLUS(string word, int start, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill, bool escaped = false)
     {
         int end;
         List<Fsa> frontier;
@@ -126,7 +126,7 @@ public partial class Fsa
         }
 
         var epsState = new Fsa();
-        (end, frontier) = await epsState._ParseLETTER(word, start, cb, escaped: escaped);
+        (end, frontier) = await epsState._ParseLETTER(word, start, cb, kill, escaped: escaped);
 
         if (end < word.Length
             && (word[end] == '+' || word[end] == '{' || word[end] == '?' || word[end] == '*'))
@@ -146,15 +146,18 @@ public partial class Fsa
                     break;
 
                 case '{':
-                    (start, end, frontier) = await _EXT_ParsePLUS_Bounded(word, start, end, cb, escaped: escaped);
+                    (start, end, frontier) = await _EXT_ParsePLUS_Bounded(word, start, end, cb, kill, escaped: escaped);
+                    kill(epsState);
                     return (end, frontier);
 
                 case '?':
-                    (start, end, frontier) = await _EXT_ParsePLUS_Optional(word, start, end, cb, escaped: escaped);
+                    (start, end, frontier) = await _EXT_ParsePLUS_Optional(word, start, end, cb, kill, escaped: escaped);
+                    kill(epsState);
                     return (end, frontier);
 
                 case '*':
-                    (start, end, frontier) = await _EXT_ParsePLUS_Star(word, start, end, cb, escaped: escaped);
+                    (start, end, frontier) = await _EXT_ParsePLUS_Star(word, start, end, cb, kill, escaped: escaped);
+                    kill(epsState);
                     return (end, frontier);
             }
 
@@ -173,6 +176,7 @@ public partial class Fsa
                 await _AddTransition(k, v, cb, end);
             }
         }
+        kill(epsState);
 
         return (end, frontier);
 
@@ -180,7 +184,7 @@ public partial class Fsa
         throw new ApplicationException($"Cannot use '+', '{{}}', or '*' (at offset {end}) on the empty string");
     }
 
-    protected async Task<(int end, List<Fsa> frontier)> _ParseLETTER(string word, int start, Func<int, Task> cb, bool escaped = false)
+    protected async Task<(int end, List<Fsa> frontier)> _ParseLETTER(string word, int start, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill, bool escaped = false)
     {
         var letter = word[start];
 
@@ -190,11 +194,11 @@ public partial class Fsa
         switch (letter)
         {
             case '\\' when !escaped:
-                (end, frontier) = await _ParseSERIES(word, start + 1, cb, escaped: true);
+                (end, frontier) = await _ParseSERIES(word, start + 1, cb, kill, escaped: true);
                 return (end, frontier);
 
             case '(' when !escaped:
-                (end, frontier) = await _ParsePARENS(word, start, cb);
+                (end, frontier) = await _ParsePARENS(word, start, cb, kill);
                 return (end, frontier);
 
             case '[' when !escaped:

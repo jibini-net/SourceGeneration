@@ -2,7 +2,7 @@
 
 public partial class Fsa
 {
-    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Bounded(string word, int start, int end, Func<int, Task> cb, bool escaped = false)
+    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Bounded(string word, int start, int end, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill, bool escaped = false)
     {
         List<Fsa> frontier = [];
         start -= escaped ? 1 : 0;
@@ -64,7 +64,7 @@ public partial class Fsa
         {
             var builtExpr = string.Join("", Enumerable.Range(0, c).Select((_) => expr));
             List<Fsa> _frontier;
-            (_, _frontier) = await _ParseSERIES(builtExpr, 0, (_) => Task.CompletedTask);
+            (_, _frontier) = await _ParseSERIES(builtExpr, 0, (_, _, _) => Task.CompletedTask, kill);
 
             frontier.AddRange(_frontier);
         }
@@ -74,7 +74,7 @@ public partial class Fsa
 
         if (canHaveMore)
         {
-            (_, frontier) = await frontier.Single()._ParsePARENS($"({expr}+|)", 0, (_) => Task.CompletedTask);
+            (_, frontier) = await frontier.Single()._ParsePARENS($"({expr}+|)", 0, (_, _, _) => Task.CompletedTask, kill);
         }
 
         if (end >= word.Length || word[end] != '}')
@@ -91,33 +91,33 @@ public partial class Fsa
         throw new ApplicationException($"Expected numeric value at offset {end}");
     }
 
-    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Optional(string word, int start, int end, Func<int, Task> cb, bool escaped = false)
+    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Optional(string word, int start, int end, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill, bool escaped = false)
     {
         start -= escaped ? 1 : 0;
         var expr = word[start..end];
 
         List<Fsa> frontier;
-        (_, frontier) = await _ParsePARENS($"({expr}|)", 0, (_) => Task.CompletedTask);
+        (_, frontier) = await _ParsePARENS($"({expr}|)", 0, (_, _, _) => Task.CompletedTask, kill);
         
         end++;
 
         return (start, end, frontier);
     }
 
-    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Star(string word, int start, int end, Func<int, Task> cb, bool escaped = false)
+    protected async Task<(int start, int end, List<Fsa> frontier)> _EXT_ParsePLUS_Star(string word, int start, int end, Func<int, Fsa, Fsa, Task> cb, Action<Fsa> kill, bool escaped = false)
     {
         start -= escaped ? 1 : 0;
         var expr = word[start..end];
 
         List<Fsa> frontier;
-        (_, frontier) = await _ParsePARENS($"({expr}+|)", 0, (_) => Task.CompletedTask);
+        (_, frontier) = await _ParsePARENS($"({expr}+|)", 0, (_, _, _) => Task.CompletedTask, kill);
 
         end++;
 
         return (start, end, frontier);
     }
 
-    protected async Task<(int end, List<Fsa> frontier)> _EXT_ParseRANGE_Chars(string word, int end, List<Fsa> frontier, Func<int, Task> cb)
+    protected async Task<(int end, List<Fsa> frontier)> _EXT_ParseRANGE_Chars(string word, int end, List<Fsa> frontier, Func<int, Fsa, Fsa, Task> cb)
     {
         var letter = word[end];
 
@@ -152,7 +152,7 @@ public partial class Fsa
         return (end, frontier);
     }
 
-    protected async Task<(int end, List<Fsa> frontier)> _EXT_ParseRANGE(string word, int start, Func<int, Task> cb)
+    protected async Task<(int end, List<Fsa> frontier)> _EXT_ParseRANGE(string word, int start, Func<int, Fsa, Fsa, Task> cb)
     {
         var end = start + 1;
         List<Fsa> frontier = [];
