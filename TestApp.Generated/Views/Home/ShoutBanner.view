@@ -18,7 +18,7 @@ div(| class = {"banner green-banner d-flex flex-row"} |
 		)
 
 		p(| class = {"mb-4"} |
-			span(| class = {"fw-bolder"} |
+			span(| class = {""} |
 				<">
 				If I'm not writing code, odds are I'm talking about code. Every project
 				is an opportunity to push my limits and learn something new

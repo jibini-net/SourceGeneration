@@ -14,7 +14,7 @@ CascadingState cascade(
 		a(| href = {""}, class = {"btn btn-lg btn-light ms-md-4"} | unsafe({"&#10094;&nbsp;&nbsp;&nbsp;Home"}))
 
 		span(|
-			class = {"fw-lighter"},
+			class = {""},
 			style = {"font-size: 2rem;color: #fbf0d5;"}
 			|
 			<">Project Portfolio</">
