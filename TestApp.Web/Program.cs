@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Generated;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
@@ -12,6 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 builder.Services.AddResponseCompression((options) =>
 {
     options.EnableForHttps = true;
@@ -130,6 +137,7 @@ app.UseSwaggerUI((options) =>
     options.EnableTryItOutByDefault();
 });
 
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 if (app.Environment.IsDevelopment())

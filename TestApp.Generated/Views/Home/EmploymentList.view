@@ -12,23 +12,23 @@ div(|
 	|
 
 	h5(
-		i(<">August 2021 - Now</">)
+		i(<">January 2026 - Now</">)
 	)
-	h4(
+	h4(| class = {"py-3"} |
 		a(|
-			href = {links.GetNamed("Netkinetix")},
+			href = {links.GetNamed("KwikTrip")},
 			target = {"_blank"},
 			class = {"m-2"}
 			|
 			img(|
-				src = {"images/netkinetix.png"},
+				src = {"images/kwik-trip.png"},
 				width = {160},
-				height = {73},
-				alt = {"Netkinetix"}
+				height = {"auto"},
+				alt = {"Kwik Trip"}
 				|)
 		)
-		span(| class = {"smaller"} |
-			<">.NET Software Developer</">
+		span(| class = {"smaller ms-1"} |
+			<">Software Developer 2</">
 		)
 	)
 	p(
@@ -37,73 +37,12 @@ div(|
 
 	p(
 		<">
-		We work with customers from public and private sectors to address their
-		unique business challenges. The crew specializes in applications built on
-		</">
-		a(|
-			href = {links.GetNamed("AspNet")},
-			target = {"_blank"}
-			|
-			<">ASP.NET Core</">
-		)
-		<"> and </">
-		a(|
-			href = {links.GetNamed("SqlServer")},
-			target = {"_blank"}
-			|
-			<">Microsoft SQL Server</">
-		)
-		<">.</">
-	)
-	p(
-		<">
-		The focus is on the needs of the customer, and thus projects are
-		constantly in flux. We balance changing priorities, meet shifting
-		deadlines, and interact with wildly varied projects
-		simultaneously</">unsafe({"&mdash;"})<">whatever is needed to drive
-		productivity and deliver consistent products.
+		Retail-facing product development during a time of rapid and accelerating growth. An employer with strong local values and investments.
 		</">
 	)
-	p(
-		<">
-		I've pushed to incorporate new tools, including adopting
-		</">
-		a(|
-			href = {links.GetNamed("Blazor")},
-			target = {"_blank"}
-			|
-			<">Blazor</">
-		)
-		<">
-		as a frontend technology. We maintain libraries shared across our
-		projects to increase code reuse and reduce redundant effort.
-		</">
-	)
-	p(| class = {"mb-1"} |
-		<">
-		Some custom, interactive systems I've helped build:
-		</">
-	)
-	ul(
-		li(<">employee time-tracking, reporting, and estimation tools</">)
-		li(<">an interactive Google Maps polygon annotation editor</">)
-		li(<">an Outlook calendar clone</">)
-		li(<">interactive forms for public sector budgeting and reimbursement</">)
-		li(<">sophisticated interactive reports using Chart.js</">)
-		li(<">a drag-n-drop, WYSIWYG survey builder with logic sub-system</">)
-		li(<">MLS-enabled home listing viewer</">)
-	)
-	p(
-		<">
-		I approach every project with the assumption it
-		</">
-		i(<">can</">)
-		<">
-		be done.
-		</">
-	)
+	
 	i(| class = {"text-muted fw-light"} |
-		<">Last updated 2024-11-16</">
+		<">Last updated 2026-03-01</">
 	)
 )
 
@@ -151,6 +90,44 @@ div(| class = {"border-top border-light my-4"} |)
 div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 
 	h5(
+		i(<">August 2021 - December 2025</">)
+	)
+	h4(
+		a(|
+			href = {links.GetNamed("Netkinetix")},
+			target = {"_blank"},
+			class = {"m-2"}
+			|
+			img(|
+				src = {"images/netkinetix.png"},
+				width = {160},
+				height = {73},
+				alt = {"Netkinetix"}
+				|)
+		)
+		span(| class = {"smaller ms-1"} |
+			<">.NET Software Developer</">
+		)
+	)
+	p(
+		unsafe({"&mdash;"})
+	)
+
+	p(
+		<">
+		Public and private sector contract development including public-facing sites for the Wisconsin DOT.
+		</">
+	)
+	
+	i(| class = {"text-muted fw-light"} |
+		<">Last updated 2026-03-01</">
+	)
+
+)
+
+div(| class = {"bg-white text-dark p-3 mt-3 bg-opacity-75"} |
+
+	h5(
 		i(<">June 2020 - August 2021</">)
 	)
 	h4(
@@ -171,25 +148,14 @@ div(| class = {"bg-white text-dark p-3 bg-opacity-75"} |
 
 	p(
 		<">
-		My favorite part of this job was the direct interaction with engineers.
-		With rapid feedback from the team, I implemented and deployed intuitive
-		reporting tools to access data in
-		</">
+		Developing reporting tools for </">
 		a(|
 			href = {links.GetNamed("Epicor")},
 			target = {"_blank"}
 			|
 			<">Epicor ERP</">
 		)
-		<">.
-		The tools are still used throughout the company and save countless hours of
-		navigating cluttered screens.
-		</">
-	)
-	p(
-		<">
-		In the meantime, I learned crucial details about inventory management
-		and the mechanical engineering process.
+		<">, interacting directly with mechanical engineers the manufacturing process.
 		</">
 	)
 
